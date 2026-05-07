@@ -91,14 +91,25 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                string cmdSQL = "DELETE FROM Insumos WHERE IdInsumo = @IdInsumo";
+                // Importante: No SQL Server, isso falhará se houver Lotes ou Movimentações vinculadas
+                string cmdSQL = "DELETE FROM Insumos WHERE idInsumo = @idInsumo";
 
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
-                cmd.Parameters.AddWithValue("@IdInsumo", idInsumo);
+
+                cmd.Parameters.AddWithValue("@idInsumo", idInsumo);
 
                 con.Open();
                 cmd.ExecuteNonQuery();
                 con.Close();
+            }
+            catch (SqlException ex)
+            {
+                // Erro 547 é o código específico do SQL Server para violação de Chave Estrangeira
+                if (ex.Number == 547)
+                {
+                    throw new Exception("Não é possível excluir este insumo pois ele possui lotes, receitas ou movimentações vinculadas.");
+                }
+                throw new Exception("Erro de banco de dados: " + ex.Message);
             }
             catch (Exception ex)
             {

@@ -3,32 +3,32 @@ using System.Data;
 
 namespace K_Gest.BancoDados
 {
-    public class Receitas
+    public class Lote
     {
-
         //-------------------------------------------------------------
         // Atributos
         //-------------------------------------------------------------
-        public int? idReceita;
-        public string nomePrato;
+        public int? idLote;
+        public DateTime dtFabricacao;
+        public DateTime dtValidade;
+        public int numLote;
+        public int idInsumo; // Chave Estrangeira
 
         SqlConnection con;
 
         //-------------------------------------------------------------
         // Construtor
         //-------------------------------------------------------------
-        public Receitas()
+        public Lote()
         {
             try
             {
                 IConfigurationRoot o_Config = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile(@".\Configuration\Kantine.json")
+                    .AddJsonFile(@".\Configuration\ProjTCC.json")
                     .Build();
 
-
                 string strConexao = o_Config.GetConnectionString(@"StringConexaoSQLServer");
-
                 con = new SqlConnection(strConexao);
             }
             catch (Exception ex)
@@ -38,71 +38,63 @@ namespace K_Gest.BancoDados
         }
 
         //-------------------------------------------------------------
-        // Métodos
+        // Métodos de Persistência
         //-------------------------------------------------------------
         public void Inserir()
         {
             try
             {
-                string cmdSQL = "INSERT INTO Receitas(nomePrato) VALUES(@NomePrato)";
+                // Note que o idInsumo é inserido normalmente como um inteiro
+                string cmdSQL = "INSERT INTO Lotes(DtFabricacao, DtValidade, NumLote, IdInsumo) " +
+                                "VALUES(@DtFabricacao, @DtValidade, @NumLote, @IdInsumo)";
 
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
+                cmd.Parameters.AddWithValue("@DtFabricacao", dtFabricacao);
+                cmd.Parameters.AddWithValue("@DtValidade", dtValidade);
+                cmd.Parameters.AddWithValue("@NumLote", numLote);
+                cmd.Parameters.AddWithValue("@IdInsumo", idInsumo);
 
-                cmd.Parameters.AddWithValue("@NomePrato", nomePrato);
-
-                //Abre conexão com BD
                 con.Open();
-
-                // Executar o comando SQL
                 cmd.ExecuteNonQuery();
-
-                //Executar o comando SQL
-
                 con.Close();
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Erro ao inserir lote (Verifique se o Insumo existe): " + ex.Message);
             }
-
         }
+
         public void Alterar()
         {
             try
             {
-                // Prepara o comando SQL
-                string cmdSQL = "UPDATE Receitas SET nomePrato = @NomePrato WHERE idReceita = @IdReceita";
+                string cmdSQL = "UPDATE Lotes SET DtFabricacao = @DtFabricacao, DtValidade = @DtValidade, " +
+                                "NumLote = @NumLote, IdInsumo = @IdInsumo WHERE IdLote = @IdLote";
 
-                //Prepara SqlCommand
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
+                cmd.Parameters.AddWithValue("@IdLote", idLote);
+                cmd.Parameters.AddWithValue("@DtFabricacao", dtFabricacao);
+                cmd.Parameters.AddWithValue("@DtValidade", dtValidade);
+                cmd.Parameters.AddWithValue("@NumLote", numLote);
+                cmd.Parameters.AddWithValue("@IdInsumo", idInsumo);
 
-                cmd.Parameters.AddWithValue("@IdReceita", idReceita);
-                cmd.Parameters.AddWithValue("@NomePrato", nomePrato);
-
-                //Abre conexão com BD
                 con.Open();
-
-                // Executar o comando SQL
                 cmd.ExecuteNonQuery();
-
-                // Fecha a conexão com o BD
                 con.Close();
-
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
         }
+
         public void Excluir()
         {
             try
             {
-                
-                string cmdSQL = "DELETE FROM Receitas WHERE idReceita = @IdReceita";
-
+                string cmdSQL = "DELETE FROM Lotes WHERE IdLote = @IdLote";
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
-                cmd.Parameters.AddWithValue("@IdReceita", idReceita);
+                cmd.Parameters.AddWithValue("@IdLote", idLote);
 
                 con.Open();
                 cmd.ExecuteNonQuery();
@@ -110,76 +102,52 @@ namespace K_Gest.BancoDados
             }
             catch (Exception ex)
             {
-                
-                throw new Exception("Erro ao excluir: Verifique se existem itens vinculados a esta receita. " + ex.Message);
+                throw new Exception(ex.Message);
             }
         }
+
+        //-------------------------------------------------------------
+        // Métodos de Consulta (Com JOIN para facilitar a visualização)
+        //-------------------------------------------------------------
         public DataTable SelecionarTodos()
         {
             try
             {
-                // Prepara o comando SQL
-                string cmdSQL = "SELECT idReceita, nomePrato FROM receitas ORDER BY idReceita";
+                // Exemplo de SELECT com JOIN para trazer o nome do Insumo junto
+                string cmdSQL = @"SELECT L.IdLote, L.DtFabricacao, L.DtValidade, L.NumLote, L.IdInsumo, I.Nome as NomeInsumo 
+                                  FROM Lotes L 
+                                  INNER JOIN Insumos I ON L.IdInsumo = I.IdInsumo 
+                                  ORDER BY L.IdLote";
 
-                // Prepara SQL Adapter
                 SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
-
-                //Abre conexão com BD
                 con.Open();
-
                 DataTable dtPesquisa = new DataTable();
-
-                // Executa o Select no banco de dados
                 int qtdeLinhasAfetada = o_DataAdapter.Fill(dtPesquisa);
-
-                // Fecha conexão com BD
                 con.Close();
 
-                if (qtdeLinhasAfetada > 0)
-                {
-                    return dtPesquisa;
-                }
-                else
-                {
-                    return null;
-                }
+                return qtdeLinhasAfetada > 0 ? dtPesquisa : null;
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
         }
+
         public DataTable SelecionarPorID()
         {
             try
             {
-                // Prepara o comando SQL
-                string cmdSQL = "SELECT idReceita, nomePrato FROM receitas WHERE idReceita = @IdReceita";
+                string cmdSQL = "SELECT IdLote, DtFabricacao, DtValidade, NumLote, IdInsumo FROM Lotes WHERE IdLote = @IdLote";
 
-                // Prepara SQL Adapter
                 SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
+                o_DataAdapter.SelectCommand.Parameters.AddWithValue("@IdLote", idLote);
 
-                o_DataAdapter.SelectCommand.Parameters.AddWithValue("@IdReceita", idReceita);
-
-                //Abre conexão com BD
                 con.Open();
-
                 DataTable dtPesquisa = new DataTable();
-
-                // Executa o Select no banco de dados
                 int qtdeLinhasAfetada = o_DataAdapter.Fill(dtPesquisa);
-
-                // Fecha conexão com BD
                 con.Close();
 
-                if (qtdeLinhasAfetada > 0)
-                {
-                    return dtPesquisa;
-                }
-                else
-                {
-                    return null;
-                }
+                return qtdeLinhasAfetada > 0 ? dtPesquisa : null;
             }
             catch (Exception ex)
             {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-public class InsumoViewModel
+public class InsumosViewModel
 {
     [Key]
     public int? IdInsumo { get; set; }

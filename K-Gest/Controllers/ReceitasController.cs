@@ -78,31 +78,28 @@ namespace K_Gest.Controllers
         {
             try
             {
-                //--------------------------------------------------
-                // Buscar dados do Receitas no banco de dados
-                //--------------------------------------------------
                 Receitas o_Receitas = new Receitas();
-
                 o_Receitas.idReceita = idReceita;
                 DataTable pesqReceitas = o_Receitas.SelecionarPorID();
 
-                //--------------------------------------------------
-                // Preencher a Model com os dados do Banco de Dados
-                //--------------------------------------------------
+                // Verificação se o registro existe
+                if (pesqReceitas == null || pesqReceitas.Rows.Count == 0)
+                {
+                    TempData["MsgErro"] = "Receita não encontrada.";
+                    return RedirectToAction("Selecionar");
+                }
+
                 ReceitasViewModel o_ReceitasVM = new ReceitasViewModel();
-
-                //Campos que não podem ser nulos
                 o_ReceitasVM.IdReceita = idReceita;
-                o_ReceitasVM.NomePrato = pesqReceitas.Rows[0]["NomePrato"].ToString();
-
-               
+                
+                o_ReceitasVM.NomePrato = pesqReceitas.Rows[0]["nomePrato"].ToString();
 
                 return View("AlterarExibirView", o_ReceitasVM);
             }
             catch (Exception ex)
             {
                 TempData["MsgErro"] = $"Erro: {ex.Message}";
-                return View("AlterarExibirView");
+                return RedirectToAction("Selecionar");
             }
         }
 
@@ -147,31 +144,24 @@ namespace K_Gest.Controllers
         {
             try
             {
-                //--------------------------------------------------
-                // Buscar dados do Receitas no banco de dados
-                //--------------------------------------------------
                 Receitas o_Receitas = new Receitas();
-
                 o_Receitas.idReceita = idReceita;
                 DataTable pesqReceitas = o_Receitas.SelecionarPorID();
 
-                //--------------------------------------------------
-                // Preencher a Model com os dados do Banco de Dados
-                //--------------------------------------------------
+                // Verificação de existência
+                if (pesqReceitas == null || pesqReceitas.Rows.Count == 0)
+                    return RedirectToAction("Selecionar");
+
                 ReceitasViewModel o_ReceitasVM = new ReceitasViewModel();
-
-                //Campos que não podem ser nulos
                 o_ReceitasVM.IdReceita = idReceita;
-                o_ReceitasVM.NomePrato = pesqReceitas.Rows[0]["NomePrato"].ToString();
-
-                
+                o_ReceitasVM.NomePrato = pesqReceitas.Rows[0]["nomePrato"].ToString();
 
                 return View("ExcluirExibirView", o_ReceitasVM);
             }
             catch (Exception ex)
             {
                 TempData["MsgErro"] = $"Erro: {ex.Message}";
-                return View("ExcluirExibirView");
+                return RedirectToAction("Selecionar");
             }
         }
 
@@ -194,7 +184,7 @@ namespace K_Gest.Controllers
 
                 o_Receitas.Excluir();
 
-                TempData["MsgSucesso"] = "Setor excluído com sucesso!";
+                TempData["MsgSucesso"] = "Receita excluída com sucesso!";
                 return RedirectToAction("Selecionar");
             }
             catch (Exception ex)
