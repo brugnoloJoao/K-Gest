@@ -38,7 +38,6 @@ namespace K_Gest.Controllers
             return View("InserirExibirView");
         }
 
-
         //-----------------------------------------------------------
         // INSERIR - PROCESSAR
         //-----------------------------------------------------------
@@ -71,7 +70,6 @@ namespace K_Gest.Controllers
                 return View("InserirExibirView", o_MovimentacaoEstoqueVM);
             }
         }
-
 
         //-----------------------------------------------------------
         // ALTERAR - EXIBIR
@@ -110,7 +108,6 @@ namespace K_Gest.Controllers
             }
         }
 
-
         //-----------------------------------------------------------
         // ALTERAR - PROCESSAR
         //-----------------------------------------------------------
@@ -144,7 +141,6 @@ namespace K_Gest.Controllers
             }
 
         }
-
 
         //-----------------------------------------------------------
         // EXCLUIR - EXIBIR
