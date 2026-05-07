@@ -10,7 +10,7 @@ namespace K_Gest.BancoDados
         //-------------------------------------------------------------
         public int? idEstoque;
         public string tipoEs;
-        public int qntdEstoque;
+        public int qtdMoviment;
         public string motivo;
         public int idInsumo;
 
@@ -44,12 +44,12 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                string cmdSQL = "INSERT INTO MovimentacaoEstoque(TipoEs, QntdEstoque, Motivo, IdInsumo) VALUES(@TipoEs, @QntdEstoque, @Motivo, @IdInsumo)";
+                string cmdSQL = "INSERT INTO MovimentacaoEstoque(TipoEs, QtdMoviment, Motivo, IdInsumo) VALUES(@TipoEs, @QtdMoviment, @Motivo, @IdInsumo)";
 
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
 
                 cmd.Parameters.AddWithValue("@TipoEs", tipoEs);
-                cmd.Parameters.AddWithValue("@QntdEstoque", qntdEstoque);
+                cmd.Parameters.AddWithValue("@QtdMoviment", qtdMoviment);
                 cmd.Parameters.AddWithValue("@Motivo", motivo);
                 cmd.Parameters.AddWithValue("@IdInsumo", idInsumo);
 
@@ -67,13 +67,13 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                string cmdSQL = "UPDATE MovimentacaoEstoque SET TipoEs = @TipoEs, QntdEstoque = @QntdEstoque, Motivo = @Motivo, IdInsumo = @IdInsumo WHERE IdEstoque = @IdEstoque";
+                string cmdSQL = "UPDATE MovimentacaoEstoque SET TipoEs = @TipoEs, QtdMoviment = @QtdMoviment, Motivo = @Motivo, IdInsumo = @IdInsumo WHERE IdEstoque = @IdEstoque";
 
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
 
                 cmd.Parameters.AddWithValue("@IdEstoque", idEstoque);
                 cmd.Parameters.AddWithValue("@TipoEs", tipoEs);
-                cmd.Parameters.AddWithValue("@QntdEstoque", qntdEstoque);
+                cmd.Parameters.AddWithValue("@QtdMoviment", qtdMoviment);
                 cmd.Parameters.AddWithValue("@Motivo", motivo);
                 cmd.Parameters.AddWithValue("@IdInsumo", idInsumo);
 
@@ -114,7 +114,7 @@ namespace K_Gest.BancoDados
                 string cmdSQL = @"SELECT 
                                     M.IdEstoque, 
                                     M.TipoEs, 
-                                    M.QntdEstoque, 
+                                    M.QtdMoviment, 
                                     M.Motivo, 
                                     I.Nome AS NomeInsumo 
                                   FROM MovimentacaoEstoque M
@@ -142,7 +142,7 @@ namespace K_Gest.BancoDados
                 string cmdSQL = @"SELECT 
                                     M.IdEstoque, 
                                     M.TipoEs, 
-                                    M.QntdEstoque, 
+                                    M.QtdMoviment, 
                                     M.Motivo, 
                                     M.IdInsumo,
                                     I.Nome AS NomeInsumo 
