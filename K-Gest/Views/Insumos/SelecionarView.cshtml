@@ -1,0 +1,82 @@
+﻿@using System.Data
+
+@model DataTable
+
+@{
+    ViewData["Title"] = "Consulta de Insumos";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Estoque de Insumos</h2>
+        <a href="/Insumos/InserirExibir" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Novo Insumo
+        </a>
+    </div>
+
+    @if (TempData["MsgSucesso"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["MsgSucesso"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["MsgErro"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["MsgErro"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome do Insumo</th>
+                        <th>Unidade</th>
+                        <th class="text-center">Estoque Atual</th>
+                        <th class="text-center">Ponto de Pedido</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Rows.Count > 0)
+                    {
+                        foreach (DataRow row in Model.Rows)
+                        {
+                            // Lógica simples para destacar estoque baixo
+                            var estoqueBaixo = Convert.ToDecimal(row["estoqueAtual"]) <= Convert.ToDecimal(row["pontoPedido"]);
+
+                            <tr class="@(estoqueBaixo ? "table-warning" : "")">
+                                <td>@row["idInsumo"]</td>
+                                <td><strong>@row["nomeInsumo"]</strong></td>
+                                <td>@row["unidadeMed"]</td>
+                                <td class="text-center">@row["estoqueAtual"]</td>
+                                <td class="text-center">@row["pontoPedido"]</td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a href="/Insumos/AlterarExibir?idInsumo=@row["idInsumo"]"
+                                           class="btn btn-outline-warning btn-sm">Editar</a>
+
+                                        <a href="/Insumos/ExcluirExibir?idInsumo=@row["idInsumo"]"
+                                           class="btn btn-outline-danger btn-sm">Excluir</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">Nenhum insumo cadastrado.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

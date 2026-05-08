@@ -66,6 +66,8 @@ namespace K_Gest.Controllers
         //-----------------------------------------------------------
         // ALTERAR - EXIBIR
         //-----------------------------------------------------------
+
+
         public IActionResult AlterarExibir(int idInsumo)
         {
             try

@@ -158,5 +158,30 @@ namespace K_Gest.BancoDados
                 throw new Exception(ex.Message);
             }
         }
+
+        public DataTable SelecionarAbaixoDoPontoPedido()
+        {
+            try
+            {
+                // Seleciona apenas insumos onde o estoque atual atingiu ou passou do limite de segurança
+                string cmdSQL = @"SELECT IdInsumo, Nome, EstoqueAtual, PontoPedido, UnidadeMed 
+                          FROM Insumos 
+                          WHERE EstoqueAtual <= PontoPedido
+                          ORDER BY Nome ASC";
+
+                SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
+
+                con.Open();
+                DataTable dtPesquisa = new DataTable();
+                int qtdeLinhas = o_DataAdapter.Fill(dtPesquisa);
+                con.Close();
+
+                return qtdeLinhas > 0 ? dtPesquisa : null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao gerar lista de compras: " + ex.Message);
+            }
+        }
     }
 }

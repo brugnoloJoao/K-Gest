@@ -5,20 +5,14 @@ namespace K_Gest.BancoDados
 {
     public class MovimentacaoEstoque
     {
-        //-------------------------------------------------------------
-        // Atributos
-        //-------------------------------------------------------------
         public int? idEstoque;
-        public string tipoEs;
+        public string tipoEs; // "E" para Entrada, "S" para Saída
         public int qtdMoviment;
         public string motivo;
         public int idInsumo;
 
         SqlConnection con;
 
-        //-------------------------------------------------------------
-        // Construtor
-        //-------------------------------------------------------------
         public MovimentacaoEstoque()
         {
             try
@@ -38,71 +32,78 @@ namespace K_Gest.BancoDados
         }
 
         //-------------------------------------------------------------
-        // Métodos
+        // INSERIR COM ATUALIZAÇÃO DE ESTOQUE
         //-------------------------------------------------------------
         public void Inserir()
         {
+            con.Open();
+            SqlTransaction tran = con.BeginTransaction(); // Inicia transação para garantir integridade
+
             try
             {
-                string cmdSQL = "INSERT INTO MovimentacaoEstoque(TipoEs, QtdMoviment, Motivo, IdInsumo) VALUES(@TipoEs, @QtdMoviment, @Motivo, @IdInsumo)";
+                // Inserir o registro na tabela de movimentação
+                string cmdMovimentacao = @"INSERT INTO Movimentacao_Estoque(tipoEs, qtdMoviment, motivo, idInsumo) 
+                                         VALUES(@tipoEs, @qtdMoviment, @motivo, @idInsumo)";
 
-                SqlCommand cmd = new SqlCommand(cmdSQL, con);
+                SqlCommand cmd1 = new SqlCommand(cmdMovimentacao, con, tran);
+                cmd1.Parameters.AddWithValue("@tipoEs", tipoEs);
+                cmd1.Parameters.AddWithValue("@qtdMoviment", qtdMoviment);
+                cmd1.Parameters.AddWithValue("@motivo", motivo);
+                cmd1.Parameters.AddWithValue("@idInsumo", idInsumo);
+                cmd1.ExecuteNonQuery();
 
-                cmd.Parameters.AddWithValue("@TipoEs", tipoEs);
-                cmd.Parameters.AddWithValue("@QtdMoviment", qtdMoviment);
-                cmd.Parameters.AddWithValue("@Motivo", motivo);
-                cmd.Parameters.AddWithValue("@IdInsumo", idInsumo);
+                //  Atualizar o estoqueAtual na tabela Insumos
+                // Se tipoEs for 'E', soma. Se for 'S', subtrai.
+                string operacao = (tipoEs.ToUpper() == "E") ? "+" : "-";
+                string cmdInsumo = $"UPDATE Insumos SET estoqueAtual = estoqueAtual {operacao} @qtd WHERE idInsumo = @idInsumo";
 
-                con.Open();
-                cmd.ExecuteNonQuery();
-                con.Close();
+                SqlCommand cmd2 = new SqlCommand(cmdInsumo, con, tran);
+                cmd2.Parameters.AddWithValue("@qtdMoviment", qtdMoviment);
+                cmd2.Parameters.AddWithValue("@idInsumo", idInsumo);
+                cmd2.ExecuteNonQuery();
+
+                tran.Commit(); // Salva as duas operações
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                tran.Rollback(); // Se der erro em qualquer uma, cancela tudo
+                throw new Exception("Erro ao processar movimentação: " + ex.Message);
+            }
+            finally
+            {
+                con.Close();
             }
         }
 
-        public void Alterar()
+        //-------------------------------------------------------------
+        // MÉTODOS PARA O DASHBOARD E LISTA DE COMPRAS
+        //-------------------------------------------------------------
+
+        public DataTable SelecionarPorMotivo(string motivoFiltro)
         {
             try
             {
-                string cmdSQL = "UPDATE MovimentacaoEstoque SET TipoEs = @TipoEs, QtdMoviment = @QtdMoviment, Motivo = @Motivo, IdInsumo = @IdInsumo WHERE IdEstoque = @IdEstoque";
+                // SQL com JOIN para saber qual insumo foi desperdiçado
+                string cmdSQL = @"SELECT M.IdEstoque, M.TipoEs, M.QtdMoviment, M.Motivo, I.Nome as NomeInsumo 
+                          FROM MovimentacaoEstoque M
+                          INNER JOIN Insumos I ON M.IdInsumo = I.IdInsumo
+                          WHERE M.Motivo LIKE @Motivo
+                          ORDER BY M.IdEstoque DESC";
 
-                SqlCommand cmd = new SqlCommand(cmdSQL, con);
-
-                cmd.Parameters.AddWithValue("@IdEstoque", idEstoque);
-                cmd.Parameters.AddWithValue("@TipoEs", tipoEs);
-                cmd.Parameters.AddWithValue("@QtdMoviment", qtdMoviment);
-                cmd.Parameters.AddWithValue("@Motivo", motivo);
-                cmd.Parameters.AddWithValue("@IdInsumo", idInsumo);
+                SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
+                // O % faz com que ele busque qualquer frase que contenha a palavra (Ex: "Desperdício de sobra")
+                o_DataAdapter.SelectCommand.Parameters.AddWithValue("@Motivo", "%" + motivoFiltro + "%");
 
                 con.Open();
-                cmd.ExecuteNonQuery();
+                DataTable dtPesquisa = new DataTable();
+                int qtdeLinhas = o_DataAdapter.Fill(dtPesquisa);
                 con.Close();
+
+                return qtdeLinhas > 0 ? dtPesquisa : null;
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public void Excluir()
-        {
-            try
-            {
-                string cmdSQL = "DELETE FROM MovimentacaoEstoque WHERE IdEstoque = @IdEstoque";
-
-                SqlCommand cmd = new SqlCommand(cmdSQL, con);
-                cmd.Parameters.AddWithValue("@IdEstoque", idEstoque);
-
-                con.Open();
-                cmd.ExecuteNonQuery();
-                con.Close();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
+                throw new Exception("Erro ao filtrar motivo: " + ex.Message);
             }
         }
 
@@ -110,59 +111,90 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                // SQL com JOIN para trazer o Nome do Insumo
-                string cmdSQL = @"SELECT 
-                                    M.IdEstoque, 
-                                    M.TipoEs, 
-                                    M.QtdMoviment, 
-                                    M.Motivo, 
-                                    I.Nome AS NomeInsumo 
-                                  FROM MovimentacaoEstoque M
-                                  INNER JOIN Insumos I ON M.IdInsumo = I.IdInsumo
-                                  ORDER BY M.IdEstoque DESC";
+                string cmdSQL = @"SELECT M.idEstoque, M.tipoEs, M.qtdMoviment, M.motivo, 
+                                 I.nomeInsumo, I.unidadeMed, M.idInsumo
+                          FROM Movimentacao_Estoque M
+                          INNER JOIN Insumos I ON M.idInsumo = I.idInsumo
+                          ORDER BY M.idEstoque DESC";
 
-                SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
+                SqlDataAdapter da = new SqlDataAdapter(cmdSQL, con);
+                DataTable dt = new DataTable();
                 con.Open();
-                DataTable dtPesquisa = new DataTable();
-                o_DataAdapter.Fill(dtPesquisa);
+                da.Fill(dt);
                 con.Close();
-
-                return dtPesquisa.Rows.Count > 0 ? dtPesquisa : null;
+                return dt;
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
         public DataTable SelecionarPorID()
         {
             try
             {
-                string cmdSQL = @"SELECT 
-                                    M.IdEstoque, 
-                                    M.TipoEs, 
-                                    M.QtdMoviment, 
-                                    M.Motivo, 
-                                    M.IdInsumo,
-                                    I.Nome AS NomeInsumo 
-                                  FROM MovimentacaoEstoque M
-                                  INNER JOIN Insumos I ON M.IdInsumo = I.IdInsumo
-                                  WHERE M.IdEstoque = @IdEstoque";
+                string cmdSQL = "SELECT * FROM Movimentacao_Estoque WHERE idEstoque = @idEstoque";
+                SqlCommand cmd = new SqlCommand(cmdSQL, con);
+                cmd.Parameters.AddWithValue("@idEstoque", idEstoque);
 
-                SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
-                o_DataAdapter.SelectCommand.Parameters.AddWithValue("@IdEstoque", idEstoque);
-
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
                 con.Open();
-                DataTable dtPesquisa = new DataTable();
-                o_DataAdapter.Fill(dtPesquisa);
+                da.Fill(dt);
                 con.Close();
+                return dt;
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
 
-                return dtPesquisa.Rows.Count > 0 ? dtPesquisa : null;
+        public void Excluir()
+        {
+            con.Open();
+            SqlTransaction tran = con.BeginTransaction();
+
+            try
+            {
+                
+                // Precisamos saber se era Entrada ou Saída para devolver ao estoque corretamente
+                string sqlBusca = "SELECT tipoEs, qtdMoviment, idInsumo FROM Movimentacao_Estoque WHERE idEstoque = @idEstoque";
+                SqlCommand cmdBusca = new SqlCommand(sqlBusca, con, tran);
+                cmdBusca.Parameters.AddWithValue("@idEstoque", idEstoque);
+
+                SqlDataReader dr = cmdBusca.ExecuteReader();
+                dr.Read();
+
+                // Atribuímos às variáveis locais para garantir que temos os valores do BD
+                string v_tipo = dr["tipoEs"].ToString();
+                int v_qtd = Convert.ToInt32(dr["qtdMoviment"]);
+                int v_idInsumo = Convert.ToInt32(dr["idInsumo"]);
+
+                dr.Close();
+
+                //  Lógica de Estorno
+                string opEstorno = (v_tipo.ToUpper() == "E") ? "-" : "+";
+
+                // Aqui usamos nomes de parâmetros que remetem aos seus atributos
+                string sqlEstorno = $"UPDATE Insumos SET estoqueAtual = estoqueAtual {opEstorno} @qtdMoviment WHERE idInsumo = @idInsumo";
+                SqlCommand cmdEstorno = new SqlCommand(sqlEstorno, con, tran);
+
+                cmdEstorno.Parameters.AddWithValue("@qtdMoviment", v_qtd);
+                cmdEstorno.Parameters.AddWithValue("@idInsumo", v_idInsumo);
+                cmdEstorno.ExecuteNonQuery();
+
+               
+                string sqlDel = "DELETE FROM Movimentacao_Estoque WHERE idEstoque = @idEstoque";
+                SqlCommand cmdDel = new SqlCommand(sqlDel, con, tran);
+                cmdDel.Parameters.AddWithValue("@idEstoque", idEstoque);
+                cmdDel.ExecuteNonQuery();
+
+                tran.Commit();
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                tran.Rollback();
+                throw new Exception("Erro ao excluir e estornar estoque: " + ex.Message);
+            }
+            finally
+            {
+                con.Close();
             }
         }
     }
