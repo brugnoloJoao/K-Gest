@@ -3,13 +3,13 @@
 //    "StringConexaoSQLServer": "Data Source=.\\SQLEXPRESS; Database=Kantine; User ID=sa;Password=sa"
 //  }
 //}
-//{ // Connection string da casa do Brugnolo
-//  "ConnectionStrings": {
-//    "StringConexaoSQLServer": "Server=localhost;Database=Kantine;Trusted_Connection=True;"
-//  }
-//}
-
-
-"ConnectionStrings": {
-  "StringConexaoSQLServer": "Server=localhost;Database=Kantine;Trusted_Connection=True;Encrypt=False;TrustServerCertificate=True;"
+{ // Connection string da casa do Brugnolo
+  "ConnectionStrings": {
+    "StringConexaoSQLServer": "Server=localhost;Database=Kantine;Trusted_Connection=True;"
+  }
 }
+
+
+//"ConnectionStrings": {
+//  "StringConexaoSQLServer": "Server=localhost;Database=Kantine;Trusted_Connection=True;Encrypt=False;TrustServerCertificate=True;"
+//}
