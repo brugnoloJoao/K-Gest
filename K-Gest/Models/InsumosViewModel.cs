@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
 namespace K_Gest.Models
 {
     public class InsumosViewModel
@@ -15,14 +16,11 @@ namespace K_Gest.Models
         [StringLength(10, ErrorMessage = "A unidade deve ser curta (máx. 10 caracteres).")]
         [Display(Name = "Unidade de Medida")]
         public string UnidadeMed { get; set; }
-
         [Required(ErrorMessage = "Informe o estoque atual.")]
-        [Range(0, 9999999.99, ErrorMessage = "O estoque não pode ser negativo.")]
         [Display(Name = "Estoque Atual")]
         public decimal EstoqueAtual { get; set; }
 
         [Required(ErrorMessage = "Informe o ponto de pedido.")]
-        [Range(0, 9999999.99, ErrorMessage = "O ponto de pedido não pode ser negativo.")]
         [Display(Name = "Ponto de Pedido")]
         public decimal PontoPedido { get; set; }
     }

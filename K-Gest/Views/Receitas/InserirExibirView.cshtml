@@ -1,0 +1,21 @@
+﻿@model K_Gest.Models.ReceitasViewModel
+
+@{
+    ViewData["Title"] = "Nova Receita";
+}
+
+<div class="container mt-4">
+    <h2>Cadastrar Nova Receita</h2>
+    <hr />
+
+    <form asp-action="InserirProcessar" method="post">
+        <div class="form-group mb-3">
+            <label class="form-label">Nome do Prato</label>
+            <input asp-for="NomePrato" class="form-control" placeholder="Ex: Lasanha de Carne" />
+            <span asp-validation-for="NomePrato" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Salvar Receita</button>
+        <a asp-action="Selecionar" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

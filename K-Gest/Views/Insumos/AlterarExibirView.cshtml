@@ -1,0 +1,43 @@
+﻿@model K_Gest.Models.InsumosViewModel
+
+<div class="container mt-4">
+    <h2>Alterar Insumo</h2>
+    <hr />
+    <form asp-action="AlterarProcessar" method="post">
+        @* CAMPO OBRIGATÓRIO PARA O UPDATE FUNCIONAR *@
+        <input type="hidden" asp-for="IdInsumo" />
+
+        <div class="form-group mb-3">
+            <label>Nome do Insumo</label>
+            <input asp-for="NomeInsumo" class="form-control" required />
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Unidade de Medida</label>
+            <select asp-for="UnidadeMed" class="form-control" required>
+                <option value="KG">Quilograma (KG)</option>
+                <option value="UN">Unidade (UN)</option>
+                <option value="L">Litro (L)</option>
+                <option value="G">Grama (G)</option>
+            </select>
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Estoque Atual</label>
+            @* Mudamos para type="text" para o navegador não travar o ponto/vírgula *@
+            <input name="EstoqueAtual" type="text" class="form-control"
+                   value="@Model.EstoqueAtual.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Ponto de Pedido</label>
+            <input name="PontoPedido" type="text" class="form-control"
+                   value="@Model.PontoPedido.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)" />
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">Salvar Alterações</button>
+            <a asp-action="Selecionar" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>

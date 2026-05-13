@@ -57,7 +57,7 @@ namespace K_Gest.Controllers
         // INSERIR - PROCESSAR
         //-----------------------------------------------------------
         [HttpPost]
-        public IActionResult InserirProcessar(MovimentacaoEstoqueViewModel o_MovimentacaoEstoqueVM)
+        public IActionResult InserirProcessar(MovimentacaoEstoqueViewModel o_MovimentacaoVM)
         {
             try
             {
@@ -65,26 +65,25 @@ namespace K_Gest.Controllers
                 {
                     MovimentacaoEstoque o_Movimentacao = new MovimentacaoEstoque();
 
-                    o_Movimentacao.tipoEs = o_MovimentacaoEstoqueVM.TipoEs;
-                    o_Movimentacao.qtdMoviment = o_MovimentacaoEstoqueVM.QtdMoviment;
-                    o_Movimentacao.motivo = o_MovimentacaoEstoqueVM.Motivo;
-                    o_Movimentacao.idInsumo = o_MovimentacaoEstoqueVM.IdInsumo;
+                    // Preenche os dados básicos
+                    o_Movimentacao.tipoEs = o_MovimentacaoVM.TipoEs;
+                    o_Movimentacao.qtdMoviment = o_MovimentacaoVM.QtdMoviment;
+                    o_Movimentacao.motivo = o_MovimentacaoVM.Motivo;
+                    o_Movimentacao.idInsumo = o_MovimentacaoVM.IdInsumo;
 
-                    // IMPORTANTE: O método Inserir() deve internamente atualizar a tabela Insumos
-                    // Se tipoEs == 'S' (Saída), subtrai do estoque.
-                    // Se tipoEs == 'E' (Entrada), soma ao estoque.
-                    o_Movimentacao.Inserir();
+                    // AGORA VOCÊ PASSA A UNIDADE AQUI DENTRO DOS PARÊNTESES
+                    // Isso resolve o erro de "nenhum argumento fornecido"
+                    o_Movimentacao.Inserir(o_MovimentacaoVM.UnidadeMed);
 
-                    TempData["MsgSucesso"] = "Movimentação registrada e estoque atualizado!";
+                    TempData["MsgSucesso"] = "Movimentação realizada!";
                     return RedirectToAction("Selecionar");
                 }
-
-                return View("InserirExibirView", o_MovimentacaoEstoqueVM);
+                return View("InserirExibir", o_MovimentacaoVM);
             }
             catch (Exception ex)
             {
-                TempData["MsgErro"] = $"Erro: {ex.Message}";
-                return View("InserirExibirView", o_MovimentacaoEstoqueVM);
+                TempData["MsgErro"] = ex.Message;
+                return View("InserirExibir", o_MovimentacaoVM);
             }
         }
 
@@ -225,14 +224,14 @@ namespace K_Gest.Controllers
             return View("DashboardDesperdicio", dtDesperdicio);
         }
 
-        public IActionResult ListaComprasAutomatica()
-        {
-            Insumos o_Insumos = new Insumos();
-            // No SQL: SELECT * FROM Insumos WHERE estoqueAtual <= pontoPedido
-            DataTable dtParaComprar = o_Insumos.SelecionarAbaixoDoPontoPedido();
+        //public IActionResult ListaComprasAutomatica()
+        //{
+        //    Insumos o_Insumos = new Insumos();
+        //    // No SQL: SELECT * FROM Insumos WHERE estoqueAtual <= pontoPedido
+        //    DataTable dtParaComprar = o_Insumos.SelecionarAbaixoDoPontoPedido();
 
-            return View("ListaComprasView", dtParaComprar);
-        }
+        //    return View("ListaComprasView", dtParaComprar);
+        //}
     }
 
 

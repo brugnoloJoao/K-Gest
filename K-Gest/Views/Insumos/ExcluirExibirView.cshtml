@@ -1,0 +1,43 @@
+﻿@model K_Gest.Models.InsumosViewModel
+
+@{
+    ViewData["Title"] = "Excluir Insumo";
+}
+
+<div class="container mt-4">
+    <div class="alert alert-danger">
+        <h4><i class="bi bi-exclamation-triangle"></i> Atenção!</h4>
+        <p>Você tem certeza que deseja excluir permanentemente este insumo? Esta ação não pode ser desfeita.</p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Detalhes do Insumo</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">ID:</dt>
+                <dd class="col-sm-9">@Model.IdInsumo</dd>
+
+                <dt class="col-sm-3">Nome:</dt>
+                <dd class="col-sm-9">@Model.NomeInsumo</dd>
+
+                <dt class="col-sm-3">Unidade:</dt>
+                <dd class="col-sm-9">@Model.UnidadeMed</dd>
+
+                <dt class="col-sm-3">Estoque Atual:</dt>
+                <dd class="col-sm-9">@Model.EstoqueAtual.ToString("N2")</dd>
+            </dl>
+
+            <form asp-action="ExcluirProcessar" method="post">
+                @* Campo oculto para garantir que o ID correto seja enviado ao banco Kantine *@
+                <input type="hidden" asp-for="IdInsumo" />
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+                    <a asp-action="Selecionar" class="btn btn-secondary">Cancelar e Voltar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

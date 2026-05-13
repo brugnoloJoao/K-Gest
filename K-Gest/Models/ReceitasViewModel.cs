@@ -1,14 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
-public class ReceitasViewModel
+namespace K_Gest.Models
 {
-    [Key]
-    public int? IdReceita { get; set; }
 
-    [Required(ErrorMessage = "O nome do prato é obrigatório.")]
-    [StringLength(150, ErrorMessage = "O nome do prato deve ter no máximo 150 caracteres.")]
-    [Display(Name = "Nome do Prato")]
-    public string NomePrato { get; set; }
+    public class ReceitasViewModel
+    {
+        [Key]
+        public int? IdReceita { get; set; }
 
-    
+        [Required(ErrorMessage = "O nome do prato é obrigatório.")]
+        [StringLength(150, ErrorMessage = "O nome do prato deve ter no máximo 150 caracteres.")]
+        [Display(Name = "Nome do Prato")]
+        public string NomePrato { get; set; }
+
+
+    }
 }

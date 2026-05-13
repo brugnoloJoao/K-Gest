@@ -1,0 +1,19 @@
+﻿@model K_Gest.Models.ReceitasViewModel
+
+@{
+    ViewData["Title"] = "Excluir Receita";
+}
+
+<div class="container mt-4">
+    <div class="alert alert-warning">
+        <h4>Atenção!</h4>
+        <p>Você tem certeza que deseja excluir a receita: <strong>@Model.NomePrato</strong>?</p>
+    </div>
+
+    <form asp-action="ExcluirProcessar" method="post">
+        <input type="hidden" asp-for="IdReceita" />
+
+        <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+        <a asp-action="Selecionar" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

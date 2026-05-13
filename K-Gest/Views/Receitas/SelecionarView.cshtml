@@ -1,0 +1,45 @@
+﻿@using System.Data
+@model DataTable
+
+@{
+    ViewData["Title"] = "Lista de Receitas";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Receitas (Pratos)</h2>
+        <a asp-action="InserirExibir" class="btn btn-success">Nova Receita</a>
+    </div>
+
+    @if (TempData["MsgSucesso"] != null)
+    {
+        <div class="alert alert-success">@TempData["MsgSucesso"]</div>
+    }
+    @if (TempData["MsgErro"] != null)
+    {
+        <div class="alert alert-danger">@TempData["MsgErro"]</div>
+    }
+
+    <table class="table table-hover shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nome do Prato</th>
+                <th class="text-center">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (DataRow row in Model.Rows)
+            {
+                <tr>
+                    <td>@row["idReceita"]</td>
+                    <td>@row["nomePrato"]</td>
+                    <td class="text-center">
+                        <a asp-action="AlterarExibir" asp-route-idReceita="@row["idReceita"]" class="btn btn-sm btn-warning">Editar</a>
+                        <a asp-action="ExcluirExibir" asp-route-idReceita="@row["idReceita"]" class="btn btn-sm btn-danger">Excluir</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

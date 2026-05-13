@@ -34,44 +34,69 @@ namespace K_Gest.BancoDados
         //-------------------------------------------------------------
         // INSERIR COM ATUALIZAÇÃO DE ESTOQUE
         //-------------------------------------------------------------
-        public void Inserir()
+        public void Inserir(string unidadeSelecionada)
         {
             con.Open();
-            SqlTransaction tran = con.BeginTransaction(); // Inicia transação para garantir integridade
+            SqlTransaction tran = con.BeginTransaction();
 
             try
             {
-                // Inserir o registro na tabela de movimentação
+                // 1. Calculamos o valor convertido para somar/subtrair no estoque principal
+                decimal qtdReal = CalcularValorConvertido(this.qtdMoviment, unidadeSelecionada);
+
+                // 2. Registra o histórico na tabela Movimentacao_Estoque
                 string cmdMovimentacao = @"INSERT INTO Movimentacao_Estoque(tipoEs, qtdMoviment, motivo, idInsumo) 
                                          VALUES(@tipoEs, @qtdMoviment, @motivo, @idInsumo)";
 
                 SqlCommand cmd1 = new SqlCommand(cmdMovimentacao, con, tran);
                 cmd1.Parameters.AddWithValue("@tipoEs", tipoEs);
-                cmd1.Parameters.AddWithValue("@qtdMoviment", qtdMoviment);
+                cmd1.Parameters.AddWithValue("@qtdMoviment", qtdMoviment); // Salva o valor original (ex: 10)
                 cmd1.Parameters.AddWithValue("@motivo", motivo);
                 cmd1.Parameters.AddWithValue("@idInsumo", idInsumo);
                 cmd1.ExecuteNonQuery();
 
-                //  Atualizar o estoqueAtual na tabela Insumos
-                // Se tipoEs for 'E', soma. Se for 'S', subtrai.
+                // 3. Atualiza a tabela Insumos com o valor CONVERTIDO (ex: 10000)
                 string operacao = (tipoEs.ToUpper() == "E") ? "+" : "-";
-                string cmdInsumo = $"UPDATE Insumos SET estoqueAtual = estoqueAtual {operacao} @qtd WHERE idInsumo = @idInsumo";
+                string cmdInsumo = $"UPDATE Insumos SET estoqueAtual = estoqueAtual {operacao} @qtdReal WHERE idInsumo = @idInsumo";
 
                 SqlCommand cmd2 = new SqlCommand(cmdInsumo, con, tran);
-                cmd2.Parameters.AddWithValue("@qtdMoviment", qtdMoviment);
+
+                // Parâmetro tipado para evitar estouro aritmético
+                SqlParameter paramQtd = new SqlParameter("@qtdReal", SqlDbType.Decimal);
+                paramQtd.Precision = 18;
+                paramQtd.Scale = 2;
+                paramQtd.Value = qtdReal;
+
+                cmd2.Parameters.Add(paramQtd);
                 cmd2.Parameters.AddWithValue("@idInsumo", idInsumo);
                 cmd2.ExecuteNonQuery();
 
-                tran.Commit(); // Salva as duas operações
+                tran.Commit();
             }
             catch (Exception ex)
             {
-                tran.Rollback(); // Se der erro em qualquer uma, cancela tudo
+                tran.Rollback();
                 throw new Exception("Erro ao processar movimentação: " + ex.Message);
             }
-            finally
+            finally { con.Close(); }
+        }
+
+        // --- ADICIONE ESTE MÉTODO AUXILIAR AQUI ---
+        private decimal CalcularValorConvertido(decimal qtd, string unidade)
+        {
+            if (string.IsNullOrEmpty(unidade)) return qtd;
+
+            switch (unidade.ToUpper())
             {
-                con.Close();
+                case "KG":
+                case "L":
+                    return qtd * 1000; // 10 KG vira 10000 G
+                case "G":
+                case "ML":
+                case "UN":
+                    return qtd; // Mantém a base
+                default:
+                    return qtd;
             }
         }
 

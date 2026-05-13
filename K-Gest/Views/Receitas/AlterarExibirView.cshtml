@@ -1,0 +1,24 @@
+﻿@model K_Gest.Models.ReceitasViewModel
+
+@{
+    ViewData["Title"] = "Alterar Receita";
+}
+
+<div class="container mt-4">
+    <h2>Editar Receita</h2>
+    <hr />
+
+    <form asp-action="AlterarProcessar" method="post">
+        @* Campo oculto para garantir que o ID chegue no Controller *@
+        <input type="hidden" asp-for="IdReceita" />
+
+        <div class="form-group mb-3">
+            <label class="form-label">Nome do Prato</label>
+            <input asp-for="NomePrato" class="form-control" />
+            <span asp-validation-for="NomePrato" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success">Salvar Alterações</button>
+        <a asp-action="Selecionar" class="btn btn-secondary">Voltar</a>
+    </form>
+</div>

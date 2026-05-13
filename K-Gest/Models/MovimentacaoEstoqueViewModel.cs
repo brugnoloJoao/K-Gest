@@ -24,5 +24,8 @@ namespace K_Gest.Models
         [Range(1, int.MaxValue, ErrorMessage = "IdInsumo inválido.")]
         [Display(Name = "Insumo")]
         public int IdInsumo { get; set; }
+
+        // PROPRIEDADE NOVA: Necessária para a conversão de unidades (KG, L, G, ML)
+        public string UnidadeMed { get; set; } = string.Empty;
     }
 }

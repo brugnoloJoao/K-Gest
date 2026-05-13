@@ -17,16 +17,16 @@ namespace K_Gest.Controllers
             try
             {
                 Receitas o_Receitas = new Receitas();
-
                 DataTable dtReceitas = o_Receitas.SelecionarTodos();
 
-                return View("SelecionarView", dtReceitas);
+                
+                return View("SelecionarView", dtReceitas ?? new DataTable());
             }
             catch (Exception ex)
             {
-                TempData["MsgErro"] = $"Erro: {ex.Message}";
-
-                return View("SelecionarView");
+                TempData["MsgErro"] = $"Erro ao carregar receitas: {ex.Message}";
+               
+                return View("SelecionarView", new DataTable());
             }
         }
 

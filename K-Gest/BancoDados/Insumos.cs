@@ -5,9 +5,6 @@ namespace K_Gest.BancoDados
 {
     public class Insumos
     {
-        //-------------------------------------------------------------
-        // Atributos
-        //-------------------------------------------------------------
         public int? idInsumo;
         public string nomeInsumo;
         public string unidadeMed;
@@ -16,9 +13,6 @@ namespace K_Gest.BancoDados
 
         SqlConnection con;
 
-        //-------------------------------------------------------------
-        // Construtor
-        //-------------------------------------------------------------
         public Insumos()
         {
             try
@@ -37,84 +31,97 @@ namespace K_Gest.BancoDados
             }
         }
 
-        //-------------------------------------------------------------
-        // Métodos
-        //-------------------------------------------------------------
+        // --- MÉTODOS DE CONVERSÃO UNIVERSAL ---
+
+        public decimal ConverterParaBanco(decimal valor, string unidade)
+        {
+            if (string.IsNullOrEmpty(unidade)) return valor;
+            switch (unidade.ToUpper())
+            {
+                case "KG":
+                case "L":
+                    return valor * 1000;
+                default:
+                    return valor;
+            }
+        }
+
+        public decimal ConverterParaTela(decimal valor, string unidade)
+        {
+            if (string.IsNullOrEmpty(unidade)) return valor;
+            switch (unidade.ToUpper())
+            {
+                case "KG":
+                case "L":
+                    return valor / 1000;
+                default:
+                    return valor;
+            }
+        }
+
         public void Inserir()
         {
             try
             {
-                string cmdSQL = "INSERT INTO Insumos(NomeInsumo, UnidadeMed, EstoqueAtual, PontoPedido) VALUES(@NomeInsumo, @UnidadeMed, @EstoqueAtual, @PontoPedido)";
+                decimal estoqueCvt = ConverterParaBanco(this.estoqueAtual, this.unidadeMed);
+                decimal pontoCvt = ConverterParaBanco(this.pontoPedido, this.unidadeMed);
 
+                string cmdSQL = "INSERT INTO Insumos(NomeInsumo, UnidadeMed, EstoqueAtual, PontoPedido) VALUES(@NomeInsumo, @UnidadeMed, @EstoqueAtual, @PontoPedido)";
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
 
                 cmd.Parameters.AddWithValue("@NomeInsumo", nomeInsumo);
                 cmd.Parameters.AddWithValue("@UnidadeMed", unidadeMed);
-                cmd.Parameters.AddWithValue("@EstoqueAtual", estoqueAtual);
-                cmd.Parameters.AddWithValue("@PontoPedido", pontoPedido);
+
+                cmd.Parameters.Add(new SqlParameter("@EstoqueAtual", SqlDbType.Decimal) { Precision = 18, Scale = 2, Value = estoqueCvt });
+                cmd.Parameters.Add(new SqlParameter("@PontoPedido", SqlDbType.Decimal) { Precision = 18, Scale = 2, Value = pontoCvt });
 
                 con.Open();
                 cmd.ExecuteNonQuery();
-                con.Close();
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception("Erro ao inserir: " + ex.Message); }
+            finally { if (con.State == ConnectionState.Open) con.Close(); }
         }
 
         public void Alterar()
         {
             try
             {
-                string cmdSQL = "UPDATE Insumos SET NomeInsumo = @NomeInsumo, UnidadeMed = @UnidadeMed, EstoqueAtual = @EstoqueAtual, PontoPedido = @PontoPedido WHERE IdInsumo = @IdInsumo";
+                decimal estoqueCvt = ConverterParaBanco(this.estoqueAtual, this.unidadeMed);
+                decimal pontoCvt = ConverterParaBanco(this.pontoPedido, this.unidadeMed);
 
+                string cmdSQL = "UPDATE Insumos SET NomeInsumo = @NomeInsumo, UnidadeMed = @UnidadeMed, EstoqueAtual = @EstoqueAtual, PontoPedido = @PontoPedido WHERE IdInsumo = @IdInsumo";
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
 
                 cmd.Parameters.AddWithValue("@IdInsumo", idInsumo);
                 cmd.Parameters.AddWithValue("@NomeInsumo", nomeInsumo);
                 cmd.Parameters.AddWithValue("@UnidadeMed", unidadeMed);
-                cmd.Parameters.AddWithValue("@EstoqueAtual", estoqueAtual);
-                cmd.Parameters.AddWithValue("@PontoPedido", pontoPedido);
+
+                cmd.Parameters.Add(new SqlParameter("@EstoqueAtual", SqlDbType.Decimal) { Precision = 18, Scale = 2, Value = estoqueCvt });
+                cmd.Parameters.Add(new SqlParameter("@PontoPedido", SqlDbType.Decimal) { Precision = 18, Scale = 2, Value = pontoCvt });
 
                 con.Open();
                 cmd.ExecuteNonQuery();
-                con.Close();
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception("Erro ao alterar: " + ex.Message); }
+            finally { if (con.State == ConnectionState.Open) con.Close(); }
         }
 
         public void Excluir()
         {
             try
             {
-                // Importante: No SQL Server, isso falhará se houver Lotes ou Movimentações vinculadas
                 string cmdSQL = "DELETE FROM Insumos WHERE idInsumo = @idInsumo";
-
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
-
                 cmd.Parameters.AddWithValue("@idInsumo", idInsumo);
-
                 con.Open();
                 cmd.ExecuteNonQuery();
-                con.Close();
             }
             catch (SqlException ex)
             {
-                // Erro 547 é o código específico do SQL Server para violação de Chave Estrangeira
-                if (ex.Number == 547)
-                {
-                    throw new Exception("Não é possível excluir este insumo pois ele possui lotes, receitas ou movimentações vinculadas.");
-                }
-                throw new Exception("Erro de banco de dados: " + ex.Message);
-            }
-            catch (Exception ex)
-            {
+                if (ex.Number == 547) throw new Exception("Insumo vinculado a outras tabelas.");
                 throw new Exception(ex.Message);
             }
+            finally { if (con.State == ConnectionState.Open) con.Close(); }
         }
 
         public DataTable SelecionarTodos()
@@ -122,19 +129,12 @@ namespace K_Gest.BancoDados
             try
             {
                 string cmdSQL = "SELECT IdInsumo, NomeInsumo, UnidadeMed, EstoqueAtual, PontoPedido FROM Insumos ORDER BY NomeInsumo";
-
-                SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
-                con.Open();
-                DataTable dtPesquisa = new DataTable();
-                o_DataAdapter.Fill(dtPesquisa);
-                con.Close();
-
-                return dtPesquisa.Rows.Count > 0 ? dtPesquisa : null;
+                SqlDataAdapter da = new SqlDataAdapter(cmdSQL, con);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                return dt;
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
         public DataTable SelecionarPorID()
@@ -142,46 +142,14 @@ namespace K_Gest.BancoDados
             try
             {
                 string cmdSQL = "SELECT IdInsumo, NomeInsumo, UnidadeMed, EstoqueAtual, PontoPedido FROM Insumos WHERE IdInsumo = @IdInsumo";
-
-                SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
-                o_DataAdapter.SelectCommand.Parameters.AddWithValue("@IdInsumo", idInsumo);
-
-                con.Open();
-                DataTable dtPesquisa = new DataTable();
-                o_DataAdapter.Fill(dtPesquisa);
-                con.Close();
-
-                return dtPesquisa.Rows.Count > 0 ? dtPesquisa : null;
+                SqlCommand cmd = new SqlCommand(cmdSQL, con);
+                cmd.Parameters.AddWithValue("@IdInsumo", idInsumo);
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                return dt;
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public DataTable SelecionarAbaixoDoPontoPedido()
-        {
-            try
-            {
-                // Seleciona apenas insumos onde o estoque atual atingiu ou passou do limite de segurança
-                string cmdSQL = @"SELECT IdInsumo, Nome, EstoqueAtual, PontoPedido, UnidadeMed 
-                          FROM Insumos 
-                          WHERE EstoqueAtual <= PontoPedido
-                          ORDER BY Nome ASC";
-
-                SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
-
-                con.Open();
-                DataTable dtPesquisa = new DataTable();
-                int qtdeLinhas = o_DataAdapter.Fill(dtPesquisa);
-                con.Close();
-
-                return qtdeLinhas > 0 ? dtPesquisa : null;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao gerar lista de compras: " + ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
     }
 }

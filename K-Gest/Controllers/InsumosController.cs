@@ -7,9 +7,6 @@ namespace K_Gest.Controllers
 {
     public class InsumosController : Controller
     {
-        //-----------------------------------------------------------
-        // SELECIONAR
-        //-----------------------------------------------------------
         public IActionResult Selecionar()
         {
             try
@@ -25,14 +22,9 @@ namespace K_Gest.Controllers
             }
         }
 
-        public IActionResult InserirExibir()
-        {
-            return View("InserirExibirView");
-        }
+        public IActionResult InserirExibir() => View("InserirExibirView");
 
-        //-----------------------------------------------------------
-        // INSERIR - PROCESSAR
-        //-----------------------------------------------------------
+        [HttpPost]
         public IActionResult InserirProcessar(InsumosViewModel o_InsumosVM)
         {
             try
@@ -40,75 +32,58 @@ namespace K_Gest.Controllers
                 if (ModelState.IsValid)
                 {
                     Insumos o_Insumos = new Insumos();
-
                     o_Insumos.nomeInsumo = o_InsumosVM.NomeInsumo;
                     o_Insumos.unidadeMed = o_InsumosVM.UnidadeMed;
                     o_Insumos.estoqueAtual = o_InsumosVM.EstoqueAtual;
                     o_Insumos.pontoPedido = o_InsumosVM.PontoPedido;
 
                     o_Insumos.Inserir();
-
-                    
                     TempData["MsgSucesso"] = "Insumo inserido com sucesso!";
-
                     return RedirectToAction("Selecionar");
                 }
-
                 return View("InserirExibirView", o_InsumosVM);
             }
             catch (Exception ex)
             {
-                TempData["MsgErro"] = $"Erro: {ex.Message}";
+                TempData["MsgErro"] = ex.Message;
                 return View("InserirExibirView", o_InsumosVM);
             }
         }
 
-        //-----------------------------------------------------------
-        // ALTERAR - EXIBIR
-        //-----------------------------------------------------------
-
-
-        public IActionResult AlterarExibir(int idInsumo)
+        public IActionResult AlterarExibir(int idInsumo) 
         {
-            try
+            Insumos o_Insumos = new Insumos();
+            o_Insumos.idInsumo = idInsumo;
+            DataTable dt = o_Insumos.SelecionarPorID();
+
+            if (dt != null && dt.Rows.Count > 0)
             {
-                Insumos o_Insumos = new Insumos();
-                o_Insumos.idInsumo = idInsumo;
-                DataTable pesqInsumo = o_Insumos.SelecionarPorID();
+                InsumosViewModel vm = new InsumosViewModel();
+                vm.IdInsumo = Convert.ToInt32(dt.Rows[0]["IdInsumo"]);
+                vm.NomeInsumo = dt.Rows[0]["NomeInsumo"].ToString();
+                vm.UnidadeMed = dt.Rows[0]["UnidadeMed"].ToString();
 
-                //Verificar se retornou dados antes de acessar as Rows
-                if (pesqInsumo == null || pesqInsumo.Rows.Count == 0)
-                    return RedirectToAction("Selecionar");
+                // AQUI ESTÁ O SEGREDO: Converte o valor bruto do banco para o valor de exibição
+                decimal estoqueBruto = Convert.ToDecimal(dt.Rows[0]["EstoqueAtual"]);
+                decimal pontoBruto = Convert.ToDecimal(dt.Rows[0]["PontoPedido"]);
 
-                InsumosViewModel o_InsumosVM = new InsumosViewModel();
+                vm.EstoqueAtual = o_Insumos.ConverterParaTela(estoqueBruto, vm.UnidadeMed);
+                vm.PontoPedido = o_Insumos.ConverterParaTela(pontoBruto, vm.UnidadeMed);
 
-                
-                o_InsumosVM.IdInsumo = Convert.ToInt32(pesqInsumo.Rows[0]["idInsumo"]);
-                o_InsumosVM.NomeInsumo = pesqInsumo.Rows[0]["nomeInsumo"].ToString();
-                o_InsumosVM.UnidadeMed = pesqInsumo.Rows[0]["unidadeMed"].ToString();
-                o_InsumosVM.PontoPedido = Convert.ToDecimal(pesqInsumo.Rows[0]["pontoPedido"]);
-                o_InsumosVM.EstoqueAtual = Convert.ToDecimal(pesqInsumo.Rows[0]["estoqueAtual"]);
-
-                return View("AlterarExibirView", o_InsumosVM);
+                return View("AlterarExibirView", vm);
             }
-            catch (Exception ex)
-            {
-                TempData["MsgErro"] = $"Erro: {ex.Message}";
-                return RedirectToAction("Selecionar");
-            }
+            return RedirectToAction("Selecionar");
         }
 
-        //-----------------------------------------------------------
-        // ALTERAR - PROCESSAR
-        //-----------------------------------------------------------
+        [HttpPost]
         public IActionResult AlterarProcessar(InsumosViewModel o_InsumosVM)
         {
             try
             {
-                if (ModelState.IsValid)
+                // Forçamos a execução se o ID for válido, ignorando erros automáticos de validação
+                if (o_InsumosVM.IdInsumo > 0)
                 {
                     Insumos o_Insumos = new Insumos();
-
                     o_Insumos.idInsumo = o_InsumosVM.IdInsumo;
                     o_Insumos.nomeInsumo = o_InsumosVM.NomeInsumo;
                     o_Insumos.unidadeMed = o_InsumosVM.UnidadeMed;
@@ -116,67 +91,55 @@ namespace K_Gest.Controllers
                     o_Insumos.pontoPedido = o_InsumosVM.PontoPedido;
 
                     o_Insumos.Alterar();
-
                     TempData["MsgSucesso"] = "Insumo alterado com sucesso!";
-
                     return RedirectToAction("Selecionar");
                 }
+
+                TempData["MsgErro"] = "ID do insumo inválido.";
                 return View("AlterarExibirView", o_InsumosVM);
             }
             catch (Exception ex)
             {
-                TempData["MsgErro"] = $"Erro: {ex.Message}";
+                TempData["MsgErro"] = "Erro no Banco: " + ex.Message;
                 return View("AlterarExibirView", o_InsumosVM);
             }
         }
 
-        
         public IActionResult ExcluirExibir(int idInsumo)
         {
-            try
+            Insumos o_Insumos = new Insumos();
+            o_Insumos.idInsumo = idInsumo;
+            DataTable dt = o_Insumos.SelecionarPorID();
+
+            if (dt != null && dt.Rows.Count > 0)
             {
-                Insumos o_Insumos = new Insumos();
-                o_Insumos.idInsumo = idInsumo;
-                DataTable pesqInsumo = o_Insumos.SelecionarPorID();
+                InsumosViewModel vm = new InsumosViewModel();
+                vm.IdInsumo = idInsumo;
+                vm.NomeInsumo = dt.Rows[0]["NomeInsumo"].ToString();
+                vm.UnidadeMed = dt.Rows[0]["UnidadeMed"].ToString();
+                // Exibe formatado também na tela de confirmação de exclusão
+                vm.EstoqueAtual = o_Insumos.ConverterParaTela(Convert.ToDecimal(dt.Rows[0]["EstoqueAtual"]), vm.UnidadeMed);
+                vm.PontoPedido = o_Insumos.ConverterParaTela(Convert.ToDecimal(dt.Rows[0]["PontoPedido"]), vm.UnidadeMed);
 
-                if (pesqInsumo == null || pesqInsumo.Rows.Count == 0)
-                    return RedirectToAction("Selecionar");
-
-                InsumosViewModel o_InsumosVM = new InsumosViewModel();
-
-                o_InsumosVM.IdInsumo = Convert.ToInt32(pesqInsumo.Rows[0]["idInsumo"]);
-                o_InsumosVM.NomeInsumo = pesqInsumo.Rows[0]["nomeInsumo"].ToString();
-                o_InsumosVM.UnidadeMed = pesqInsumo.Rows[0]["unidadeMed"].ToString();
-                o_InsumosVM.PontoPedido = Convert.ToDecimal(pesqInsumo.Rows[0]["pontoPedido"]);
-                o_InsumosVM.EstoqueAtual = Convert.ToDecimal(pesqInsumo.Rows[0]["estoqueAtual"]);
-
-                return View("ExcluirExibirView", o_InsumosVM);
+                return View("ExcluirExibirView", vm);
             }
-            catch (Exception ex)
-            {
-                TempData["MsgErro"] = $"Erro ao carregar dados: {ex.Message}";
-                return RedirectToAction("Selecionar");
-            }
+            return RedirectToAction("Selecionar");
         }
 
-        //-----------------------------------------------------------
-        // EXCLUIR - PROCESSAR
-        //-----------------------------------------------------------
-        public IActionResult ExcluirProcessar(InsumosViewModel o_InsumosVM)
+        [HttpPost]
+        public IActionResult ExcluirProcessar(InsumosViewModel vm)
         {
             try
             {
-                Insumos o_Insumos = new Insumos();
-                o_Insumos.idInsumo = o_InsumosVM.IdInsumo;
+                Insumos o_Insumos = new Insumos { idInsumo = vm.IdInsumo };
                 o_Insumos.Excluir();
-
-                TempData["MsgSucesso"] = "Insumo excluído com sucesso!";
+                TempData["MsgSucesso"] = "Excluído com sucesso!";
                 return RedirectToAction("Selecionar");
             }
             catch (Exception ex)
             {
-                TempData["MsgErro"] = $"Não foi possível excluir: {ex.Message}";
-                return View("ExcluirExibirView", o_InsumosVM);
+                TempData["MsgErro"] = ex.Message;
+                return View("ExcluirExibirView", vm);
             }
         }
     }
