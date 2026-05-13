@@ -45,26 +45,13 @@ namespace K_Gest.BancoDados
             try
             {
                 string cmdSQL = "INSERT INTO Receitas(nomePrato) VALUES(@NomePrato)";
-
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
-
                 cmd.Parameters.AddWithValue("@NomePrato", nomePrato);
-
-                //Abre conexão com BD
                 con.Open();
-
-                // Executar o comando SQL
                 cmd.ExecuteNonQuery();
-
-                //Executar o comando SQL
-
                 con.Close();
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
         public void Alterar()
         {
@@ -118,31 +105,15 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                // Prepara o comando SQL
                 string cmdSQL = "SELECT idReceita, nomePrato FROM receitas ORDER BY idReceita";
-
-                // Prepara SQL Adapter
                 SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
-
-                //Abre conexão com BD
                 con.Open();
-
                 DataTable dtPesquisa = new DataTable();
-
-                // Executa o Select no banco de dados
-                int qtdeLinhasAfetada = o_DataAdapter.Fill(dtPesquisa);
-
-                // Fecha conexão com BD
+                o_DataAdapter.Fill(dtPesquisa);
                 con.Close();
 
-                if (qtdeLinhasAfetada > 0)
-                {
-                    return dtPesquisa;
-                }
-                else
-                {
-                    return null;
-                }
+                // NUNCA retorne null aqui, sempre o DataTable (mesmo vazio)
+                return dtPesquisa;
             }
             catch (Exception ex)
             {

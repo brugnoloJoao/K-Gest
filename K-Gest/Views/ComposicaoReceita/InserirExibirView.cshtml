@@ -1,0 +1,46 @@
+﻿@model K_Gest.Models.ComposicaoReceitaViewModel
+
+<form asp-action="InserirProcessar" method="post">
+    <div class="row">
+        <div class="col-md-6">
+            <label>Receita</label>
+            <select asp-for="IdReceita" asp-items="Model.ListaReceitas" class="form-control">
+                <option value="">-- Selecione o Prato --</option>
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label>Insumo</label>
+            <select asp-for="IdInsumo" asp-items="Model.ListaInsumos" class="form-control" id="selectInsumo">
+                <option value="">-- Selecione o Ingrediente --</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <label>Quantidade</label>
+            <div class="input-group">
+                <input asp-for="QtdNecessaria" class="form-control" type="number" step="0.001" />
+                <div class="input-group-append">
+                    <!-- Este span será preenchido pelo Script abaixo -->
+                    <span class="input-group-text" id="displayUnidade">...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-4">Salvar Composição</button>
+</form>
+
+@section Scripts {
+    <script>
+        document.getElementById("selectInsumo").addEventListener("change", function () {
+            var combo = this;
+            var texto = combo.options[combo.selectedIndex].text;
+            // Pega o valor entre parênteses (ex: KG, UN, L)
+            var match = texto.match(/\(([^)]+)\)/);
+            document.getElementById("displayUnidade").innerText = match ? match[1] : "Medida";
+        });
+    </script>
+}

@@ -5,9 +5,6 @@ namespace K_Gest.BancoDados
 {
     public class ComposicaoReceita
     {
-        //-------------------------------------------------------------
-        // Atributos
-        //-------------------------------------------------------------
         public int? idComposicao;
         public decimal qtdNecessaria;
         public int idReceita;
@@ -15,9 +12,6 @@ namespace K_Gest.BancoDados
 
         SqlConnection con;
 
-        //-------------------------------------------------------------
-        // Construtor
-        //-------------------------------------------------------------
         public ComposicaoReceita()
         {
             try
@@ -30,138 +24,97 @@ namespace K_Gest.BancoDados
                 string strConexao = o_Config.GetConnectionString(@"StringConexaoSQLServer");
                 con = new SqlConnection(strConexao);
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        //-------------------------------------------------------------
-        // Métodos
-        //-------------------------------------------------------------
         public void Inserir()
         {
             try
             {
-                string cmdSQL = "INSERT INTO ComposicaoReceita(QtdNecessaria, IdReceita, IdInsumo) VALUES(@QtdNecessaria, @IdReceita, @IdInsumo)";
-
+                // Nome corrigido conforme image_dad75e.png
+                string cmdSQL = "INSERT INTO Composicao_Receita (qtdNecessaria, idReceita, idInsumo) VALUES(@qtd, @idR, @idI)";
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
-
-                cmd.Parameters.AddWithValue("@QtdNecessaria", qtdNecessaria);
-                cmd.Parameters.AddWithValue("@IdReceita", idReceita);
-                cmd.Parameters.AddWithValue("@IdInsumo", idInsumo);
+                cmd.Parameters.AddWithValue("@qtd", qtdNecessaria);
+                cmd.Parameters.AddWithValue("@idR", idReceita);
+                cmd.Parameters.AddWithValue("@idI", idInsumo);
 
                 con.Open();
                 cmd.ExecuteNonQuery();
                 con.Close();
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
         public void Alterar()
         {
             try
             {
-                string cmdSQL = "UPDATE ComposicaoReceita SET QtdNecessaria = @QtdNecessaria, IdReceita = @IdReceita, IdInsumo = @IdInsumo WHERE IdComposicao = @IdComposicao";
-
+                string cmdSQL = "UPDATE Composicao_Receita SET qtdNecessaria = @qtd, idReceita = @idR, idInsumo = @idI WHERE idComposicao = @idC";
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
-
-                cmd.Parameters.AddWithValue("@IdComposicao", idComposicao);
-                cmd.Parameters.AddWithValue("@QtdNecessaria", qtdNecessaria);
-                cmd.Parameters.AddWithValue("@IdReceita", idReceita);
-                cmd.Parameters.AddWithValue("@IdInsumo", idInsumo);
+                cmd.Parameters.AddWithValue("@idC", idComposicao);
+                cmd.Parameters.AddWithValue("@qtd", qtdNecessaria);
+                cmd.Parameters.AddWithValue("@idR", idReceita);
+                cmd.Parameters.AddWithValue("@idI", idInsumo);
 
                 con.Open();
                 cmd.ExecuteNonQuery();
                 con.Close();
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
         public void Excluir()
         {
             try
             {
-                string cmdSQL = "DELETE FROM ComposicaoReceita WHERE IdComposicao = @IdComposicao";
-
+                string cmdSQL = "DELETE FROM Composicao_Receita WHERE idComposicao = @idC";
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
-                cmd.Parameters.AddWithValue("@IdComposicao", idComposicao);
+                cmd.Parameters.AddWithValue("@idC", idComposicao);
 
                 con.Open();
                 cmd.ExecuteNonQuery();
                 con.Close();
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
+
+
 
         public DataTable SelecionarTodos()
         {
             try
             {
-                // SQL com JOIN para buscar nomes em vez de apenas IDs
                 string cmdSQL = @"SELECT 
-                            C.IdComposicao, 
-                            C.QtdNecessaria, 
-                            R.Nome AS NomeReceita, 
-                            I.Nome AS NomeInsumo 
-                          FROM ComposicaoReceita C
-                          INNER JOIN Receitas R ON C.IdReceita = R.IdReceita
-                          INNER JOIN Insumos I ON C.IdInsumo = I.IdInsumo
-                          ORDER BY R.Nome";
+                            C.idComposicao, 
+                            C.qtdNecessaria, 
+                            R.nomePrato, 
+                            I.nomeInsumo,
+                            I.unidadeMed
+                          FROM Composicao_Receita C
+                          INNER JOIN Receitas R ON C.idReceita = R.idReceita
+                          INNER JOIN Insumos I ON C.idInsumo = I.idInsumo
+                          ORDER BY R.nomePrato";
 
                 SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
-                con.Open();
-                DataTable dtPesquisa = new DataTable();
-                o_DataAdapter.Fill(dtPesquisa);
-                con.Close();
-
-                return dtPesquisa.Rows.Count > 0 ? dtPesquisa : null;
+                DataTable dt = new DataTable();
+                o_DataAdapter.Fill(dt);
+                return dt;
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao selecionar composições: " + ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
         public DataTable SelecionarPorID()
         {
             try
             {
-                string cmdSQL = @"SELECT 
-                            C.IdComposicao, 
-                            C.QtdNecessaria, 
-                            C.IdReceita, 
-                            C.IdInsumo,
-                            R.Nome AS NomeReceita, 
-                            I.Nome AS NomeInsumo 
-                          FROM ComposicaoReceita C
-                          INNER JOIN Receitas R ON C.IdReceita = R.IdReceita
-                          INNER JOIN Insumos I ON C.IdInsumo = I.IdInsumo
-                          WHERE C.IdComposicao = @IdComposicao";
-
+                string cmdSQL = "SELECT * FROM Composicao_Receita WHERE idComposicao = @idC";
                 SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
-                o_DataAdapter.SelectCommand.Parameters.AddWithValue("@IdComposicao", idComposicao);
-
-                con.Open();
-                DataTable dtPesquisa = new DataTable();
-                o_DataAdapter.Fill(dtPesquisa);
-                con.Close();
-
-                return dtPesquisa.Rows.Count > 0 ? dtPesquisa : null;
+                o_DataAdapter.SelectCommand.Parameters.AddWithValue("@idC", idComposicao);
+                DataTable dt = new DataTable();
+                o_DataAdapter.Fill(dt);
+                return dt;
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao buscar composição por ID: " + ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
     }
 }

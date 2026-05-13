@@ -1,0 +1,34 @@
+﻿@model K_Gest.Models.ComposicaoReceitaViewModel
+
+@{
+    ViewData["Title"] = "Editar Composição";
+}
+
+<div class="container mt-4">
+    <h2>Editar Ingrediente da Receita</h2>
+    <hr />
+
+    <form asp-action="AlterarProcessar" method="post">
+        <input type="hidden" asp-for="IdComposicao" />
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Receita</label>
+                <select asp-for="IdReceita" class="form-select" asp-items="ViewBag.ListaReceitas"></select>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Insumo</label>
+                <select asp-for="IdInsumo" class="form-select" asp-items="ViewBag.ListaInsumos"></select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Quantidade Necessária</label>
+            <input asp-for="QtdNecessaria" type="number" step="0.01" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Salvar Alterações</button>
+        <a asp-action="Selecionar" class="btn btn-secondary">Voltar</a>
+    </form>
+</div>
