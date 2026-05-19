@@ -1,8 +1,9 @@
-﻿using System;
-using System.Data;
-using K_Gest.BancoDados;
+﻿using K_Gest.BancoDados;
 using K_Gest.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Data;
 
 namespace K_Gest.Controllers
 {
@@ -15,178 +16,174 @@ namespace K_Gest.Controllers
         {
             try
             {
-                HistoricoVendas o_HistoricoVendas = new HistoricoVendas();
-
-                DataTable dtVendas = o_HistoricoVendas.SelecionarTodos();
-
+                DataTable dtVendas = new HistoricoVendas().SelecionarTodos();
                 return View("SelecionarView", dtVendas);
             }
-            catch (Exception ex)
-            {
-                TempData["MsgErro"] = $"Erro: {ex.Message}";
-
-                return View("SelecionarView");
-            }
+            catch (Exception ex) { TempData["MsgErro"] = ex.Message; return View("SelecionarView"); }
         }
 
-        //-----------------------------------------------------------
-        // INSERIR - EXIBIR
-        //----------------------------------------------------------- 
         public IActionResult InserirExibir()
         {
+            ViewBag.ListaReceitas = ObterReceitas();
             return View("InserirExibirView");
         }
 
-        //-----------------------------------------------------------
-        // INSERIR - PROCESSAR
-        //-----------------------------------------------------------
+        [HttpPost]
         public IActionResult InserirProcessar(HistoricoVendasViewModel o_HistoricoVendasVM)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+                try
                 {
                     HistoricoVendas o_HistoricoVendas = new HistoricoVendas();
-
                     o_HistoricoVendas.dataVend = o_HistoricoVendasVM.DataVend;
                     o_HistoricoVendas.qtdVendida = o_HistoricoVendasVM.QtdVendida;
                     o_HistoricoVendas.idReceita = o_HistoricoVendasVM.IdReceita;
-                    o_HistoricoVendas.Inserir();
 
-                    TempData["MsgSucesso"] = "Histórico de vendas inserido com sucesso!";
+                    o_HistoricoVendas.Inserir(); // Aciona a transação de venda + estoque
 
+                    TempData["MsgSucesso"] = "Venda registada e estoque atualizado!";
                     return RedirectToAction("Selecionar");
                 }
-
-                return View("InserirExibirView", o_HistoricoVendasVM);
+                catch (Exception ex) { TempData["MsgErro"] = ex.Message; }
             }
-            catch (Exception ex)
-            {
-                TempData["MsgErro"] = $"Erro: {ex.Message}";
-                return View("InserirExibirView", o_HistoricoVendasVM);
-            }
+            ViewBag.ListaReceitas = ObterReceitas();
+            return View("InserirExibirView", o_HistoricoVendasVM);
         }
 
-        //-----------------------------------------------------------
-        // ALTERAR - EXIBIR
-        //-----------------------------------------------------------
-        public IActionResult AlterarExibir(int idVendas)
+        private List<SelectListItem> ObterReceitas()
         {
-            try
-            {
-                //--------------------------------------------------
-                // Buscar dados do HistoricoVendas no banco de dados
-                //--------------------------------------------------
-                HistoricoVendas o_HistoricoVendas = new HistoricoVendas();
-
-                o_HistoricoVendas.idVendas = idVendas;
-                DataTable pesqVendas = o_HistoricoVendas.SelecionarPorID();
-
-                //--------------------------------------------------
-                // Preencher a Model com os dados do Banco de Dados
-                //--------------------------------------------------
-                HistoricoVendasViewModel o_HistoricoVendasVM = new HistoricoVendasViewModel();
-
-                // Campos que não podem ser nulos
-                o_HistoricoVendasVM.IdVendas = idVendas;
-                o_HistoricoVendasVM.DataVend = Convert.ToDateTime(pesqVendas.Rows[0]["DataVend"]);
-                o_HistoricoVendasVM.QtdVendida = Convert.ToInt32(pesqVendas.Rows[0]["QtdVendida"]);
-                o_HistoricoVendasVM.IdReceita = Convert.ToInt32(pesqVendas.Rows[0]["IdReceita"]);
-
-                return View("AlterarExibirView", o_HistoricoVendasVM);
-            }
-            catch (Exception ex)
-            {
-                TempData["MsgErro"] = $"Erro: {ex.Message}";
-                return View("AlterarExibirView");
-            }
+            // Substituir pelo método de busca da sua classe Receitas
+            DataTable dt = new Receitas().SelecionarTodos();
+            return (from DataRow dr in dt.Rows
+                    select new SelectListItem
+                    {
+                        Value = dr["idReceita"].ToString(),
+                        Text = dr["nomePrato"].ToString()
+                    }).ToList();
         }
 
-        //-----------------------------------------------------------
-        // ALTERAR - PROCESSAR
-        //-----------------------------------------------------------
-        public IActionResult AlterarProcessar(HistoricoVendasViewModel o_HistoricoVendasVM)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    HistoricoVendas o_HistoricoVendas = new HistoricoVendas();
 
-                    o_HistoricoVendas.idVendas = o_HistoricoVendasVM.IdVendas;
-                    o_HistoricoVendas.dataVend = o_HistoricoVendasVM.DataVend;
-                    o_HistoricoVendas.qtdVendida = o_HistoricoVendasVM.QtdVendida;
-                    o_HistoricoVendas.idReceita = o_HistoricoVendasVM.IdReceita;
-                    o_HistoricoVendas.Alterar();
+        //    //-----------------------------------------------------------
+        //    // ALTERAR - EXIBIR
+        //    //-----------------------------------------------------------
+        //    public IActionResult AlterarExibir(int idVendas)
+        //    {
+        //        try
+        //        {
+        //            //--------------------------------------------------
+        //            // Buscar dados do HistoricoVendas no banco de dados
+        //            //--------------------------------------------------
+        //            HistoricoVendas o_HistoricoVendas = new HistoricoVendas();
 
-                    TempData["MsgSucesso"] = "Histórico de vendas alterado com sucesso!";
+        //            o_HistoricoVendas.idVendas = idVendas;
+        //            DataTable pesqVendas = o_HistoricoVendas.SelecionarPorID();
 
-                    return RedirectToAction("Selecionar");
-                }
-                return View("AlterarExibirView", o_HistoricoVendasVM);
-            }
-            catch (Exception ex)
-            {
-                TempData["MsgErro"] = $"Erro: {ex.Message}";
-                return View("AlterarExibirView", o_HistoricoVendasVM);
-            }
-        }
+        //            //--------------------------------------------------
+        //            // Preencher a Model com os dados do Banco de Dados
+        //            //--------------------------------------------------
+        //            HistoricoVendasViewModel o_HistoricoVendasVM = new HistoricoVendasViewModel();
 
-        //-----------------------------------------------------------
-        // EXCLUIR - EXIBIR
-        //----------------------------------------------------------- 
-        public IActionResult ExcluirExibir(int idVendas)
-        {
-            try
-            {
-                //--------------------------------------------------
-                // Buscar dados do HistoricoVendas no banco de dados
-                //--------------------------------------------------
-                HistoricoVendas o_HistoricoVendas = new HistoricoVendas();
+        //            // Campos que não podem ser nulos
+        //            o_HistoricoVendasVM.IdVendas = idVendas;
+        //            o_HistoricoVendasVM.DataVend = Convert.ToDateTime(pesqVendas.Rows[0]["DataVend"]);
+        //            o_HistoricoVendasVM.QtdVendida = Convert.ToInt32(pesqVendas.Rows[0]["QtdVendida"]);
+        //            o_HistoricoVendasVM.IdReceita = Convert.ToInt32(pesqVendas.Rows[0]["IdReceita"]);
 
-                o_HistoricoVendas.idVendas = idVendas;
-                DataTable pesqVendas = o_HistoricoVendas.SelecionarPorID();
+        //            return View("AlterarExibirView", o_HistoricoVendasVM);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            TempData["MsgErro"] = $"Erro: {ex.Message}";
+        //            return View("AlterarExibirView");
+        //        }
+        //    }
 
-                //--------------------------------------------------
-                // Preencher a Model com os dados do Banco de Dados
-                //--------------------------------------------------
-                HistoricoVendasViewModel o_HistoricoVendasVM = new HistoricoVendasViewModel();
+        //    //-----------------------------------------------------------
+        //    // ALTERAR - PROCESSAR
+        //    //-----------------------------------------------------------
+        //    public IActionResult AlterarProcessar(HistoricoVendasViewModel o_HistoricoVendasVM)
+        //    {
+        //        try
+        //        {
+        //            if (ModelState.IsValid)
+        //            {
+        //                HistoricoVendas o_HistoricoVendas = new HistoricoVendas();
 
-                // Campos que não podem ser nulos
-                o_HistoricoVendasVM.IdVendas = idVendas;
-                o_HistoricoVendasVM.DataVend = Convert.ToDateTime(pesqVendas.Rows[0]["DataVend"]);
-                o_HistoricoVendasVM.QtdVendida = Convert.ToInt32(pesqVendas.Rows[0]["QtdVendida"]);
-                o_HistoricoVendasVM.IdReceita = Convert.ToInt32(pesqVendas.Rows[0]["IdReceita"]);
+        //                o_HistoricoVendas.idVendas = o_HistoricoVendasVM.IdVendas;
+        //                o_HistoricoVendas.dataVend = o_HistoricoVendasVM.DataVend;
+        //                o_HistoricoVendas.qtdVendida = o_HistoricoVendasVM.QtdVendida;
+        //                o_HistoricoVendas.idReceita = o_HistoricoVendasVM.IdReceita;
+        //                o_HistoricoVendas.Alterar();
 
-                return View("ExcluirExibirView", o_HistoricoVendasVM);
-            }
-            catch (Exception ex)
-            {
-                TempData["MsgErro"] = $"Erro: {ex.Message}";
-                return View("ExcluirExibirView");
-            }
-        }
+        //                TempData["MsgSucesso"] = "Histórico de vendas alterado com sucesso!";
 
-        //-----------------------------------------------------------
-        // EXCLUIR - PROCESSAR
-        //-----------------------------------------------------------
-        public IActionResult ExcluirProcessar(HistoricoVendasViewModel o_HistoricoVendasVM)
-        {
-            try
-            {
-                HistoricoVendas o_HistoricoVendas = new HistoricoVendas();
-                o_HistoricoVendas.idVendas = o_HistoricoVendasVM.IdVendas;
+        //                return RedirectToAction("Selecionar");
+        //            }
+        //            return View("AlterarExibirView", o_HistoricoVendasVM);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            TempData["MsgErro"] = $"Erro: {ex.Message}";
+        //            return View("AlterarExibirView", o_HistoricoVendasVM);
+        //        }
+        //    }
 
-                o_HistoricoVendas.Excluir();
+        //    //-----------------------------------------------------------
+        //    // EXCLUIR - EXIBIR
+        //    //----------------------------------------------------------- 
+        //    public IActionResult ExcluirExibir(int idVendas)
+        //    {
+        //        try
+        //        {
+        //            //--------------------------------------------------
+        //            // Buscar dados do HistoricoVendas no banco de dados
+        //            //--------------------------------------------------
+        //            HistoricoVendas o_HistoricoVendas = new HistoricoVendas();
 
-                TempData["MsgSucesso"] = "Venda excluída com sucesso!";
-                return RedirectToAction("Selecionar");
-            }
-            catch (Exception ex)
-            {
-                TempData["MsgErro"] = $"Erro: {ex.Message}";
-                return View("ExcluirExibirView", o_HistoricoVendasVM);
-            }
-        }
+        //            o_HistoricoVendas.idVendas = idVendas;
+        //            DataTable pesqVendas = o_HistoricoVendas.SelecionarPorID();
+
+        //            //--------------------------------------------------
+        //            // Preencher a Model com os dados do Banco de Dados
+        //            //--------------------------------------------------
+        //            HistoricoVendasViewModel o_HistoricoVendasVM = new HistoricoVendasViewModel();
+
+        //            // Campos que não podem ser nulos
+        //            o_HistoricoVendasVM.IdVendas = idVendas;
+        //            o_HistoricoVendasVM.DataVend = Convert.ToDateTime(pesqVendas.Rows[0]["DataVend"]);
+        //            o_HistoricoVendasVM.QtdVendida = Convert.ToInt32(pesqVendas.Rows[0]["QtdVendida"]);
+        //            o_HistoricoVendasVM.IdReceita = Convert.ToInt32(pesqVendas.Rows[0]["IdReceita"]);
+
+        //            return View("ExcluirExibirView", o_HistoricoVendasVM);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            TempData["MsgErro"] = $"Erro: {ex.Message}";
+        //            return View("ExcluirExibirView");
+        //        }
+        //    }
+
+        //    //-----------------------------------------------------------
+        //    // EXCLUIR - PROCESSAR
+        //    //-----------------------------------------------------------
+        //    public IActionResult ExcluirProcessar(HistoricoVendasViewModel o_HistoricoVendasVM)
+        //    {
+        //        try
+        //        {
+        //            HistoricoVendas o_HistoricoVendas = new HistoricoVendas();
+        //            o_HistoricoVendas.idVendas = o_HistoricoVendasVM.IdVendas;
+
+        //            o_HistoricoVendas.Excluir();
+
+        //            TempData["MsgSucesso"] = "Venda excluída com sucesso!";
+        //            return RedirectToAction("Selecionar");
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            TempData["MsgErro"] = $"Erro: {ex.Message}";
+        //            return View("ExcluirExibirView", o_HistoricoVendasVM);
+        //        }
+        //    }
     }
 }

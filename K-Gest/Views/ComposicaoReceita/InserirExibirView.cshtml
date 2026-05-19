@@ -1,46 +1,131 @@
 ﻿@model K_Gest.Models.ComposicaoReceitaViewModel
 
-<form asp-action="InserirProcessar" method="post">
-    <div class="row">
-        <div class="col-md-6">
-            <label>Receita</label>
-            <select asp-for="IdReceita" asp-items="Model.ListaReceitas" class="form-control">
-                <option value="">-- Selecione o Prato --</option>
-            </select>
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4><i class="bi bi-list-check"></i> Montar Ficha Técnica</h4>
         </div>
+        <div class="card-body">
+            <form asp-action="InserirProcessar" method="post">
+                <input type="hidden" asp-for="IdReceita" />
 
-        <div class="col-md-6">
-            <label>Insumo</label>
-            <select asp-for="IdInsumo" asp-items="Model.ListaInsumos" class="form-control" id="selectInsumo">
-                <option value="">-- Selecione o Ingrediente --</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="row mt-3">
-        <div class="col-md-4">
-            <label>Quantidade</label>
-            <div class="input-group">
-                <input asp-for="QtdNecessaria" class="form-control" type="number" step="0.001" />
-                <div class="input-group-append">
-                    <!-- Este span será preenchido pelo Script abaixo -->
-                    <span class="input-group-text" id="displayUnidade">...</span>
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Receita</label>
+                    <select asp-for="IdReceita" asp-items="Model.ListaReceitas" class="form-select border-primary" disabled="@(Model.Itens.Count > 0)">
+                        <option value="">-- Escolha o Prato --</option>
+                    </select>
+                    @if (Model.Itens.Count > 0)
+                    {
+                        <small class="text-muted">Para mudar o prato, crie uma nova ficha.</small>
+                    }
                 </div>
-            </div>
+
+                <div class="bg-light p-3 border rounded mb-3">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-6">
+                            <label class="form-label">Ingrediente</label>
+                            <select id="selInsumo" class="form-select">
+                                <option value="">-- Selecione --</option>
+                                @foreach (var item in Model.ListaInsumos)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Quantidade</label>
+                            <input type="number" id="txtQtd" class="form-control" step="0.001" />
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" id="btnAdd" class="btn btn-success w-100">Incluir</button>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-striped border" id="tblItens">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Ingrediente</th>
+                            <th>Quantidade</th>
+                            <th>Unidade</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Itens != null)
+                        {
+                            @for (int i = 0; i < Model.Itens.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @Model.Itens[i].NomeInsumo
+                                        <input type="hidden" name="Itens[@i].IdInsumo" value="@Model.Itens[i].IdInsumo" />
+                                    </td>
+                                    <td>
+                                        @Model.Itens[i].Quantidade
+                                        <input type="hidden" name="Itens[@i].Quantidade" value="@Model.Itens[i].Quantidade" />
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info text-dark">@Model.Itens[i].UnidadeMed</span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.parentElement.remove()">Remover</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">Salvar Ficha Técnica</button>
+                <a asp-action="Selecionar" class="btn btn-outline-secondary w-100 mt-2">Cancelar</a>
+            </form>
         </div>
     </div>
-
-    <button type="submit" class="btn btn-primary mt-4">Salvar Composição</button>
-</form>
+</div>
 
 @section Scripts {
     <script>
-        document.getElementById("selectInsumo").addEventListener("change", function () {
-            var combo = this;
-            var texto = combo.options[combo.selectedIndex].text;
-            // Pega o valor entre parênteses (ex: KG, UN, L)
-            var match = texto.match(/\(([^)]+)\)/);
-            document.getElementById("displayUnidade").innerText = match ? match[1] : "Medida";
+        
+        let index = @(Model.Itens?.Count ?? 0);
+
+        document.getElementById('btnAdd').addEventListener('click', function () {
+            const sel = document.getElementById('selInsumo');
+            const qtd = document.getElementById('txtQtd');
+
+            if (!sel.value || !qtd.value) return;
+
+            const idInsumo = sel.value;
+            const textoCombo = sel.options[sel.selectedIndex].text;
+
+            const unidade = textoCombo.substring(textoCombo.lastIndexOf("(") + 1, textoCombo.lastIndexOf(")"));
+            const nomeInsumo = textoCombo.split(' (')[0];
+
+            const tbody = document.querySelector('#tblItens tbody');
+            const tr = document.createElement('tr');
+
+            tr.innerHTML = `
+                        <td>
+                            ${nomeInsumo}
+                            <input type="hidden" name="Itens[${index}].IdInsumo" value="${idInsumo}" />
+                        </td>
+                        <td>
+                            ${qtd.value}
+                            <input type="hidden" name="Itens[${index}].Quantidade" value="${qtd.value}" />
+                        </td>
+                        <td>
+                            <span class="badge bg-info text-dark">${unidade}</span>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.parentElement.remove()">Remover</button>
+                        </td>
+                    `;
+
+            tbody.appendChild(tr);
+            index++;
+
+            sel.value = "";
+            qtd.value = "";
         });
     </script>
 }

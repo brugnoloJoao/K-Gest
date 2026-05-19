@@ -41,47 +41,52 @@ namespace K_Gest.BancoDados
         //-------------------------------------------------------------
         public void Inserir()
         {
+            con.Open();
+            SqlTransaction transacao = con.BeginTransaction();
+
             try
             {
-                string cmdSQL = "INSERT INTO HistoricoVendas(DataVend, QtdVendida, IdReceita) VALUES(@DataVend, @QtdVendida, @IdReceita)";
+                // 1. Gravar a Venda
+                string cmdVenda = "INSERT INTO HistoricoVendas(DataVend, QtdVendida, IdReceita) VALUES(@DataVend, @QtdVendida, @IdReceita)";
+                SqlCommand cmd1 = new SqlCommand(cmdVenda, con, transacao);
+                cmd1.Parameters.AddWithValue("@DataVend", dataVend);
+                cmd1.Parameters.AddWithValue("@QtdVendida", qtdVendida);
+                cmd1.Parameters.AddWithValue("@IdReceita", idReceita);
+                cmd1.ExecuteNonQuery();
 
-                SqlCommand cmd = new SqlCommand(cmdSQL, con);
+                // 2. Baixa Automática no Estoque (Explosão da Receita)
+                // Multiplica a quantidade vendida pelo que é exigido na composição da receita
+                string cmdBaixaEstoque = @"
+                    UPDATE Insumos 
+                    SET estoqueAtual = estoqueAtual - (C.qtdNecessaria * @QtdVendida)
+                    FROM Insumos I
+                    INNER JOIN Composicao_Receita C ON I.idInsumo = C.idInsumo
+                    WHERE C.idReceita = @IdReceita";
 
-                cmd.Parameters.AddWithValue("@DataVend", dataVend);
-                cmd.Parameters.AddWithValue("@QtdVendida", qtdVendida);
-                cmd.Parameters.AddWithValue("@IdReceita", idReceita);
+                SqlCommand cmd2 = new SqlCommand(cmdBaixaEstoque, con, transacao);
+                cmd2.Parameters.AddWithValue("@QtdVendida", qtdVendida);
+                cmd2.Parameters.AddWithValue("@IdReceita", idReceita);
+                cmd2.ExecuteNonQuery();
 
-                con.Open();
-                cmd.ExecuteNonQuery();
-                con.Close();
+                // 3. Gerar Histórico na Movimentação de Estoque
+                string cmdMovimentacao = @"
+                    INSERT INTO Movimentacao_Estoque (tipoEs, qtdMoviment, motivo, idInsumo)
+                    SELECT 'S', (C.qtdNecessaria * @QtdVendida), 'Venda Realizada', C.idInsumo
+                    FROM Composicao_Receita C WHERE C.idReceita = @IdReceita";
+
+                SqlCommand cmd3 = new SqlCommand(cmdMovimentacao, con, transacao);
+                cmd3.Parameters.AddWithValue("@QtdVendida", qtdVendida);
+                cmd3.Parameters.AddWithValue("@IdReceita", idReceita);
+                cmd3.ExecuteNonQuery();
+
+                transacao.Commit();
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                transacao.Rollback();
+                throw new Exception("Erro ao processar venda e estoque: " + ex.Message);
             }
-        }
-
-        public void Alterar()
-        {
-            try
-            {
-                string cmdSQL = "UPDATE HistoricoVendas SET DataVend = @DataVend, QtdVendida = @QtdVendida, IdReceita = @IdReceita WHERE IdVendas = @IdVendas";
-
-                SqlCommand cmd = new SqlCommand(cmdSQL, con);
-
-                cmd.Parameters.AddWithValue("@IdVendas", idVendas);
-                cmd.Parameters.AddWithValue("@DataVend", dataVend);
-                cmd.Parameters.AddWithValue("@QtdVendida", qtdVendida);
-                cmd.Parameters.AddWithValue("@IdReceita", idReceita);
-
-                con.Open();
-                cmd.ExecuteNonQuery();
-                con.Close();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            finally { con.Close(); }
         }
 
         public void Excluir()

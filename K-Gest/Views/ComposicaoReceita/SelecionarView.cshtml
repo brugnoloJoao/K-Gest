@@ -1,43 +1,111 @@
 ﻿@using System.Data
 @model DataTable
 
-@{
-    ViewData["Title"] = "Composição das Receitas";
-}
-
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Ingredientes por Receita</h2>
-        <a asp-action="InserirExibir" class="btn btn-success">Adicionar Ingrediente</a>
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="bi bi- receipt-cutoff"></i> Gestão de Fichas Técnicas</h4>
+            <a href="/ComposicaoReceita/InserirExibir" class="btn btn-success btn-sm">
+                <i class="bi bi-plus-lg"></i> Nova Composição
+            </a>
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Receita (Prato)</th>
+                        <th class="text-center">Ingredientes</th>
+                        <th class="text-end pe-4">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (DataRow dr in Model.Rows)
+                    {
+                        <tr>
+                            <td class="ps-4 align-middle fw-bold">@dr["nomePrato"]</td>
+                            <td class="text-center align-middle">
+                                <button class="btn btn-outline-primary btn-sm"
+                                        onclick="verIngredientes(@dr["idReceita"], '@dr["nomePrato"]')">
+                                    <i class="bi bi-search"></i> Visualizar Ingredientes
+                                </button>
+                            </td>
+                            <td class="text-end pe-4 align-middle">
+                                <a href="/ComposicaoReceita/EditarFicha/@dr["idReceita"]" class="btn btn-warning btn-sm">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
-
-    @if (TempData["MsgSucesso"] != null)
-    {
-        <div class="alert alert-success">@TempData["MsgSucesso"]</div>
-    }
-
-    <table class="table table-hover shadow-sm">
-        <thead class="table-dark">
-            <tr>
-                <th>Receita (Prato)</th>
-                <th>Insumo (Ingrediente)</th>
-                <th class="text-end">Qtd. Necessária</th>
-                <th class="text-center">Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (DataRow row in Model.Rows)
-            {
-                <tr>
-                    <td>@row["NomePrato"]</td>
-                    <td>@row["NomeInsumo"]</td>
-                    <td class="text-end">@Convert.ToDecimal(row["QtdNecessaria"]).ToString("N2")</td>
-                    <td class="text-center">
-                        <a asp-action="AlterarExibir" asp-route-idComposicao="@row["idComposicao"]" class="btn btn-primary">Editar</a>
-                        <a asp-action="ExcluirExibir" asp-route-idComposicao="@row["idComposicao"]" class="btn btn-danger">Excluir</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
 </div>
+
+<div class="modal fade" id="modalIngredientes" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="bi bi-list-check"></i> <span id="tituloReceita"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div id="listaItens" class="list-group list-group-flush">
+                    <div class="text-center p-4">
+                        <div class="spinner-border text-info" role="status"></div>
+                        <p class="mt-2 text-muted">Carregando ingredientes...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function verIngredientes(id, nome) {
+            // Atualiza o título do modal com o nome do prato
+            document.getElementById('tituloReceita').innerText = nome;
+
+            // Instancia e abre o modal
+            var modalEl = document.getElementById('modalIngredientes');
+            var modalBootstrap = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modalBootstrap.show();
+
+            // Busca os ingredientes no Controller (Action ObterIngredientesJson)
+            fetch('/ComposicaoReceita/ObterIngredientesJson/' + id)
+                .then(response => response.json())
+                .then(data => {
+                    let html = '';
+
+                    if (data.length === 0) {
+                        html = '<div class="p-4 text-center text-muted">Nenhum ingrediente cadastrado nesta ficha.</div>';
+                    } else {
+                        data.forEach(item => {
+                            html += `
+                                        <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                            <div>
+                                                <h6 class="mb-0">${item.nomeInsumo}</h6>
+                                                <span class="badge bg-light text-dark border">${item.qtd} ${item.unidade}</span>
+                                            </div>
+                                            <a href="/ComposicaoReceita/ExcluirIngrediente/${item.idComp}"
+                                               class="btn btn-outline-danger btn-sm border-0"
+                                               onclick="return confirm('Deseja remover ${item.nomeInsumo} desta receita?')">
+                                                <i class="bi bi-trash3-fill"></i>
+                                            </a>
+                                        </div>`;
+                        });
+                    }
+                    document.getElementById('listaItens').innerHTML = html;
+                })
+                .catch(error => {
+                    document.getElementById('listaItens').innerHTML =
+                        '<div class="alert alert-danger m-3">Erro ao carregar os dados.</div>';
+                });
+        }
+    </script>
+}

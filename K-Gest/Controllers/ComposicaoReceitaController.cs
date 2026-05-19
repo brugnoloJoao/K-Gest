@@ -12,8 +12,70 @@ namespace K_Gest.Controllers
         public IActionResult Selecionar()
         {
             ComposicaoReceita o_Comp = new ComposicaoReceita();
-            DataTable dt = o_Comp.SelecionarTodos();
+            DataTable dt = o_Comp.SelecionarAgrupado();
             return View("SelecionarView", dt);
+        }
+        [HttpGet]
+        public JsonResult ObterIngredientesJson(int id)
+        {
+            ComposicaoReceita o_Comp = new ComposicaoReceita();
+            DataTable dt = o_Comp.SelecionarPorReceita(id);
+
+            var lista = new List<object>();
+            foreach (DataRow row in dt.Rows)
+            {
+                lista.Add(new
+                {
+                    // idComp é o que a lixeira do modal vai usar para excluir
+                    idComp = row["idComposicao"].ToString(),
+                    nomeInsumo = row["nomeInsumo"].ToString(),
+                    qtd = row["qtdNecessaria"].ToString(),
+                    unidade = row["unidadeMed"].ToString()
+                });
+            }
+            return Json(lista);
+        }
+
+        [HttpGet]
+        public IActionResult EditarFicha(int id)
+        {
+            try
+            {
+                ComposicaoReceita o_Comp = new ComposicaoReceita();
+                DataTable dtItens = o_Comp.SelecionarPorReceita(id);
+
+                var vm = new ComposicaoReceitaViewModel
+                {
+                    IdReceita = id,
+                    ListaReceitas = ObterReceitas(),
+                    ListaInsumos = ObterInsumos(),
+                    Itens = new List<ItemComposicao>()
+                };
+
+                foreach (DataRow row in dtItens.Rows)
+                {
+                    vm.Itens.Add(new ItemComposicao
+                    {
+                        // Agora idInsumo existe no DataTable devido à correção no SQL
+                        IdInsumo = Convert.ToInt32(row["idInsumo"]),
+                        NomeInsumo = row["nomeInsumo"].ToString(),
+                        Quantidade = Convert.ToDecimal(row["qtdNecessaria"]),
+                        UnidadeMed = row["unidadeMed"].ToString()
+                    });
+                }
+                return View("InserirExibirView", vm);
+            }
+            catch (Exception ex)
+            {
+                // Exibe o erro na tela caso algo falhe
+                return Content("Erro ao carregar: " + ex.Message);
+            }
+        }
+
+        public IActionResult ExcluirIngrediente(int id)
+        {
+            new ComposicaoReceita().ExcluirIngredienteIndividual(id);
+            return RedirectToAction("Selecionar");
         }
 
         // --- INSERIR ---
@@ -26,34 +88,34 @@ namespace K_Gest.Controllers
             };
             return View("InserirExibirView", vm);
         }
-
         [HttpPost]
         public IActionResult InserirProcessar(ComposicaoReceitaViewModel vm)
         {
             ModelState.Remove("ListaReceitas");
             ModelState.Remove("ListaInsumos");
 
-            if (vm.IdReceita > 0 && vm.IdInsumo > 0)
+            // Se a lista "Itens" tiver dados, salvamos todos
+            if (vm.IdReceita > 0 && vm.Itens != null && vm.Itens.Count > 0)
             {
                 try
                 {
-                    ComposicaoReceita o_Comp = new ComposicaoReceita
-                    {
-                        qtdNecessaria = vm.QtdNecessaria,
-                        idReceita = vm.IdReceita,
-                        idInsumo = vm.IdInsumo
-                    };
-                    o_Comp.Inserir();
-                    TempData["MsgSucesso"] = "Salvo com sucesso!";
+                    ComposicaoReceita o_Comp = new ComposicaoReceita();
+                    o_Comp.InserirFichaTecnica(vm.IdReceita, vm.Itens);
+
+                    TempData["MsgSucesso"] = "Ficha Técnica salva com sucesso!";
                     return RedirectToAction("Selecionar");
                 }
                 catch (Exception ex) { TempData["MsgErro"] = ex.Message; }
             }
+            else
+            {
+                TempData["MsgErro"] = "Por favor, selecione a receita e adicione os ingredientes.";
+            }
+
             vm.ListaReceitas = ObterReceitas();
             vm.ListaInsumos = ObterInsumos();
             return View("InserirExibirView", vm);
         }
-
         // --- ALTERAR ---
         public IActionResult AlterarExibir(int id) // 'id' deve vir da sua tabela na SelecionarView
         {
@@ -110,6 +172,8 @@ namespace K_Gest.Controllers
         }
 
         // --- EXCLUIR ---
+
+       
         public IActionResult Excluir(int id)
         {
             try
@@ -121,6 +185,8 @@ namespace K_Gest.Controllers
             catch (Exception ex) { TempData["MsgErro"] = ex.Message; }
             return RedirectToAction("Selecionar");
         }
+
+       
 
         // --- AUXILIARES ---
         private List<SelectListItem> ObterReceitas()
