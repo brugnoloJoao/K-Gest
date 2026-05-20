@@ -151,29 +151,37 @@ namespace K_Gest.Controllers
 
             try
             {
-                ComposicaoReceita o_Comp = new ComposicaoReceita
+                if (vm.IdReceita > 0)
                 {
-                    idComposicao = vm.IdComposicao,
-                    idReceita = vm.IdReceita,
-                    idInsumo = vm.IdInsumo,
-                    qtdNecessaria = vm.QtdNecessaria
-                };
-                o_Comp.Alterar();
-                TempData["MsgSucesso"] = "Alterado com sucesso!";
-                return RedirectToAction("Selecionar");
+                    ComposicaoReceita o_Comp = new ComposicaoReceita();
+
+                    // Se a lista vier vazia porque removeu tudo, passa uma lista em branco
+                    var itensSalvar = vm.Itens ?? new List<ItemComposicao>();
+
+                    // Chama o método correto que limpa o antigo e insere o novo estado da lista
+                    o_Comp.AtualizarFichaTecnica(vm.IdReceita, itensSalvar);
+
+                    TempData["MsgSucesso"] = "Ficha Técnica atualizada com sucesso!";
+                    return RedirectToAction("Selecionar");
+                }
+                else
+                {
+                    TempData["MsgErro"] = "Receita inválida.";
+                }
             }
             catch (Exception ex)
             {
                 TempData["MsgErro"] = ex.Message;
-                vm.ListaReceitas = ObterReceitas();
-                vm.ListaInsumos = ObterInsumos();
-                return View("AlterarExibirView", vm);
             }
+
+            vm.ListaReceitas = ObterReceitas();
+            vm.ListaInsumos = ObterInsumos();
+            return View("InserirExibirView", vm);
         }
 
         // --- EXCLUIR ---
 
-       
+
         public IActionResult Excluir(int id)
         {
             try

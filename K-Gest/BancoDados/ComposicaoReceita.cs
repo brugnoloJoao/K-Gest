@@ -86,11 +86,12 @@ namespace K_Gest.BancoDados
 
         public DataTable SelecionarAgrupado()
         {
-            string sql = @"SELECT R.idReceita, R.nomePrato FROM Composicao_Receita C 
-                          INNER JOIN Receitas R ON C.idReceita = R.idReceita 
-                          GROUP BY R.idReceita, R.nomePrato";
+            // Buscando direto da tabela de Receitas para listar todas na View Selecionar
+            string sql = @"SELECT idReceita, nomePrato FROM Receitas ORDER BY nomePrato";
             SqlDataAdapter da = new SqlDataAdapter(sql, con);
-            DataTable dt = new DataTable(); da.Fill(dt); return dt;
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            return dt;
         }
 
         public void Alterar()

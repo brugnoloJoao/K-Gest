@@ -6,15 +6,16 @@
             <h4><i class="bi bi-list-check"></i> Montar Ficha Técnica</h4>
         </div>
         <div class="card-body">
-            <form asp-action="InserirProcessar" method="post">
-                <input type="hidden" asp-for="IdReceita" />
+            <form id="frmFicha" action="@(Model.IdReceita > 0 ? "/ComposicaoReceita/AlterarProcessar" : "/ComposicaoReceita/InserirProcessar")" method="post">
+
+                <input type="hidden" asp-for="IdReceita" id="hdnIdReceita" />
 
                 <div class="mb-4">
                     <label class="form-label fw-bold">Receita</label>
-                    <select asp-for="IdReceita" asp-items="Model.ListaReceitas" class="form-select border-primary" disabled="@(Model.Itens.Count > 0)">
+                    <select id="selReceita" asp-items="Model.ListaReceitas" class="form-select border-primary" style="@(Model.IdReceita > 0 ? "pointer-events: none; background-color: #e9ecef;" : "")">
                         <option value="">-- Escolha o Prato --</option>
                     </select>
-                    @if (Model.Itens.Count > 0)
+                    @if (Model.IdReceita > 0)
                     {
                         <small class="text-muted">Para mudar o prato, crie uma nova ficha.</small>
                     }
@@ -47,29 +48,30 @@
                         <tr>
                             <th>Ingrediente</th>
                             <th>Quantidade</th>
-                            <th>Unidade</th>
+                            <th>Unidade Original</th>
                             <th>Ação</th>
                         </tr>
                     </thead>
                     <tbody>
                         @if (Model.Itens != null)
                         {
-                            @for (int i = 0; i < Model.Itens.Count; i++)
+                            for (int i = 0; i < Model.Itens.Count; i++)
                             {
                                 <tr>
                                     <td>
                                         @Model.Itens[i].NomeInsumo
-                                        <input type="hidden" name="Itens[@i].IdInsumo" value="@Model.Itens[i].IdInsumo" />
+                                        <input type="hidden" class="insumo-id" value="@Model.Itens[i].IdInsumo" />
                                     </td>
                                     <td>
-                                        @Model.Itens[i].Quantidade
-                                        <input type="hidden" name="Itens[@i].Quantidade" value="@Model.Itens[i].Quantidade" />
+                                        @Model.Itens[i].Quantidade.ToString("G29")
+                                        <input type="hidden" class="insumo-qtd" value="@Model.Itens[i].Quantidade.ToString().Replace(",", ".")" />
                                     </td>
                                     <td>
                                         <span class="badge bg-info text-dark">@Model.Itens[i].UnidadeMed</span>
+                                        <input type="hidden" class="insumo-unidade" value="@Model.Itens[i].UnidadeMed" />
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.parentElement.remove()">Remover</button>
+                                        <button type="button" class="btn btn-sm btn-danger btn-remover">Remover</button>
                                     </td>
                                 </tr>
                             }
@@ -86,9 +88,19 @@
 
 @section Scripts {
     <script>
-        
-        let index = @(Model.Itens?.Count ?? 0);
+        // Sincroniza o select inicial com o input hidden do IdReceita
+        const selReceita = document.getElementById('selReceita');
+        const hdnIdReceita = document.getElementById('hdnIdReceita');
 
+        if (selReceita && hdnIdReceita && hdnIdReceita.value) {
+            selReceita.value = hdnIdReceita.value;
+        }
+
+        selReceita.addEventListener('change', function () {
+            hdnIdReceita.value = this.value;
+        });
+
+        // Evento para tratar botão incluir
         document.getElementById('btnAdd').addEventListener('click', function () {
             const sel = document.getElementById('selInsumo');
             const qtd = document.getElementById('txtQtd');
@@ -107,25 +119,48 @@
             tr.innerHTML = `
                         <td>
                             ${nomeInsumo}
-                            <input type="hidden" name="Itens[${index}].IdInsumo" value="${idInsumo}" />
+                            <input type="hidden" class="insumo-id" value="${idInsumo}" />
                         </td>
                         <td>
                             ${qtd.value}
-                            <input type="hidden" name="Itens[${index}].Quantidade" value="${qtd.value}" />
+                            <input type="hidden" class="insumo-qtd" value="${qtd.value}" />
                         </td>
                         <td>
                             <span class="badge bg-info text-dark">${unidade}</span>
+                            <input type="hidden" class="insumo-unidade" value="${unidade}" />
                         </td>
                         <td>
-                            <button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.parentElement.remove()">Remover</button>
+                            <button type="button" class="btn btn-sm btn-danger btn-remover">Remover</button>
                         </td>
                     `;
 
             tbody.appendChild(tr);
-            index++;
 
             sel.value = "";
             qtd.value = "";
+        });
+
+        // Evento delegado para o botão remover que funciona em elementos criados dinamicamente
+        document.querySelector('#tblItens tbody').addEventListener('click', function (e) {
+            if (e.target && e.target.classList.contains('btn-remover')) {
+                e.target.closest('tr').remove();
+            }
+        });
+
+        // --- SOLUÇÃO CRÍTICA DO BOTÃO SALVAR (REORGANIZAÇÃO DOS ÍNDICES ANTES DE ENVIAR) ---
+        document.getElementById('frmFicha').addEventListener('submit', function (e) {
+            const linhas = document.querySelectorAll('#tblItens tbody tr');
+
+            linhas.forEach((tr, index) => {
+                const inputId = tr.querySelector('.insumo-id');
+                const inputQtd = tr.querySelector('.insumo-qtd');
+                const inputUnidade = tr.querySelector('.insumo-unidade');
+
+                // Força o name correto sequencial ex: Itens[0], Itens[1]... independente de exclusões
+                inputId.name = `Itens[${index}].IdInsumo`;
+                inputQtd.name = `Itens[${index}].Quantidade`;
+                inputUnidade.name = `Itens[${index}].UnidadeMed`;
+            });
         });
     </script>
 }

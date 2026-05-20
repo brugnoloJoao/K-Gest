@@ -32,9 +32,16 @@
                 <tr>
                     <td>@row["nomeInsumo"]</td>
                     <td>@row["unidadeMed"]</td>
-                    @* Formatação para exibir decimais como 10,50 *@
-                    <td class="text-end">@Convert.ToDecimal(row["estoqueAtual"]).ToString("N2")</td>
-                    <td class="text-end">@Convert.ToDecimal(row["pontoPedido"]).ToString("N2")</td>
+                    <td class="text-end">
+                        @(row["unidadeMed"].ToString() == "UN"
+                                            ? Convert.ToDecimal(row["estoqueAtual"]).ToString("N0")
+                                            : Convert.ToDecimal(row["estoqueAtual"]).ToString("N2"))
+                    </td>
+                    <td class="text-end">
+                        @(row["unidadeMed"].ToString() == "UN" 
+                                            ? Convert.ToDecimal(row["pontoPedido"]).ToString("N0") 
+                                            : Convert.ToDecimal(row["pontoPedido"]).ToString("N2"))
+                    </td>
                     <td class="text-center">
                         @* O parâmetro deve se chamar 'idInsumo' e o campo do banco é 'IdInsumo' *@
                         <a asp-action="AlterarExibir"

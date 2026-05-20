@@ -15,12 +15,15 @@ namespace K_Gest.Models
         public List<SelectListItem>? ListaInsumos { get; set; }
     }
 
-    // Esta classe DEVE estar no mesmo arquivo ou no namespace Models
     public class ItemComposicao
     {
         public int IdInsumo { get; set; }
         public string? NomeInsumo { get; set; }
         public decimal Quantidade { get; set; }
         public string? UnidadeMed { get; set; }
+
+        // Propriedades formatadas para a View
+        public decimal QuantidadeExibicao => UnidadeMed?.ToUpper() == "KG" || UnidadeMed?.ToUpper() == "L" ? Quantidade * 1000 : Quantidade;
+        public string UnidadeExibicao => UnidadeMed?.ToUpper() == "KG" ? "G" : (UnidadeMed?.ToUpper() == "L" ? "ML" : UnidadeMed ?? "");
     }
 }

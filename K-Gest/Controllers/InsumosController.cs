@@ -13,6 +13,11 @@ namespace K_Gest.Controllers
             {
                 Insumos o_Insumos = new Insumos();
                 DataTable dtInsumos = o_Insumos.SelecionarTodos();
+                foreach (DataRow row in dtInsumos.Rows)
+                {
+                    row["estoqueAtual"] = o_Insumos.ConverterParaTela(Convert.ToDecimal(row["EstoqueAtual"]), row["UnidadeMed"].ToString());
+                    row["PontoPedido"] = o_Insumos.ConverterParaTela(Convert.ToDecimal(row["PontoPedido"]), row["UnidadeMed"].ToString());
+                }
                 return View("SelecionarView", dtInsumos);
             }
             catch (Exception ex)
