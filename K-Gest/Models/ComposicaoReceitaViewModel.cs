@@ -4,7 +4,6 @@ namespace K_Gest.Models
 {
     public class ComposicaoReceitaViewModel
     {
-        // Adicione esta propriedade para resolver os erros CS0117 e CS1061
         public int IdComposicao { get; set; }
         public int IdReceita { get; set; }
         public int IdInsumo { get; set; }
@@ -22,8 +21,7 @@ namespace K_Gest.Models
         public decimal Quantidade { get; set; }
         public string? UnidadeMed { get; set; }
 
-        // Propriedades formatadas para a View
-        public decimal QuantidadeExibicao => UnidadeMed?.ToUpper() == "KG" || UnidadeMed?.ToUpper() == "L" ? Quantidade * 1000 : Quantidade;
-        public string UnidadeExibicao => UnidadeMed?.ToUpper() == "KG" ? "G" : (UnidadeMed?.ToUpper() == "L" ? "ML" : UnidadeMed ?? "");
+        // Divide por 1000 apenas se for KG ou L para o utilizador ver "1" em vez de "1000"
+        public decimal QuantidadeExibicao => (UnidadeMed?.ToUpper() == "KG" || UnidadeMed?.ToUpper() == "L") ? Quantidade / 1000 : Quantidade;
     }
 }

@@ -8,13 +8,13 @@ namespace K_Gest.Controllers
 {
     public class ComposicaoReceitaController : Controller
     {
-        // --- LISTAGEM ---
         public IActionResult Selecionar()
         {
             ComposicaoReceita o_Comp = new ComposicaoReceita();
             DataTable dt = o_Comp.SelecionarAgrupado();
             return View("SelecionarView", dt);
         }
+
         [HttpGet]
         public JsonResult ObterIngredientesJson(int id)
         {
@@ -24,13 +24,23 @@ namespace K_Gest.Controllers
             var lista = new List<object>();
             foreach (DataRow row in dt.Rows)
             {
+                decimal qtdOriginal = Convert.ToDecimal(row["qtdNecessaria"]);
+                string unidade = row["unidadeMed"].ToString() ?? "";
+                decimal qtdExibicao = qtdOriginal;
+
+                // CORREÇÃO VISUAL DO MODAL: Se for KG ou L, divide por 1000 apenas para renderizar o texto amigável
+                if (unidade.ToUpper() == "KG" || unidade.ToUpper() == "L")
+                {
+                    qtdExibicao = qtdOriginal / 1000;
+                }
+
                 lista.Add(new
                 {
-                    // idComp é o que a lixeira do modal vai usar para excluir
                     idComp = row["idComposicao"].ToString(),
                     nomeInsumo = row["nomeInsumo"].ToString(),
-                    qtd = row["qtdNecessaria"].ToString(),
-                    unidade = row["unidadeMed"].ToString()
+                    // Formata removendo zeros desnecessários à direita na string
+                    qtd = qtdExibicao.ToString("G29", System.Globalization.CultureInfo.CurrentCulture),
+                    unidade = unidade
                 });
             }
             return Json(lista);
@@ -56,7 +66,6 @@ namespace K_Gest.Controllers
                 {
                     vm.Itens.Add(new ItemComposicao
                     {
-                        // Agora idInsumo existe no DataTable devido à correção no SQL
                         IdInsumo = Convert.ToInt32(row["idInsumo"]),
                         NomeInsumo = row["nomeInsumo"].ToString(),
                         Quantidade = Convert.ToDecimal(row["qtdNecessaria"]),
@@ -67,7 +76,6 @@ namespace K_Gest.Controllers
             }
             catch (Exception ex)
             {
-                // Exibe o erro na tela caso algo falhe
                 return Content("Erro ao carregar: " + ex.Message);
             }
         }
@@ -78,7 +86,6 @@ namespace K_Gest.Controllers
             return RedirectToAction("Selecionar");
         }
 
-        // --- INSERIR ---
         public IActionResult InserirExibir()
         {
             var vm = new ComposicaoReceitaViewModel
@@ -88,13 +95,13 @@ namespace K_Gest.Controllers
             };
             return View("InserirExibirView", vm);
         }
+
         [HttpPost]
         public IActionResult InserirProcessar(ComposicaoReceitaViewModel vm)
         {
             ModelState.Remove("ListaReceitas");
             ModelState.Remove("ListaInsumos");
 
-            // Se a lista "Itens" tiver dados, salvamos todos
             if (vm.IdReceita > 0 && vm.Itens != null && vm.Itens.Count > 0)
             {
                 try
@@ -116,32 +123,6 @@ namespace K_Gest.Controllers
             vm.ListaInsumos = ObterInsumos();
             return View("InserirExibirView", vm);
         }
-        // --- ALTERAR ---
-        public IActionResult AlterarExibir(int id) // 'id' deve vir da sua tabela na SelecionarView
-        {
-            try
-            {
-                ComposicaoReceita o_Comp = new ComposicaoReceita { idComposicao = id };
-                DataTable dt = o_Comp.SelecionarPorID();
-
-                if (dt != null && dt.Rows.Count > 0)
-                {
-                    DataRow row = dt.Rows[0];
-                    var vm = new ComposicaoReceitaViewModel
-                    {
-                        IdComposicao = Convert.ToInt32(row["idComposicao"]),
-                        IdReceita = Convert.ToInt32(row["idReceita"]),
-                        IdInsumo = Convert.ToInt32(row["idInsumo"]),
-                        QtdNecessaria = Convert.ToDecimal(row["qtdNecessaria"]),
-                        ListaReceitas = ObterReceitas(),
-                        ListaInsumos = ObterInsumos()
-                    };
-                    return View("AlterarExibirView", vm);
-                }
-            }
-            catch (Exception ex) { TempData["MsgErro"] = ex.Message; }
-            return RedirectToAction("Selecionar");
-        }
 
         [HttpPost]
         public IActionResult AlterarProcessar(ComposicaoReceitaViewModel vm)
@@ -154,11 +135,8 @@ namespace K_Gest.Controllers
                 if (vm.IdReceita > 0)
                 {
                     ComposicaoReceita o_Comp = new ComposicaoReceita();
-
-                    // Se a lista vier vazia porque removeu tudo, passa uma lista em branco
                     var itensSalvar = vm.Itens ?? new List<ItemComposicao>();
 
-                    // Chama o método correto que limpa o antigo e insere o novo estado da lista
                     o_Comp.AtualizarFichaTecnica(vm.IdReceita, itensSalvar);
 
                     TempData["MsgSucesso"] = "Ficha Técnica atualizada com sucesso!";
@@ -169,18 +147,12 @@ namespace K_Gest.Controllers
                     TempData["MsgErro"] = "Receita inválida.";
                 }
             }
-            catch (Exception ex)
-            {
-                TempData["MsgErro"] = ex.Message;
-            }
+            catch (Exception ex) { TempData["MsgErro"] = ex.Message; }
 
             vm.ListaReceitas = ObterReceitas();
             vm.ListaInsumos = ObterInsumos();
             return View("InserirExibirView", vm);
         }
-
-        // --- EXCLUIR ---
-
 
         public IActionResult Excluir(int id)
         {
@@ -194,9 +166,6 @@ namespace K_Gest.Controllers
             return RedirectToAction("Selecionar");
         }
 
-       
-
-        // --- AUXILIARES ---
         private List<SelectListItem> ObterReceitas()
         {
             DataTable dt = new Receitas().SelecionarTodos();
@@ -215,7 +184,6 @@ namespace K_Gest.Controllers
                     select new SelectListItem
                     {
                         Value = dr["idInsumo"].ToString(),
-                        
                         Text = $"{dr["nomeInsumo"]} ({dr["unidadeMed"]})"
                     }).ToList();
         }

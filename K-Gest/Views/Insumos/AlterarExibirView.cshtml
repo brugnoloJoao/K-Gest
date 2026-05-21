@@ -26,13 +26,13 @@
             <label>Estoque Atual</label>
             @* Mudamos para type="text" para o navegador não travar o ponto/vírgula *@
             <input name="EstoqueAtual" type="text" class="form-control"
-                   value="@Model.EstoqueAtual.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)" />
+                   value="@Model.EstoqueAtual.ToString("F2")" />
         </div>
 
         <div class="form-group mb-3">
             <label>Ponto de Pedido</label>
             <input name="PontoPedido" type="text" class="form-control"
-                   value="@Model.PontoPedido.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)" />
+                   value="@Model.PontoPedido.ToString("F2")" />
         </div>
 
         <div class="mt-4">

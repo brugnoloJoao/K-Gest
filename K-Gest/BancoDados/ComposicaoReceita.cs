@@ -53,7 +53,6 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                // ADICIONADO: C.idComposicao e C.idInsumo para evitar os erros das imagens 32b9c3 e 31df87
                 string cmdSQL = @"SELECT 
                             C.idComposicao, 
                             C.idInsumo, 
@@ -73,7 +72,6 @@ namespace K_Gest.BancoDados
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        // Método para excluir apenas UM ingrediente
         public void ExcluirIngredienteIndividual(int id)
         {
             string sql = "DELETE FROM Composicao_Receita WHERE idComposicao = @id";
@@ -86,7 +84,6 @@ namespace K_Gest.BancoDados
 
         public DataTable SelecionarAgrupado()
         {
-            // Buscando direto da tabela de Receitas para listar todas na View Selecionar
             string sql = @"SELECT idReceita, nomePrato FROM Receitas ORDER BY nomePrato";
             SqlDataAdapter da = new SqlDataAdapter(sql, con);
             DataTable dt = new DataTable();
@@ -111,13 +108,11 @@ namespace K_Gest.BancoDados
             SqlTransaction trans = con.BeginTransaction();
             try
             {
-                // 1. Remove tudo o que a receita tinha antes
                 string delSQL = "DELETE FROM Composicao_Receita WHERE idReceita = @idR";
                 SqlCommand cmdDel = new SqlCommand(delSQL, con, trans);
                 cmdDel.Parameters.AddWithValue("@idR", idReceita);
                 cmdDel.ExecuteNonQuery();
 
-                // 2. Insere a nova lista atualizada
                 foreach (var item in itens)
                 {
                     string insSQL = "INSERT INTO Composicao_Receita (qtdNecessaria, idReceita, idInsumo) VALUES(@qtd, @idR, @idI)";

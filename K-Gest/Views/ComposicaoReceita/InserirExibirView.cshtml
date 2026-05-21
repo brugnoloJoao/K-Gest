@@ -1,4 +1,5 @@
-﻿@model K_Gest.Models.ComposicaoReceitaViewModel
+﻿
+@model K_Gest.Models.ComposicaoReceitaViewModel
 
 <div class="container mt-4">
     <div class="card shadow">
@@ -35,7 +36,7 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Quantidade</label>
-                            <input type="number" id="txtQtd" class="form-control" step="0.001" />
+                            <input type="number" id="txtQtd" class="form-control" step="0.001" placeholder="Ex: 0.2 para 200g" />
                         </div>
                         <div class="col-md-3">
                             <button type="button" id="btnAdd" class="btn btn-success w-100">Incluir</button>
@@ -57,14 +58,15 @@
                         {
                             for (int i = 0; i < Model.Itens.Count; i++)
                             {
-                                <tr>
+                                <tr data-origem="banco">
                                     <td>
                                         @Model.Itens[i].NomeInsumo
                                         <input type="hidden" class="insumo-id" value="@Model.Itens[i].IdInsumo" />
                                     </td>
                                     <td>
-                                        @Model.Itens[i].Quantidade.ToString("G29")
-                                        <input type="hidden" class="insumo-qtd" value="@Model.Itens[i].Quantidade.ToString().Replace(",", ".")" />
+                                        @Model.Itens[i].QuantidadeExibicao.ToString("G29", System.Globalization.CultureInfo.CurrentCulture)
+
+                                        <input type="hidden" class="insumo-qtd" value="@Model.Itens[i].Quantidade.ToString("F3", System.Globalization.CultureInfo.InvariantCulture)" />
                                     </td>
                                     <td>
                                         <span class="badge bg-info text-dark">@Model.Itens[i].UnidadeMed</span>
@@ -88,7 +90,6 @@
 
 @section Scripts {
     <script>
-        // Sincroniza o select inicial com o input hidden do IdReceita
         const selReceita = document.getElementById('selReceita');
         const hdnIdReceita = document.getElementById('hdnIdReceita');
 
@@ -100,7 +101,7 @@
             hdnIdReceita.value = this.value;
         });
 
-        // Evento para tratar botão incluir
+        // Incluir novos itens manualmente na tabela
         document.getElementById('btnAdd').addEventListener('click', function () {
             const sel = document.getElementById('selInsumo');
             const qtd = document.getElementById('txtQtd');
@@ -116,23 +117,28 @@
             const tbody = document.querySelector('#tblItens tbody');
             const tr = document.createElement('tr');
 
+            tr.setAttribute('data-origem', 'tela');
+
+            // Padroniza a exibição na tela trocando ponto por vírgula se necessário
+            let qtdDigitada = qtd.value.replace('.', ',');
+
             tr.innerHTML = `
-                        <td>
-                            ${nomeInsumo}
-                            <input type="hidden" class="insumo-id" value="${idInsumo}" />
-                        </td>
-                        <td>
-                            ${qtd.value}
-                            <input type="hidden" class="insumo-qtd" value="${qtd.value}" />
-                        </td>
-                        <td>
-                            <span class="badge bg-info text-dark">${unidade}</span>
-                            <input type="hidden" class="insumo-unidade" value="${unidade}" />
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-danger btn-remover">Remover</button>
-                        </td>
-                    `;
+                                <td>
+                                    ${nomeInsumo}
+                                    <input type="hidden" class="insumo-id" value="${idInsumo}" />
+                                </td>
+                                <td>
+                                    ${qtdDigitada}
+                                    <input type="hidden" class="insumo-qtd" value="${qtd.value}" />
+                                </td>
+                                <td>
+                                    <span class="badge bg-info text-dark">${unidade}</span>
+                                    <input type="hidden" class="insumo-unidade" value="${unidade}" />
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger btn-remover">Remover</button>
+                                </td>
+                            `;
 
             tbody.appendChild(tr);
 
@@ -140,27 +146,42 @@
             qtd.value = "";
         });
 
-        // Evento delegado para o botão remover que funciona em elementos criados dinamicamente
-        document.querySelector('#tblItens tbody').addEventListener('click', function (e) {
+        // Remover linhas da tabela
+        document.getElementById('tblItens').addEventListener('click', function (e) {
             if (e.target && e.target.classList.contains('btn-remover')) {
                 e.target.closest('tr').remove();
             }
         });
 
-        // --- SOLUÇÃO CRÍTICA DO BOTÃO SALVAR (REORGANIZAÇÃO DOS ÍNDICES ANTES DE ENVIAR) ---
+        // Processamento ao clicar em Salvar Ficha Técnica
         document.getElementById('frmFicha').addEventListener('submit', function (e) {
-            const linhas = document.querySelectorAll('#tblItens tbody tr');
+            const lines = document.querySelectorAll('#tblItens tbody tr');
 
-            linhas.forEach((tr, index) => {
+            lines.forEach((tr, index) => {
                 const inputId = tr.querySelector('.insumo-id');
                 const inputQtd = tr.querySelector('.insumo-qtd');
                 const inputUnidade = tr.querySelector('.insumo-unidade');
 
-                // Força o name correto sequencial ex: Itens[0], Itens[1]... independente de exclusões
+                // Tratamento universal de ponto/vírgula para o parseFloat do JavaScript não quebrar decimais
+                let valorTexto = inputQtd.value.replace(',', '.');
+                let valorFinal = parseFloat(valorTexto);
+
+                const unidadeTexto = inputUnidade.value.toUpperCase();
+                const origen = tr.getAttribute('data-origem');
+
+                // Só multiplica se for inserido direto na tela agora
+                if (origen === "tela" && (unidadeTexto === "KG" || unidadeTexto === "L")) {
+                    valorFinal = valorFinal * 1000;
+                }
+
                 inputId.name = `Itens[${index}].IdInsumo`;
                 inputQtd.name = `Itens[${index}].Quantidade`;
                 inputUnidade.name = `Itens[${index}].UnidadeMed`;
+
+                // Devolve para o input em formato Invariant string (ponto) aceito de volta pelo C#
+                inputQtd.value = valorFinal.toString();
             });
         });
     </script>
 }
+

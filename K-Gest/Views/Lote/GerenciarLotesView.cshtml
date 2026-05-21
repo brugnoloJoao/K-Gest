@@ -36,28 +36,49 @@
                     {
                         foreach (DataRow dr in Model.Rows)
                         {
-                            DateTime dtValidade = Convert.ToDateTime(dr["DtValidade"]);
-                            bool vencido = dtValidade < DateTime.Now;
+                            DateTime dtValidade = Convert.ToDateTime(dr["dtValidade"]);
+
+                            // Recupera a situação calculada pelo banco C# que configuramos no Lote.cs
+                            string situacao = dr["situacao"]?.ToString() ?? "Regular / Próprio para consumo";
 
                             <tr>
-                                <td class="ps-4 align-middle fw-bold text-primary">#@dr["NumLote"]</td>
-                                <td class="align-middle">@Convert.ToDateTime(dr["DtFabricacao"]).ToString("dd/MM/yyyy")</td>
+                                <td class="ps-4 align-middle fw-bold text-primary">#@dr["numLote"]</td>
+                                <td class="align-middle">@Convert.ToDateTime(dr["dtFabricacao"]).ToString("dd/MM/yyyy")</td>
                                 <td class="align-middle">@dtValidade.ToString("dd/MM/yyyy")</td>
                                 <td class="align-middle">
-                                    @if (vencido)
+
+                                    @* CORES ADAPTADAS PARA AS 4 CATEGORIAS PEDIDAS *@
+                                    @if (situacao == "Vencido")
                                     {
-                                        <span class="badge bg-danger"><i class="bi bi-exclamation-triangle"></i> Vencido</span>
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-x-circle-fill"></i> Vencido
+                                        </span>
+                                    }
+                                    else if (situacao == "Alerta")
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-exclamation-triangle-fill"></i> Alerta (Vence Amanhã)
+                                        </span>
+                                    }
+                                    else if (situacao == "Próximo da data de vencimento")
+                                    {
+                                        <span class="badge bg-info text-dark">
+                                            <i class="bi bi-clock-history"></i> Próximo do Vencimento
+                                        </span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-success">Regular</span>
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle-fill"></i> Próprio para Consumo
+                                        </span>
                                     }
+
                                 </td>
                                 <td class="text-end pe-4 align-middle">
-                                    <a href="/Lote/AlterarExibir/@dr["IdLote"]" class="btn btn-warning btn-sm me-1">
+                                    <a href="/Lote/AlterarExibir/@dr["idLote"]" class="btn btn-warning btn-sm me-1">
                                         <i class="bi bi-pencil"></i> Editar
                                     </a>
-                                    <a href="/Lote/Excluir/@dr["IdLote"]" class="btn btn-danger btn-sm"
+                                    <a href="/Lote/Excluir/@dr["idLote"]" class="btn btn-danger btn-sm"
                                        onclick="return confirm('Deseja realmente excluir este lote do estoque?')">
                                         <i class="bi bi-trash"></i> Excluir
                                     </a>

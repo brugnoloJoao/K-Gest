@@ -14,6 +14,9 @@ namespace K_Gest.BancoDados
         public int numLote;
         public int idInsumo; // Chave Estrangeira
 
+        // Propriedade calculada para obter o status em tempo real do lote
+        public string Situacao => CalcularSituacao(dtValidade);
+
         SqlConnection con;
 
         //-------------------------------------------------------------
@@ -38,19 +41,47 @@ namespace K_Gest.BancoDados
         }
 
         //-------------------------------------------------------------
+        // Regra de Negócio: Categorias de Vencimento
+        //-------------------------------------------------------------
+        public static string CalcularSituacao(DateTime dataValidade)
+        {
+            // Zera as horas para comparar puramente os dias civis
+            DateTime hoje = DateTime.Today;
+            DateTime validade = dataValidade.Date;
+
+            // Calcula a diferença de dias (Data de Validade menos Hoje)
+            int diasRestantes = (validade - hoje).Days;
+
+            if (diasRestantes < 0)
+            {
+                return "Vencido"; // A partir do primeiro dia de vencimento
+            }
+            else if (diasRestantes == 1)
+            {
+                return "Alerta"; // Exatamente 1 dia antes da data de vencimento
+            }
+            else if (diasRestantes >= 2 && diasRestantes <= 15)
+            {
+                return "Próximo da data de vencimento"; // De 2 até 15 dias antes
+            }
+            else
+            {
+                return "Regular / Próprio para consumo"; // 16 dias ou mais antes da validade
+            }
+        }
+
+        //-------------------------------------------------------------
         // Métodos de Persistência
         //-------------------------------------------------------------
         public void Inserir()
         {
             try
             {
-                // CORRIGIDO: Nome da tabela para 'Lote' (no singular) e colunas batendo 100% com o diagrama físico
                 string cmdSQL = "INSERT INTO Lote(dtFabricacao, dtValidade, numLote, idInsumo) " +
                                 "VALUES(@dtFabricacao, @dtValidade, @numLote, @idInsumo)";
 
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
 
-                // Vincula os parâmetros mapeando os atributos da classe
                 cmd.Parameters.AddWithValue("@dtFabricacao", dtFabricacao);
                 cmd.Parameters.AddWithValue("@dtValidade", dtValidade);
                 cmd.Parameters.AddWithValue("@numLote", numLote);
@@ -62,9 +93,7 @@ namespace K_Gest.BancoDados
             }
             catch (Exception ex)
             {
-                // Se a conexão estiver aberta por erro, tenta fechar antes de estourar a exceção
                 if (con.State == ConnectionState.Open) con.Close();
-
                 throw new Exception("Erro SQL ao inserir: " + ex.Message);
             }
         }
@@ -73,8 +102,9 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                string cmdSQL = "UPDATE Lotes SET DtFabricacao = @DtFabricacao, DtValidade = @DtValidade, " +
-                                "NumLote = @NumLote, IdInsumo = @IdInsumo WHERE IdLote = @IdLote";
+                // AJUSTADO: Mudado de 'Lotes' para 'Lote' para manter consistência com o banco
+                string cmdSQL = "UPDATE Lote SET dtFabricacao = @DtFabricacao, dtValidade = @DtValidade, " +
+                                "numLote = @NumLote, idInsumo = @IdInsumo WHERE idLote = @IdLote";
 
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
                 cmd.Parameters.AddWithValue("@IdLote", idLote);
@@ -89,7 +119,8 @@ namespace K_Gest.BancoDados
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                if (con.State == ConnectionState.Open) con.Close();
+                throw new Exception("Erro SQL ao alterar: " + ex.Message);
             }
         }
 
@@ -97,7 +128,8 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                string cmdSQL = "DELETE FROM Lotes WHERE IdLote = @IdLote";
+                // AJUSTADO: Mudado de 'Lotes' para 'Lote'
+                string cmdSQL = "DELETE FROM Lote WHERE idLote = @IdLote";
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
                 cmd.Parameters.AddWithValue("@IdLote", idLote);
 
@@ -107,22 +139,18 @@ namespace K_Gest.BancoDados
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                if (con.State == ConnectionState.Open) con.Close();
+                throw new Exception("Erro SQL ao excluir: " + ex.Message);
             }
         }
 
         //-------------------------------------------------------------
-        // Métodos de Consulta (Com JOIN para facilitar a visualização)
+        // Métodos de Consulta
         //-------------------------------------------------------------
-        //-------------------------------------------------------------
-        // Métodos de Consulta Corrigidos com base no Diagrama Real
-        //-------------------------------------------------------------
-
         public DataTable SelecionarTodos()
         {
             try
             {
-                // CORRIGIDO: Tabela 'Lote' no singular e colunas batendo com o diagrama
                 string cmdSQL = @"SELECT L.idLote, L.dtFabricacao, L.dtValidade, L.numLote, L.idInsumo, I.nomeInsumo as NomeInsumo 
                           FROM Lote L 
                           INNER JOIN Insumos I ON L.idInsumo = I.idInsumo 
@@ -134,10 +162,23 @@ namespace K_Gest.BancoDados
                 o_DataAdapter.Fill(dtPesquisa);
                 con.Close();
 
-                return dtPesquisa.Rows.Count > 0 ? dtPesquisa : null;
+                // Adiciona dinamicamente uma coluna de Situação no DataTable retornado para a sua GridView/Tabela ler direto
+                if (dtPesquisa.Rows.Count > 0)
+                {
+                    dtPesquisa.Columns.Add("situacao", typeof(string));
+                    foreach (DataRow row in dtPesquisa.Rows)
+                    {
+                        DateTime validade = Convert.ToDateTime(row["dtValidade"]);
+                        row["situacao"] = CalcularSituacao(validade);
+                    }
+                    return dtPesquisa;
+                }
+
+                return null;
             }
             catch (Exception ex)
             {
+                if (con.State == ConnectionState.Open) con.Close();
                 throw new Exception("Erro em SelecionarTodos: " + ex.Message);
             }
         }
@@ -146,7 +187,6 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                // CORRIGIDO: Tabela 'Lote' no singular e mapeamento exato
                 string cmdSQL = @"SELECT idLote, dtFabricacao, dtValidade, numLote, idInsumo 
                           FROM Lote 
                           WHERE idInsumo = @idInsumo 
@@ -160,10 +200,21 @@ namespace K_Gest.BancoDados
                 o_DataAdapter.Fill(dtPesquisa);
                 con.Close();
 
+                if (dtPesquisa.Rows.Count > 0)
+                {
+                    dtPesquisa.Columns.Add("situacao", typeof(string));
+                    foreach (DataRow row in dtPesquisa.Rows)
+                    {
+                        DateTime validade = Convert.ToDateTime(row["dtValidade"]);
+                        row["situacao"] = CalcularSituacao(validade);
+                    }
+                }
+
                 return dtPesquisa;
             }
             catch (Exception ex)
             {
+                if (con.State == ConnectionState.Open) con.Close();
                 throw new Exception("Erro em SelecionarPorInsumo: " + ex.Message);
             }
         }
@@ -172,7 +223,6 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                // CORRIGIDO: Tabela 'Lote' no singular e campos em camelCase
                 string cmdSQL = "SELECT idLote, dtFabricacao, dtValidade, numLote, idInsumo FROM Lote WHERE idLote = @idLote";
 
                 SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
@@ -183,10 +233,22 @@ namespace K_Gest.BancoDados
                 o_DataAdapter.Fill(dtPesquisa);
                 con.Close();
 
-                return dtPesquisa.Rows.Count > 0 ? dtPesquisa : null;
+                if (dtPesquisa.Rows.Count > 0)
+                {
+                    dtPesquisa.Columns.Add("situacao", typeof(string));
+                    foreach (DataRow row in dtPesquisa.Rows)
+                    {
+                        DateTime validade = Convert.ToDateTime(row["dtValidade"]);
+                        row["situacao"] = CalcularSituacao(validade);
+                    }
+                    return dtPesquisa;
+                }
+
+                return null;
             }
             catch (Exception ex)
             {
+                if (con.State == ConnectionState.Open) con.Close();
                 throw new Exception("Erro em SelecionarPorID: " + ex.Message);
             }
         }
