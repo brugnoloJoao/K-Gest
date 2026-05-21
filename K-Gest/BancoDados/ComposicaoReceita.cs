@@ -1,6 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using K_Gest.Models;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
+using Microsoft.Data.SqlClient;
 using System.Data;
-using K_Gest.Models;
 
 namespace K_Gest.BancoDados
 {
@@ -10,6 +11,7 @@ namespace K_Gest.BancoDados
         public decimal qtdNecessaria;
         public int idReceita;
         public int idInsumo;
+        public string unidadeExibicao;
         SqlConnection con;
 
         public ComposicaoReceita()
@@ -58,7 +60,7 @@ namespace K_Gest.BancoDados
                             C.idInsumo, 
                             I.nomeInsumo, 
                             C.qtdNecessaria, 
-                            I.unidadeMed 
+                            C.unidadeExibicao
                           FROM Composicao_Receita C
                           INNER JOIN Insumos I ON C.idInsumo = I.idInsumo
                           WHERE C.idReceita = @id";
@@ -93,10 +95,11 @@ namespace K_Gest.BancoDados
 
         public void Alterar()
         {
-            string sql = "UPDATE Composicao_Receita SET qtdNecessaria=@q, idReceita=@r, idInsumo=@i WHERE idComposicao=@c";
+            string sql = "UPDATE Composicao_Receita SET qtdNecessaria=@q, idReceita=@r, idInsumo=@i, unidadeExibicao=@u WHERE idComposicao=@c, ";
             SqlCommand cmd = new SqlCommand(sql, con);
             cmd.Parameters.AddWithValue("@c", idComposicao);
             cmd.Parameters.AddWithValue("@q", qtdNecessaria);
+            cmd.Parameters.AddWithValue("@u", unidadeExibicao);
             cmd.Parameters.AddWithValue("@r", idReceita);
             cmd.Parameters.AddWithValue("@i", idInsumo);
             con.Open(); cmd.ExecuteNonQuery(); con.Close();
@@ -115,11 +118,12 @@ namespace K_Gest.BancoDados
 
                 foreach (var item in itens)
                 {
-                    string insSQL = "INSERT INTO Composicao_Receita (qtdNecessaria, idReceita, idInsumo) VALUES(@qtd, @idR, @idI)";
+                    string insSQL = "INSERT INTO Composicao_Receita (qtdNecessaria,unidadeExibicao, idReceita, idInsumo) VALUES(@qtd, @u, @idR, @idI)";
                     SqlCommand cmdIns = new SqlCommand(insSQL, con, trans);
                     cmdIns.Parameters.AddWithValue("@qtd", item.Quantidade);
                     cmdIns.Parameters.AddWithValue("@idR", idReceita);
                     cmdIns.Parameters.AddWithValue("@idI", item.IdInsumo);
+                    cmdIns.Parameters.AddWithValue("@u", item.UnidadeExibicao);
                     cmdIns.ExecuteNonQuery();
                 }
                 trans.Commit();
