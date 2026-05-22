@@ -214,7 +214,7 @@ namespace K_Gest.BancoDados
             }
             catch (Exception ex)
             {
-                if (con.State == ConnectionState.Open) con.Close();
+                if (con.State == ConnectionState.Open) con.Close();     
                 throw new Exception("Erro em SelecionarPorInsumo: " + ex.Message);
             }
         }

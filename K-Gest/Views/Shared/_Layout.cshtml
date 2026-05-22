@@ -1,59 +1,222 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - K_Gest</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/K_Gest.styles.css" asp-append-version="true" />
+    <title>K_Gest - Controle de Estoque</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" />
+
+    <style>
+            :root {
+                --sidebar-bg: #ffffff; /* Barra lateral branca e limpa */
+                --sidebar-hover: #fff1ed; /* Feedback sutil em salmão bem claro */
+                --salmon-primary: #FF8C69; /* Cor Principal: Rosa Salmão */
+                --salmon-hover: #fa7a52; /* Tom de hover para botões */
+                --bg-main: #f8fafc; /* Fundo geral do sistema (cinza bem leve) */
+                --text-main: #334155; /* Texto principal elegante (Slate) */
+                --text-muted: #94a3b8; /* Cinza para subtítulos */
+                --border-color: #e2e8f0; /* Linhas de divisão ultra finas */
+            }
+
+            body {
+                background-color: var(--bg-main);
+                overflow-x: hidden;
+                font-family: 'Inter', system-ui, -apple-system, sans-serif;
+                color: var(--text-main);
+            }
+
+            .wrapper {
+                display: flex;
+                width: 100%;
+                align-items: stretch;
+            }
+
+            /* BARRA LATERAL LIGHT PREMIUM */
+            #sidebar {
+                min-width: 270px;
+                max-width: 270px;
+                background-color: var(--sidebar-bg);
+                color: var(--text-main);
+                min-height: 100vh;
+                transition: all 0.3s ease;
+                border-right: 1px solid var(--border-color);
+            }
+
+            .sidebar-header {
+                padding: 24px 20px;
+                background-color: #ffffff;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+                .sidebar-header .logo-text {
+                    font-size: 22px;
+                    font-weight: 800;
+                    background: linear-gradient(45deg, var(--salmon-primary), #fa7a52);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+
+                .sidebar-header .logo-sub {
+                    font-size: 11px;
+                    color: var(--text-muted);
+                    display: block;
+                    margin-top: 5px;
+                    font-weight: 600;
+                    letter-spacing: 0.3px;
+                }
+
+            /* Divisores de Categoria */
+            .sidebar-section-title {
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: var(--text-muted);
+                padding: 24px 20px 8px 25px;
+                letter-spacing: 1.2px;
+            }
+
+            #sidebar ul.components {
+                padding: 0 12px;
+            }
+
+            #sidebar ul li {
+                margin-bottom: 4px;
+            }
+
+                #sidebar ul li a {
+                    padding: 12px 16px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    color: #64748b; /* Cor do link inativo */
+                    text-decoration: none;
+                    border-radius: 10px;
+                    transition: all 0.2s ease;
+                }
+
+                    #sidebar ul li a:hover {
+                        color: var(--salmon-primary);
+                        background-color: var(--sidebar-hover);
+                    }
+
+                /* Item Ativo - Pílula Salmão com Texto Branco */
+                #sidebar ul li.active > a {
+                    color: #ffffff;
+                    background-color: var(--salmon-primary);
+                    box-shadow: 0 4px 12px rgba(255, 140, 105, 0.25);
+                }
+
+                #sidebar ul li a i {
+                    margin-right: 12px;
+                    font-size: 18px;
+                }
+
+            /* TOPO NAVBAR CLEAN */
+            .top-navbar {
+                background-color: #ffffff;
+                color: var(--text-main);
+                padding: 18px 30px;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            #content {
+                width: 100%;
+                min-height: 100vh;
+            }
+
+            .user-profile-box {
+                background-color: #f8fafc;
+                padding: 6px 14px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 600;
+                color: #475569;
+                border: 1px solid var(--border-color);
+            }
+
+            .text-salmon {
+                color: var(--salmon-primary) !important;
+            }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">K_Gest</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Insumos" asp-action="Selecionar">Insumos</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Receitas" asp-action="Selecionar">Receitas</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="ComposicaoReceita" asp-action="Selecionar">Composição</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Lote" asp-action="Selecionar">Lotes</a>
-                        </li>
-                    </ul>
+
+    <div class="wrapper">
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <span class="logo-text"><i class="bi bi-lightning-charge-fill text-salmon"></i> K_Gest</span>
+                <span class="logo-sub">GESTÃO INTELIGENTE DE ESTOQUE</span>
+            </div>
+
+            <div class="sidebar-section-title">Gerenciamento</div>
+            <ul class="list-unstyled components">
+                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Inicio" ? "active" : "")">
+                    <a href="/Inicio/IndexView"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+                </li>
+                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Insumos" ? "active" : "")">
+                    <a href="/Insumos/Selecionar"><i class="bi bi-box-seam"></i> Insumos</a>
+                </li>
+                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Receitas" ? "active" : "")">
+                    <a href="/Receitas/Selecionar"><i class="bi bi-receipt"></i> Fichas / Receitas</a>
+                </li>
+                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Composicao" ? "active" : "")">
+                    <a href="/Composicao/Selecionar"><i class="bi bi-diagram-3"></i> Composição</a>
+                </li>
+                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Lote" ? "active" : "")">
+                    <a href="/Lote/Selecionar"><i class="bi bi-layers"></i> Lotes</a>
+                </li>
+            </ul>
+
+            <div class="sidebar-section-title">Movimentação</div>
+            <ul class="list-unstyled components">
+                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Movimentacao" && ViewContext.RouteData.Values["action"]?.ToString() == "Entradas" ? "active" : "")">
+                    <a href="/Movimentacao/Entradas"><i class="bi bi-plus-circle-fill text-salmon"></i> Entradas</a>
+                </li>
+                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Movimentacao" && ViewContext.RouteData.Values["action"]?.ToString() == "Saidas" ? "active" : "")">
+                    <a href="/Movimentacao/Saidas"><i class="bi bi-dash-circle-fill text-warning"></i> Saídas</a>
+                </li>
+            </ul>
+
+            <div class="sidebar-section-title">Administração</div>
+            <ul class="list-unstyled components">
+                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Usuarios" ? "active" : "")">
+                    <a href="/Usuarios/Selecionar"><i class="bi bi-shield-lock"></i> Usuários</a>
+                </li>
+                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Logs" ? "active" : "")">
+                    <a href="/Home/Logs"><i class="bi bi-terminal"></i> Logs de Sistema</a>
+                </li>
+                <li class="mt-5">
+                    <a href="/Login/Sair" class="text-danger fw-semibold" style="background: rgba(239, 68, 68, 0.05);"><i class="bi bi-power"></i> Sair</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div id="content">
+            <div class="top-navbar d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="m-0 fw-bold text-dark d-none d-md-inline" style="font-size: 15px;">Painel Administrativo</h5>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="user-profile-box">
+                        <i class="bi bi-person-circle text-salmon me-1"></i> Op:
+                        <span class="text-dark">@User.Identity?.Name</span>
+                    </div>
+                    <span class="badge bg-light text-secondary border px-3 py-2" style="font-size: 11px; border-color: var(--border-color) !important;">Server IP: 192.168.56.1</span>
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+
+            <div class="p-4">
+                @RenderBody()
+            </div>
+        </div>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - K_Gest - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
