@@ -181,7 +181,7 @@ namespace K_Gest.Controllers
                 //Campos que não podem ser nulos
                 o_MovimentacaoEstoqueVM.IdEstoque = idEstoque;
                 o_MovimentacaoEstoqueVM.TipoEs = pesqSetores.Rows[0]["TipoEs"].ToString();
-                o_MovimentacaoEstoqueVM.QtdMoviment = Convert.ToInt32(pesqSetores.Rows[0]["QtdMoviment"]);
+                o_MovimentacaoEstoqueVM.QtdMoviment = Convert.ToDecimal(pesqSetores.Rows[0]["QtdMoviment"]);
                 o_MovimentacaoEstoqueVM.Motivo = pesqSetores.Rows[0]["Motivo"].ToString();
                 o_MovimentacaoEstoqueVM.IdInsumo = Convert.ToInt32(pesqSetores.Rows[0]["IdInsumo"]);
 

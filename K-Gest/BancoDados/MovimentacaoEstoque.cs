@@ -7,7 +7,7 @@ namespace K_Gest.BancoDados
     {
         public int? idEstoque;
         public string tipoEs; // "E" para Entrada, "S" para Saída
-        public int qtdMoviment;
+        public decimal qtdMoviment;
         public string motivo;
         public int idInsumo;
 

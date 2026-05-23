@@ -63,7 +63,8 @@ namespace K_Gest.Controllers
                 // Alimenta as ViewBags de forma segura para a tela de gerenciamento de lotes
                 ViewBag.IdInsumo = insumoId;
                 ViewBag.NomeInsumo = dtInsumos.Columns.Contains("nomeInsumo") ? insumoRow["nomeInsumo"].ToString() : insumoRow[1].ToString();
-                ViewBag.UnidadeMed = dtInsumos.Columns.Contains("unidadeMed") ? insumoRow["unidadeMed"].ToString() : "";
+                string unidadeMed = dtInsumos.Columns.Contains("unidadeMed") ? insumoRow["unidadeMed"].ToString() : "";
+                ViewBag.UnidadeMed = unidadeMed;
 
                 // Busca os lotes vinculados
                 Lote o_Lote = new Lote();
@@ -73,6 +74,10 @@ namespace K_Gest.Controllers
                 {
                     dtLotes = new DataTable();
                 }
+                ViewBag.EstoqueAtual = dtInsumos.Columns.Contains("estoqueAtual") 
+                                        ? o_Lote.ConverterParaTela(Convert.ToDecimal(insumoRow["estoqueAtual"].ToString()), unidadeMed) 
+                                        : o_Lote.ConverterParaTela(Convert.ToDecimal(insumoRow[1].ToString()), unidadeMed);
+
 
                 return View("GerenciarLotesView", dtLotes);
             }
@@ -112,11 +117,33 @@ namespace K_Gest.Controllers
                         dtFabricacao = vm.DtFabricacao,
                         dtValidade = vm.DtValidade,
                         numLote = vm.NumLote,
-                        idInsumo = vm.IdInsumo
+                        idInsumo = vm.IdInsumo,
+                        
                     };
 
+                    
+                    Insumos o_Insumo = new Insumos();
+                    o_Insumo.idInsumo = vm.IdInsumo;
+                    
+                    decimal somaLotes = o_Lote.TotalLotes();
+                    decimal estoqueAtual = o_Insumo.ObterEstoqueAtual();
+                    string unidadeMed = o_Insumo.ObterUnidadeMedida();
+
+                    o_Lote.quantidade = o_Lote.ConverterParaBanco(vm.Quantidade, unidadeMed);
                     // Executa o comando INSERT no banco de dados
                     o_Lote.Inserir();
+
+                    if (somaLotes - estoqueAtual > 0)
+                    {
+                        MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque
+                        {
+                            tipoEs = "Entrada",
+                            qtdMoviment = somaLotes - estoqueAtual,
+                            motivo = "Ajuste automático de estoque após cadastro de lote",
+                            idInsumo = vm.IdInsumo
+                        };
+                        o_MovimentacaoEstoque.Inserir(unidadeMed);
+                    }
 
                     TempData["MsgSucesso"] = "Lote cadastrado com sucesso!";
 
@@ -206,17 +233,20 @@ namespace K_Gest.Controllers
         // ==========================================
         public IActionResult Excluir(int id)
         {
+            
             try
             {
                 Lote o_Lote = new Lote { idLote = id };
+                int idInsumo = o_Lote.ObterIDInsumoPorIDLote();
                 o_Lote.Excluir();
                 TempData["MsgSucesso"] = "Lote excluído com sucesso!";
+                return RedirectToAction("GerenciarLotes", idInsumo);
+
             }
             catch (Exception ex)
             {
                 TempData["MsgErro"] = "Erro ao excluir: " + ex.Message;
             }
-
             return RedirectToAction("Selecionar");
         }
 
