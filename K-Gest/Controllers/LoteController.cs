@@ -74,10 +74,11 @@ namespace K_Gest.Controllers
                 {
                     dtLotes = new DataTable();
                 }
-                ViewBag.EstoqueAtual = dtInsumos.Columns.Contains("estoqueAtual") 
-                                        ? o_Lote.ConverterParaTela(Convert.ToDecimal(insumoRow["estoqueAtual"].ToString()), unidadeMed) 
-                                        : o_Lote.ConverterParaTela(Convert.ToDecimal(insumoRow[1].ToString()), unidadeMed);
 
+                foreach (DataRow row in dtLotes.Rows)
+                {
+                    row["quantidade"] = o_Lote.ConverterParaTela(Convert.ToDecimal(row["quantidade"]), unidadeMed);
+                }
 
                 return View("GerenciarLotesView", dtLotes);
             }
@@ -125,7 +126,7 @@ namespace K_Gest.Controllers
                     Insumos o_Insumo = new Insumos();
                     o_Insumo.idInsumo = vm.IdInsumo;
                     
-                    decimal somaLotes = o_Lote.TotalLotes();
+                    
                     decimal estoqueAtual = o_Insumo.ObterEstoqueAtual();
                     string unidadeMed = o_Insumo.ObterUnidadeMedida();
 
@@ -133,16 +134,18 @@ namespace K_Gest.Controllers
                     // Executa o comando INSERT no banco de dados
                     o_Lote.Inserir();
 
+                    decimal somaLotes = o_Lote.TotalLotes();
+
                     if (somaLotes - estoqueAtual > 0)
                     {
                         MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque
                         {
-                            tipoEs = "Entrada",
+                            tipoEs = "E",
                             qtdMoviment = somaLotes - estoqueAtual,
                             motivo = "Ajuste automático de estoque após cadastro de lote",
                             idInsumo = vm.IdInsumo
                         };
-                        o_MovimentacaoEstoque.Inserir(unidadeMed);
+                        o_MovimentacaoEstoque.InserirPorLote();
                     }
 
                     TempData["MsgSucesso"] = "Lote cadastrado com sucesso!";

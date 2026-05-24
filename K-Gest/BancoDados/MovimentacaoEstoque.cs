@@ -80,6 +80,50 @@ namespace K_Gest.BancoDados
             }
             finally { con.Close(); }
         }
+        public void InserirPorLote()
+        {
+            con.Open();
+            SqlTransaction tran = con.BeginTransaction();
+
+            try
+            {
+
+                // Registra o histórico na tabela Movimentacao_Estoque
+                string cmdMovimentacao = @"INSERT INTO Movimentacao_Estoque(tipoEs, qtdMoviment, motivo, idInsumo) 
+                                         VALUES(@tipoEs, @qtdMoviment, @motivo, @idInsumo)";
+
+                SqlCommand cmd1 = new SqlCommand(cmdMovimentacao, con, tran);
+                cmd1.Parameters.AddWithValue("@tipoEs", tipoEs);
+                cmd1.Parameters.AddWithValue("@qtdMoviment", qtdMoviment); 
+                cmd1.Parameters.AddWithValue("@motivo", motivo);
+                cmd1.Parameters.AddWithValue("@idInsumo", idInsumo);
+                cmd1.ExecuteNonQuery();
+
+                // Atualiza a tabela Insumos com o valor CONVERTIDO (ex: 10000)
+                string operacao = (tipoEs.ToUpper() == "E") ? "+" : "-";
+                string cmdInsumo = $"UPDATE Insumos SET estoqueAtual = estoqueAtual {operacao} @qtdReal WHERE idInsumo = @idInsumo";
+
+                SqlCommand cmd2 = new SqlCommand(cmdInsumo, con, tran);
+
+                // Parâmetro tipado para evitar estouro aritmético
+                SqlParameter paramQtd = new SqlParameter("@qtdReal", SqlDbType.Decimal);
+                paramQtd.Precision = 18;
+                paramQtd.Scale = 2;
+                paramQtd.Value = qtdMoviment;
+
+                cmd2.Parameters.Add(paramQtd);
+                cmd2.Parameters.AddWithValue("@idInsumo", idInsumo);
+                cmd2.ExecuteNonQuery();
+
+                tran.Commit();
+            }
+            catch (Exception ex)
+            {
+                tran.Rollback();
+                throw new Exception("Erro ao processar movimentação: " + ex.Message);
+            }
+            finally { con.Close(); }
+        }
 
         // --- ADICIONE ESTE MÉTODO AUXILIAR AQUI ---
         private decimal CalcularValorConvertido(decimal qtd, string unidade)
