@@ -25,22 +25,16 @@ namespace K_Gest.Controllers
             foreach (DataRow row in dt.Rows)
             {
                 decimal qtdOriginal = Convert.ToDecimal(row["qtdNecessaria"]);
-                string unidade = row["unidadeMed"].ToString() ?? "";
-                decimal qtdExibicao = qtdOriginal;
-
-                // CORREÇÃO VISUAL DO MODAL: Se for KG ou L, divide por 1000 apenas para renderizar o texto amigável
-                if (unidade.ToUpper() == "KG" || unidade.ToUpper() == "L")
-                {
-                    qtdExibicao = qtdOriginal / 1000;
-                }
+                string unidadeEx = row["unidadeExibicao"].ToString() ?? "";
+                decimal qtdEx = (unidadeEx.ToUpper() == "KG" || unidadeEx.ToUpper() == "L") ? qtdOriginal / 1000 : qtdOriginal;
 
                 lista.Add(new
                 {
                     idComp = row["idComposicao"].ToString(),
                     nomeInsumo = row["nomeInsumo"].ToString(),
                     // Formata removendo zeros desnecessários à direita na string
-                    qtd = qtdExibicao.ToString("G29", System.Globalization.CultureInfo.CurrentCulture),
-                    unidade = unidade
+                    qtdEx = qtdEx.ToString("G29", System.Globalization.CultureInfo.CurrentCulture),
+                    unidadeEx = unidadeEx
                 });
             }
             return Json(lista);
@@ -69,7 +63,7 @@ namespace K_Gest.Controllers
                         IdInsumo = Convert.ToInt32(row["idInsumo"]),
                         NomeInsumo = row["nomeInsumo"].ToString(),
                         Quantidade = Convert.ToDecimal(row["qtdNecessaria"]),
-                        UnidadeMed = row["unidadeMed"].ToString()
+                        UnidadeExibicao = row["unidadeExibicao"].ToString()
                     });
                 }
                 return View("InserirExibirView", vm);
