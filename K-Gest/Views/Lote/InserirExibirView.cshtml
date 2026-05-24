@@ -37,6 +37,16 @@
                         </div>
 
                         <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold text-dark">Quantidade</label>
+                                <div class="input-group">
+                                    <input type="number" asp-for="Quantidade" id="txtQuantidade" step="0.01" class="form-control border-success" placeholder="Ex: 50" required min="1" />
+                                </div>
+                                <span asp-validation-for="Quantidade" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold text-dark">Data de Fabricação</label>
                                 <input type="date" asp-for="DtFabricacao" id="txtDtFabricacao" class="form-control border-success" asp-format="{0:yyyy-MM-dd}" required />

@@ -195,7 +195,46 @@ namespace K_Gest.BancoDados
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
+        public DataTable SelecionarEntradas()
+        {
+            try
+            {
+                string cmdSQL = @"SELECT M.idEstoque, M.tipoEs, M.qtdMoviment, M.motivo, 
+                                 I.nomeInsumo, I.unidadeMed, M.idInsumo
+                          FROM Movimentacao_Estoque M
+                          INNER JOIN Insumos I ON M.idInsumo = I.idInsumo
+                          WHERE M.tipoEs = 'E'
+                          ORDER BY M.idEstoque DESC";
 
+                SqlDataAdapter da = new SqlDataAdapter(cmdSQL, con);
+                DataTable dt = new DataTable();
+                con.Open();
+                da.Fill(dt);
+                con.Close();
+                return dt;
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
+        public DataTable SelecionarSaidas()
+        {
+            try
+            {
+                string cmdSQL = @"SELECT M.idEstoque, M.tipoEs, M.qtdMoviment, M.motivo, 
+                                 I.nomeInsumo, I.unidadeMed, M.idInsumo
+                          FROM Movimentacao_Estoque M
+                          INNER JOIN Insumos I ON M.idInsumo = I.idInsumo
+                          WHERE M.tipoEs = 'S'
+                          ORDER BY M.idEstoque DESC";
+
+                SqlDataAdapter da = new SqlDataAdapter(cmdSQL, con);
+                DataTable dt = new DataTable();
+                con.Open();
+                da.Fill(dt);
+                con.Close();
+                return dt;
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
         public DataTable SelecionarPorID()
         {
             try

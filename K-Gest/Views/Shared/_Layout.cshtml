@@ -174,11 +174,11 @@
 
             <div class="sidebar-section-title">Movimentação</div>
             <ul class="list-unstyled components">
-                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Movimentacao" && ViewContext.RouteData.Values["action"]?.ToString() == "Entradas" ? "active" : "")">
-                    <a href="/Movimentacao/Entradas"><i class="bi bi-plus-circle-fill text-salmon"></i> Entradas</a>
+                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "MovimentacaoEstoque" && ViewContext.RouteData.Values["action"]?.ToString() == "Entradas" ? "active" : "")">
+                    <a href="/MovimentacaoEstoque/Entradas"><i class="bi bi-plus-circle-fill text-salmon"></i> Entradas</a>
                 </li>
-                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Movimentacao" && ViewContext.RouteData.Values["action"]?.ToString() == "Saidas" ? "active" : "")">
-                    <a href="/Movimentacao/Saidas"><i class="bi bi-dash-circle-fill text-warning"></i> Saídas</a>
+                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "MovimentacaoEstoque" && ViewContext.RouteData.Values["action"]?.ToString() == "Saidas" ? "active" : "")">
+                    <a href="/MovimentacaoEstoque/Saidas"><i class="bi bi-dash-circle-fill text-warning"></i> Saídas</a>
                 </li>
             </ul>
 

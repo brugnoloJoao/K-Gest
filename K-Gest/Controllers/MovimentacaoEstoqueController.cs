@@ -18,9 +18,9 @@ namespace K_Gest.Controllers
             {
                 MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque();
 
-                DataTable dtInsumos = o_MovimentacaoEstoque.SelecionarTodos();
+                DataTable dtMoviment = o_MovimentacaoEstoque.SelecionarTodos();
 
-                return View("SelecionarView", dtInsumos);
+                return View("SelecionarView", dtMoviment);
             }
             catch (Exception ex)
             {
@@ -29,7 +29,40 @@ namespace K_Gest.Controllers
                 return View("SelecionarView");
             }
         }
+        public IActionResult Entradas()
+        {
+            try
+            {
+                MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque();
 
+                DataTable dtMoviment = o_MovimentacaoEstoque.SelecionarEntradas();
+
+                return View("EntradasView", dtMoviment);
+            }
+            catch (Exception ex)
+            {
+                TempData["MsgErro"] = $"Erro: {ex.Message}";
+
+                return View("SelecionarView");
+            }
+        }
+        public IActionResult Saidas()
+        {
+            try
+            {
+                MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque();
+
+                DataTable dtMoviment = o_MovimentacaoEstoque.SelecionarSaidas();
+
+                return View("SaidasView", dtMoviment);
+            }
+            catch (Exception ex)
+            {
+                TempData["MsgErro"] = $"Erro: {ex.Message}";
+
+                return View("SaidasView");
+            }
+        }
         //-----------------------------------------------------------
         // INSERIR - EXIBIR
         //----------------------------------------------------------- 
