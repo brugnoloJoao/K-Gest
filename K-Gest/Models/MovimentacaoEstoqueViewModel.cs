@@ -14,7 +14,7 @@ namespace K_Gest.Models
         [Required(ErrorMessage = "Quantidade é obrigatória.")]
         [Range(1, int.MaxValue, ErrorMessage = "Quantidade deve ser maior que zero.")]
         [Display(Name = "Quantidade")]
-        public int QtdMoviment { get; set; }
+        public decimal QtdMoviment { get; set; }
 
         [StringLength(500, ErrorMessage = "O motivo deve ter no máximo 500 caracteres.")]
         [Display(Name = "Motivo")]

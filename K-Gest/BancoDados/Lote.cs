@@ -12,6 +12,7 @@ namespace K_Gest.BancoDados
         public DateTime dtFabricacao;
         public DateTime dtValidade;
         public int numLote;
+        public decimal quantidade;
         public int idInsumo; // Chave Estrangeira
 
         // Propriedade calculada para obter o status em tempo real do lote
@@ -56,13 +57,13 @@ namespace K_Gest.BancoDados
             {
                 return "Vencido"; // A partir do primeiro dia de vencimento
             }
-            else if (diasRestantes == 1)
+            else if (diasRestantes <= 3)
             {
-                return "Alerta"; // Exatamente 1 dia antes da data de vencimento
+                return "Alerta"; // Exatamente 3 dias antes da data de vencimento
             }
-            else if (diasRestantes >= 2 && diasRestantes <= 15)
+            else if (diasRestantes > 3 && diasRestantes <= 15)
             {
-                return "Próximo da data de vencimento"; // De 2 até 15 dias antes
+                return "Próximo da data de vencimento"; // De 3 até 15 dias antes
             }
             else
             {
@@ -77,14 +78,15 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                string cmdSQL = "INSERT INTO Lote(dtFabricacao, dtValidade, numLote, idInsumo) " +
-                                "VALUES(@dtFabricacao, @dtValidade, @numLote, @idInsumo)";
+                string cmdSQL = "INSERT INTO Lote(dtFabricacao, dtValidade, numLote, idInsumo, quantidade) " +
+                                "VALUES(@dtFabricacao, @dtValidade, @numLote, @idInsumo, @quantidade)";
 
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
 
                 cmd.Parameters.AddWithValue("@dtFabricacao", dtFabricacao);
                 cmd.Parameters.AddWithValue("@dtValidade", dtValidade);
                 cmd.Parameters.AddWithValue("@numLote", numLote);
+                cmd.Parameters.AddWithValue("@quantidade", quantidade);
                 cmd.Parameters.AddWithValue("@idInsumo", idInsumo);
 
                 con.Open();
@@ -104,13 +106,14 @@ namespace K_Gest.BancoDados
             {
                 // AJUSTADO: Mudado de 'Lotes' para 'Lote' para manter consistência com o banco
                 string cmdSQL = "UPDATE Lote SET dtFabricacao = @DtFabricacao, dtValidade = @DtValidade, " +
-                                "numLote = @NumLote, idInsumo = @IdInsumo WHERE idLote = @IdLote";
+                                "numLote = @NumLote quantidade = @Quantidade, idInsumo = @IdInsumo WHERE idLote = @IdLote";
 
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
                 cmd.Parameters.AddWithValue("@IdLote", idLote);
                 cmd.Parameters.AddWithValue("@DtFabricacao", dtFabricacao);
                 cmd.Parameters.AddWithValue("@DtValidade", dtValidade);
                 cmd.Parameters.AddWithValue("@NumLote", numLote);
+                cmd.Parameters.AddWithValue("@Quantidade", quantidade);
                 cmd.Parameters.AddWithValue("@IdInsumo", idInsumo);
 
                 con.Open();
@@ -187,7 +190,7 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                string cmdSQL = @"SELECT idLote, dtFabricacao, dtValidade, numLote, idInsumo 
+                string cmdSQL = @"SELECT idLote, dtFabricacao, dtValidade, numLote, quantidade, idInsumo
                           FROM Lote 
                           WHERE idInsumo = @idInsumo 
                           ORDER BY dtValidade ASC";
@@ -214,7 +217,7 @@ namespace K_Gest.BancoDados
             }
             catch (Exception ex)
             {
-                if (con.State == ConnectionState.Open) con.Close();     
+                if (con.State == ConnectionState.Open) con.Close();
                 throw new Exception("Erro em SelecionarPorInsumo: " + ex.Message);
             }
         }
@@ -223,7 +226,7 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                string cmdSQL = "SELECT idLote, dtFabricacao, dtValidade, numLote, idInsumo FROM Lote WHERE idLote = @idLote";
+                string cmdSQL = "SELECT idLote, dtFabricacao, dtValidade, numLote, quantidade, idInsumo FROM Lote WHERE idLote = @idLote";
 
                 SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
                 o_DataAdapter.SelectCommand.Parameters.AddWithValue("@idLote", idLote);
@@ -250,6 +253,88 @@ namespace K_Gest.BancoDados
             {
                 if (con.State == ConnectionState.Open) con.Close();
                 throw new Exception("Erro em SelecionarPorID: " + ex.Message);
+            }
+        }
+        public int ObterIDInsumoPorIDLote()
+        {
+            try
+            {
+                string cmdSQL = "SELECT idInsumo FROM Lote WHERE idLote = @idLote";
+
+                SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
+                o_DataAdapter.SelectCommand.Parameters.AddWithValue("@idLote", idLote);
+
+                con.Open();
+                DataTable dtPesquisa = new DataTable();
+                o_DataAdapter.Fill(dtPesquisa);
+                con.Close();
+
+                if (dtPesquisa.Rows.Count > 0)
+                {
+                    foreach (DataRow row in dtPesquisa.Rows)
+                    {
+                        idInsumo = int.Parse(row["idInsumo"].ToString());
+                    }
+                }
+
+                return idInsumo;
+            }
+            catch (Exception ex)
+            {
+                if (con.State == ConnectionState.Open) con.Close();
+                throw new Exception("Erro em SelecionarPorID: " + ex.Message);
+            }
+        }
+
+        public decimal TotalLotes()
+        {
+            try
+            {
+                string cmdSQL = "SELECT SUM(quantidade) as TotalQuantidade FROM Lote WHERE idInsumo = @idInsumo";
+                SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
+                o_DataAdapter.SelectCommand.Parameters.AddWithValue("@idInsumo", idInsumo);
+                con.Open();
+                DataTable dtPesquisa = new DataTable();
+                o_DataAdapter.Fill(dtPesquisa);
+                con.Close();
+                if (dtPesquisa.Rows.Count > 0 && dtPesquisa.Rows[0]["TotalQuantidade"] != DBNull.Value)
+                {
+                    return Convert.ToDecimal(dtPesquisa.Rows[0]["TotalQuantidade"]);
+                }
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                if (con.State == ConnectionState.Open) con.Close();
+                throw new Exception("Erro em TotalLotes: " + ex.Message);
+            }
+        }
+
+        // --- MÉTODOS DE CONVERSÃO ---
+
+        public decimal ConverterParaBanco(decimal valor, string unidade)
+        {
+            if (string.IsNullOrEmpty(unidade)) return valor;
+            switch (unidade.ToUpper())
+            {
+                case "KG":
+                case "L":
+                    return valor * 1000; // Converte para gramas ou mililitros
+                default:
+                    return valor;
+            }
+        }
+
+        public decimal ConverterParaTela(decimal valor, string unidade)
+        {
+            if (string.IsNullOrEmpty(unidade)) return valor;
+            switch (unidade.ToUpper())
+            {
+                case "KG":
+                case "L":
+                    return valor / 1000; // Converte de volta para KG ou L
+                default:
+                    return valor;
             }
         }
     }
