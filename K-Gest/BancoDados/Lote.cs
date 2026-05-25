@@ -359,7 +359,7 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                string cmdSQL = "SELECT idLote, idInsumo, quantidade FROM Lote WHERE dtValidade < GETDATE() AND quantidade > 0;";
+                string cmdSQL = "SELECT idLote, idInsumo, quantidade FROM Lote WHERE dtValidade < CAST(GETDATE() AS DATE) AND quantidade > 0;";
                 SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
                 con.Open();
                 DataTable dtPesquisa = new DataTable();
@@ -372,7 +372,7 @@ namespace K_Gest.BancoDados
                         MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque
                         {
                             tipoEs = "S",
-                            qtdMoviment = Convert.ToInt32(row["quantidade"].ToString()),
+                            qtdMoviment = Convert.ToDecimal(row["quantidade"].ToString()),
                             motivo = "Descarte Automático - Produto Vencido",
                             idInsumo = Convert.ToInt32(row["idInsumo"].ToString()),
                         };

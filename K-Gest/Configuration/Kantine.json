@@ -5,7 +5,6 @@
 //}
 
 { // Connection string local
->>>>>>> origin/back
   "ConnectionStrings": {
     "StringConexaoSQLServer": "Server=localhost;Database=Kantine;Trusted_Connection=True;Encrypt=False;TrustServerCertificate=True;"
   }
