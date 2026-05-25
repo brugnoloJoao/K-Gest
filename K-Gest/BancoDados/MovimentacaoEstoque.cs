@@ -42,7 +42,7 @@ namespace K_Gest.BancoDados
             try
             {
                 // 1. Calculamos o valor convertido para somar/subtrair no estoque principal
-                decimal qtdReal = CalcularValorConvertido(this.qtdMoviment, unidadeSelecionada);
+                decimal qtdReal = ConverterParaBanco(this.qtdMoviment, unidadeSelecionada);
 
                 // 2. Registra o histórico na tabela Movimentacao_Estoque
                 string cmdMovimentacao = @"INSERT INTO Movimentacao_Estoque(tipoEs, qtdMoviment, motivo, idInsumo) 
@@ -125,22 +125,31 @@ namespace K_Gest.BancoDados
             finally { con.Close(); }
         }
 
-        // --- ADICIONE ESTE MÉTODO AUXILIAR AQUI ---
-        private decimal CalcularValorConvertido(decimal qtd, string unidade)
-        {
-            if (string.IsNullOrEmpty(unidade)) return qtd;
+         // --- MÉTODOS DE CONVERSÃO ---
 
+        public decimal ConverterParaBanco(decimal valor, string unidade)
+        {
+            if (string.IsNullOrEmpty(unidade)) return valor;
             switch (unidade.ToUpper())
             {
                 case "KG":
                 case "L":
-                    return qtd * 1000; // 10 KG vira 10000 G
-                case "G":
-                case "ML":
-                case "UN":
-                    return qtd; // Mantém a base
+                    return valor * 1000; // Converte para gramas ou mililitros
                 default:
-                    return qtd;
+                    return valor;
+            }
+        }
+
+        public decimal ConverterParaTela(decimal valor, string unidade)
+        {
+            if (string.IsNullOrEmpty(unidade)) return valor;
+            switch (unidade.ToUpper())
+            {
+                case "KG":
+                case "L":
+                    return valor / 1000; // Converte de volta para KG ou L
+                default:
+                    return valor;
             }
         }
 

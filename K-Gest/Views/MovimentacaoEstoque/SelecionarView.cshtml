@@ -35,9 +35,10 @@
                 <thead style="background-color: #f8fafc; border-bottom: 2px solid #f1f5f9;">
                     <tr>
                         <th class="ps-4 py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px; width: 100px;">Cód. Mov.</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Cód. Insumo</th>
+                        <th class="py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Nome Insumo</th>
                         <th class="py-3 text-secondary text-uppercase fw-bold text-center" style="font-size: 11px; letter-spacing: 0.5px; width: 140px;">Tipo</th>
                         <th class="py-3 text-secondary text-uppercase fw-bold text-end" style="font-size: 11px; letter-spacing: 0.5px;">Quantidade</th>
+                        <th class="py-3 text-secondary text-uppercase fw-bold text-end" style="font-size: 11px; letter-spacing: 0.5px; width: 150px;">Unidade de Medida</th>
                         <th class="py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px; padding-left: 30px;">Motivo / Justificativa</th>
                         <th class="pe-4 py-3 text-secondary text-uppercase fw-bold text-center" style="font-size: 11px; letter-spacing: 0.5px; width: 150px;">Ações</th>
                     </tr>
@@ -46,7 +47,7 @@
                     @foreach (DataRow row in Model.Rows)
                     {
                         var tipo = row["tipoEs"].ToString();
-                        var quantidade = Convert.ToDecimal(row["qtdMoviment"]);
+                        var qtdMoviment = Convert.ToDecimal(row["qtdMoviment"]);
 
                         <tr>
                             <td class="ps-4 py-3">
@@ -54,8 +55,7 @@
                             </td>
 
                             <td class="py-3">
-                                <span class="fw-semibold text-dark fs-6">@row["idInsumo"]</span>
-                                @* Nota: Se a sua Query trouxer o nome do insumo via JOIN, substitua por row["nomeInsumo"] *@
+                                <span class="fw-semibold text-dark fs-6">@row["nomeInsumo"]</span>
                             </td>
 
                             <td class="text-center py-3">
@@ -74,7 +74,11 @@
                             </td>
 
                             <td class="text-end py-3 fw-bold text-dark">
-                                @quantidade.ToString("N2")
+                                @(row["unidadeMed"] == "UN" ? qtdMoviment.ToString("N0") : qtdMoviment.ToString("N2"))
+                            </td>
+
+                            <td class="text-end py-3 fw-bold text-success">
+                                <span class="badge bg-light text-secondary border px-2 py-1.5 font-monospace" style="border-radius: 6px; font-size: 12px;">@row["unidadeMed"]</span>
                             </td>
 
                             <td class="py-3 text-secondary style="padding-left: 30px;" style="font-size: 14px;">

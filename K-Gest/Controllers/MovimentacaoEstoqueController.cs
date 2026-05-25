@@ -20,6 +20,11 @@ namespace K_Gest.Controllers
 
                 DataTable dtMoviment = o_MovimentacaoEstoque.SelecionarTodos();
 
+                foreach (DataRow row in dtMoviment.Rows)
+                {
+                    row["qtdMoviment"] = o_MovimentacaoEstoque.ConverterParaTela(Convert.ToDecimal(row["qtdMoviment"]), row["unidadeMed"].ToString());
+                }
+
                 return View("SelecionarView", dtMoviment);
             }
             catch (Exception ex)
@@ -37,6 +42,11 @@ namespace K_Gest.Controllers
 
                 DataTable dtMoviment = o_MovimentacaoEstoque.SelecionarEntradas();
 
+                foreach (DataRow row in dtMoviment.Rows)
+                {
+                    row["qtdMoviment"] = o_MovimentacaoEstoque.ConverterParaTela(Convert.ToDecimal(row["qtdMoviment"]), row["unidadeMed"].ToString());
+                }
+
                 return View("EntradasView", dtMoviment);
             }
             catch (Exception ex)
@@ -53,6 +63,11 @@ namespace K_Gest.Controllers
                 MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque();
 
                 DataTable dtMoviment = o_MovimentacaoEstoque.SelecionarSaidas();
+
+                foreach (DataRow row in dtMoviment.Rows)
+                {
+                    row["qtdMoviment"] = o_MovimentacaoEstoque.ConverterParaTela(Convert.ToDecimal(row["qtdMoviment"]), row["unidadeMed"].ToString());
+                }
 
                 return View("SaidasView", dtMoviment);
             }

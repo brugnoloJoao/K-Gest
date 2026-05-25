@@ -37,6 +37,7 @@
                         <th class="ps-4 py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px; width: 120px;">ID Mov.</th>
                         <th class="py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Insumo</th>
                         <th class="py-3 text-secondary text-uppercase fw-bold text-end" style="font-size: 11px; letter-spacing: 0.5px; width: 150px;">Qtd. Movimentada</th>
+                        <th class="py-3 text-secondary text-uppercase fw-bold text-end" style="font-size: 11px; letter-spacing: 0.5px; width: 150px;">Unidade de Medida</th>
                         <th class="py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px; padding-left: 40px;">Motivo / Justificativa</th>
                         <th class="pe-4 py-3 text-secondary text-uppercase fw-bold text-center" style="font-size: 11px; letter-spacing: 0.5px; width: 150px;">Ações</th>
                     </tr>
@@ -67,7 +68,10 @@
                             </td>
 
                             <td class="text-end py-3 fw-bold text-danger">
-                                - @qtdMoviment.ToString("N2")
+                                - @(row["unidadeMed"] == "UN" ? qtdMoviment.ToString("N0") : qtdMoviment.ToString("N2"))
+                            </td>
+                            <td class="text-end py-3 fw-bold text-danger">
+                                <span class="badge bg-light text-secondary border px-2 py-1.5 font-monospace" style="border-radius: 6px; font-size: 12px;">@row["unidadeMed"]</span>
                             </td>
 
                             <td class="py-3 text-secondary small" style="padding-left: 40px;">
