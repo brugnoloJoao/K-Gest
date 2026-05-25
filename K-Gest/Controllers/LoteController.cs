@@ -121,7 +121,6 @@ namespace K_Gest.Controllers
                         idInsumo = vm.IdInsumo,
                         
                     };
-
                     
                     Insumos o_Insumo = new Insumos();
                     o_Insumo.idInsumo = vm.IdInsumo;
@@ -236,20 +235,50 @@ namespace K_Gest.Controllers
         // ==========================================
         public IActionResult Excluir(int id)
         {
-            
             try
             {
                 Lote o_Lote = new Lote { idLote = id };
-                int idInsumo = o_Lote.ObterIDInsumoPorIDLote();
-                o_Lote.Excluir();
-                TempData["MsgSucesso"] = "Lote excluído com sucesso!";
-                return RedirectToAction("GerenciarLotes", idInsumo);
 
+                // Pega o idInsumo ANTES de excluir o lote
+                int idInsumo = o_Lote.ObterIDInsumoPorIDLote();
+
+                Insumos o_Insumo = new Insumos { idInsumo = idInsumo };
+
+                // Pega o estoque atual ANTES da exclusão/movimentação
+                decimal estoqueAtual = o_Insumo.ObterEstoqueAtual();
+
+                // Exclui o lote do banco de dados
+                o_Lote.Excluir();
+
+                // Calcula a nova soma dos lotes (agora sem o lote excluído)
+                // É importante passar o idInsumo para a instância do lote saber o que somar
+                o_Lote.idInsumo = idInsumo;
+                decimal somaLotes = o_Lote.TotalLotes();
+
+                // Lógica da Movimentação de Saída
+                // Se o estoque atual for MAIOR que a soma restante dos lotes, precisamos tirar a diferença
+                if (estoqueAtual - somaLotes > 0)
+                {
+                    MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque
+                    {
+                        tipoEs = "S", // "S" para Saída
+                        qtdMoviment = estoqueAtual - somaLotes, // A diferença exata que precisa ser baixada
+                        motivo = "Ajuste automático de estoque após exclusão de lote",
+                        idInsumo = idInsumo
+                    };
+                    o_MovimentacaoEstoque.InserirPorLote();
+                }
+
+                TempData["MsgSucesso"] = "Lote excluído com sucesso!";
+
+                // Pequeno ajuste aqui: usando object de rota (new { id = ... }) para garantir que a URL seja montada corretamente
+                return RedirectToAction("GerenciarLotes", new { id = idInsumo });
             }
             catch (Exception ex)
             {
                 TempData["MsgErro"] = "Erro ao excluir: " + ex.Message;
             }
+
             return RedirectToAction("Selecionar");
         }
 

@@ -1,3 +1,4 @@
+using K_Gest.Services;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 
@@ -9,6 +10,9 @@ builder.Services.AddControllersWithViews();
 var cultureInfo = new System.Globalization.CultureInfo("en-US");
 System.Globalization.CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
+// Registra o serviço de segundo plano
+builder.Services.AddHostedService<VerificadorValidadeService>();
 
 var app = builder.Build();
 

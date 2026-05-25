@@ -309,7 +309,24 @@ namespace K_Gest.BancoDados
                 throw new Exception("Erro em TotalLotes: " + ex.Message);
             }
         }
-
+        public void AtualizarQuantidade()
+        {
+            try
+            {
+                string cmdSQL = "UPDATE Lote SET quantidade = @Quantidade WHERE idLote = @IdLote";
+                SqlCommand cmd = new SqlCommand(cmdSQL, con);
+                cmd.Parameters.AddWithValue("@IdLote", idLote);
+                cmd.Parameters.AddWithValue("@Quantidade", quantidade);
+                con.Open();
+                cmd.ExecuteNonQuery();
+                con.Close();
+            }
+            catch (Exception ex)
+            {
+                if (con.State == ConnectionState.Open) con.Close();
+                throw new Exception("Erro SQL ao atualizar quantidade: " + ex.Message);
+            }
+        }
         // --- MÉTODOS DE CONVERSÃO ---
 
         public decimal ConverterParaBanco(decimal valor, string unidade)
@@ -335,6 +352,47 @@ namespace K_Gest.BancoDados
                     return valor / 1000; // Converte de volta para KG ou L
                 default:
                     return valor;
+            }
+        }
+
+        public int ProcessarLotesVencidos()
+        {
+            try
+            {
+                string cmdSQL = "SELECT idLote, idInsumo, quantidade FROM Lote WHERE dtValidade < GETDATE() AND quantidade > 0;";
+                SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
+                con.Open();
+                DataTable dtPesquisa = new DataTable();
+                o_DataAdapter.Fill(dtPesquisa);
+                con.Close();
+                if(dtPesquisa.Rows.Count > 0)
+                {
+                    foreach (DataRow row in dtPesquisa.Rows)
+                    {
+                        MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque
+                        {
+                            tipoEs = "S",
+                            qtdMoviment = Convert.ToInt32(row["quantidade"].ToString()),
+                            motivo = "Descarte Automático - Produto Vencido",
+                            idInsumo = Convert.ToInt32(row["idInsumo"].ToString()),
+                        };
+                        o_MovimentacaoEstoque.InserirPorLote(); // Registra a saída do estoque por motivo de vencimento
+
+                        Lote o_Lote = new Lote
+                        {
+                            idLote = Convert.ToInt32(row["idLote"].ToString()),
+                            quantidade = 0, // Zera a quantidade do lote vencido
+                        };
+                        o_Lote.AtualizarQuantidade(); // Método para atualizar apenas a quantidade do lote
+                    }
+                    return dtPesquisa.Rows.Count;
+                }
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                if (con.State == ConnectionState.Open) con.Close();
+                throw new Exception("Erro ao processar lotes vencidos: " + ex.Message);
             }
         }
     }
