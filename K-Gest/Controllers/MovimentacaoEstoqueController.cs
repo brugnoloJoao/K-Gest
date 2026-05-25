@@ -120,12 +120,12 @@ namespace K_Gest.Controllers
         {
             try
             {
-                MovimentacaoEstoqueViewModel o_MovimentVM = new MovimentacaoEstoqueViewModel();
+                MovimentacaoEstoqueViewModel o_MovimentacaoEstoqueVM = new MovimentacaoEstoqueViewModel();
 
                 // Passamos via ViewBag para preencher um <select>
-                o_MovimentVM.ListaInsumos = ObterInsumos();
+                o_MovimentacaoEstoqueVM.ListaInsumos = ObterInsumos();
 
-                return View("InserirEntradaView", o_MovimentVM);
+                return View("InserirEntradaView", o_MovimentacaoEstoqueVM);
             }
             catch (Exception ex)
             {
@@ -137,7 +137,7 @@ namespace K_Gest.Controllers
         // INSERIR - PROCESSAR
         //-----------------------------------------------------------
         [HttpPost]
-        public IActionResult InserirProcessar(MovimentacaoEstoqueViewModel o_MovimentacaoVM)
+        public IActionResult InserirProcessar(MovimentacaoEstoqueViewModel o_MovimentacaoEstoqueVM)
         {
             try
             {
@@ -146,24 +146,24 @@ namespace K_Gest.Controllers
                     MovimentacaoEstoque o_Movimentacao = new MovimentacaoEstoque();
 
                     // Preenche os dados básicos
-                    o_Movimentacao.tipoEs = o_MovimentacaoVM.TipoEs;
-                    o_Movimentacao.qtdMoviment = o_MovimentacaoVM.QtdMoviment;
-                    o_Movimentacao.motivo = o_MovimentacaoVM.Motivo;
-                    o_Movimentacao.idInsumo = o_MovimentacaoVM.IdInsumo;
+                    o_Movimentacao.tipoEs = o_MovimentacaoEstoqueVM.TipoEs;
+                    o_Movimentacao.qtdMoviment = o_MovimentacaoEstoqueVM.QtdMoviment;
+                    o_Movimentacao.motivo = o_MovimentacaoEstoqueVM.Motivo;
+                    o_Movimentacao.idInsumo = o_MovimentacaoEstoqueVM.IdInsumo;
 
                     // AGORA VOCÊ PASSA A UNIDADE AQUI DENTRO DOS PARÊNTESES
                     // Isso resolve o erro de "nenhum argumento fornecido"
-                    o_Movimentacao.Inserir(o_MovimentacaoVM.UnidadeMed);
+                    o_Movimentacao.Inserir(o_MovimentacaoEstoqueVM.UnidadeMed);
 
                     TempData["MsgSucesso"] = "Movimentação realizada!";
                     return RedirectToAction("Selecionar");
                 }
-                return View("InserirExibir", o_MovimentacaoVM);
+                return View("InserirExibir", o_MovimentacaoEstoqueVM);
             }
             catch (Exception ex)
             {
                 TempData["MsgErro"] = ex.Message;
-                return View("InserirExibir", o_MovimentacaoVM);
+                return View("InserirExibir", o_MovimentacaoEstoqueVM);
             }
         }
 
@@ -265,6 +265,9 @@ namespace K_Gest.Controllers
                 o_MovimentacaoEstoqueVM.Motivo = pesqSetores.Rows[0]["Motivo"].ToString();
                 o_MovimentacaoEstoqueVM.IdInsumo = Convert.ToInt32(pesqSetores.Rows[0]["IdInsumo"]);
 
+                // Passamos via ViewBag para preencher um <select>
+                o_MovimentacaoEstoqueVM.ListaInsumos = ObterInsumos();
+
                 return View("ExcluirExibirView", o_MovimentacaoEstoqueVM);
             }
             catch (Exception ex)
@@ -286,7 +289,7 @@ namespace K_Gest.Controllers
 
                 o_MovimentacaoEstoque.Excluir();
 
-                TempData["MsgSucesso"] = "Setor excluído com sucesso!";
+                TempData["MsgSucesso"] = "Movimentação excluída com sucesso!";
                 return RedirectToAction("Selecionar");
             }
             catch (Exception ex)
