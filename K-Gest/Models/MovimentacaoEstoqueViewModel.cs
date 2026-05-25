@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace K_Gest.Models
 {
@@ -27,5 +28,7 @@ namespace K_Gest.Models
 
         // PROPRIEDADE NOVA: Necessária para a conversão de unidades (KG, L, G, ML)
         public string UnidadeMed { get; set; } = string.Empty;
+
+        public List<SelectListItem> ListaInsumos { get; set; }
     }
 }

@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Data;
-using K_Gest.BancoDados;
+﻿using K_Gest.BancoDados;
 using K_Gest.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Data;
 
 
 namespace K_Gest.Controllers
@@ -85,14 +86,12 @@ namespace K_Gest.Controllers
         {
             try
             {
-                // Precisamos buscar os insumos para o usuário selecionar na View
-                Insumos o_Insumos = new Insumos();
-                DataTable dtInsumos = o_Insumos.SelecionarTodos();
+                MovimentacaoEstoqueViewModel o_MovimentVM = new MovimentacaoEstoqueViewModel();
 
                 // Passamos via ViewBag para preencher um <select>
-                ViewBag.ListaInsumos = dtInsumos;
+                o_MovimentVM.ListaInsumos = ObterInsumos();
 
-                return View("InserirExibirView");
+                return View("InserirExibirView", o_MovimentVM);
             }
             catch (Exception ex)
             {
@@ -100,7 +99,40 @@ namespace K_Gest.Controllers
                 return RedirectToAction("Selecionar");
             }
         }
+        public IActionResult InserirSaida()
+        {
+            try
+            {
+                MovimentacaoEstoqueViewModel o_MovimentVM = new MovimentacaoEstoqueViewModel();
 
+                // Passamos via ViewBag para preencher um <select>
+                o_MovimentVM.ListaInsumos = ObterInsumos();
+
+                return View("InserirSaidaView", o_MovimentVM);
+            }
+            catch (Exception ex)
+            {
+                TempData["MsgErro"] = $"Erro ao carregar insumos: {ex.Message}";
+                return RedirectToAction("Saida");
+            }
+        }
+        public IActionResult InserirEntrada()
+        {
+            try
+            {
+                MovimentacaoEstoqueViewModel o_MovimentVM = new MovimentacaoEstoqueViewModel();
+
+                // Passamos via ViewBag para preencher um <select>
+                o_MovimentVM.ListaInsumos = ObterInsumos();
+
+                return View("InserirEntradaView", o_MovimentVM);
+            }
+            catch (Exception ex)
+            {
+                TempData["MsgErro"] = $"Erro ao carregar insumos: {ex.Message}";
+                return RedirectToAction("Saida");
+            }
+        }
         //-----------------------------------------------------------
         // INSERIR - PROCESSAR
         //-----------------------------------------------------------
@@ -280,7 +312,20 @@ namespace K_Gest.Controllers
 
         //    return View("ListaComprasView", dtParaComprar);
         //}
+        private List<SelectListItem> ObterInsumos()
+        {
+            // Nota: Conforme o código anterior, sua classe de dados chama-se 'Insumos'
+            DataTable dt = new Insumos().SelecionarTodos();
+
+            if (dt == null) return new List<SelectListItem>();
+
+            return (from DataRow dr in dt.Rows
+                    select new SelectListItem
+                    {
+                        // Adapte a string de coluna se no seu banco de insumos for minúsculo (ex: "idInsumo" / "nomeInsumo")
+                        Value = dr["idInsumo"].ToString(),
+                        Text = $"{dr["nomeInsumo"]} ({dr["unidadeMed"]})"
+                    }).ToList();
+        }
     }
-
-
 }

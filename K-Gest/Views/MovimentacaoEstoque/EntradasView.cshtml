@@ -16,7 +16,7 @@
                 <p class="text-muted small m-0 mt-1">Histórico de abastecimento e incrementos de insumos no inventário</p>
             </div>
         </div>
-        <a asp-action="InserirExibir" class="btn-salmon-action d-flex align-items-center gap-2 shadow-sm">
+        <a asp-action="InserirEntrada" class="btn-salmon-action d-flex align-items-center gap-2 shadow-sm">
             <i class="bi bi-plus-lg"></i> Nova Entrada
         </a>
     </div>
@@ -79,13 +79,6 @@
 
                             <td class="pe-4 text-center py-3">
                                 <div class="d-flex justify-content-center gap-2">
-                                    <a asp-action="AlterarExibir"
-                                       asp-route-idEstoque="@idEstoque"
-                                       class="btn-action-modern btn-edit-salmon"
-                                       title="Editar Entrada">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-
                                     <a asp-action="ExcluirExibir"
                                        asp-route-idEstoque="@idEstoque"
                                        class="btn-action-modern btn-delete-salmon"
