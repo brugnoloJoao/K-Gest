@@ -1,7 +1,7 @@
-﻿@model K_Gest.Models.InsumosViewModel
+﻿@model K_Gest.Models.MovimentacaoEstoqueViewModel
 
 @{
-    ViewData["Title"] = "Cadastrar Novo Insumo";
+    ViewData["Title"] = "Nova Movimentação de Estoque";
 }
 
 <div class="container-fluid px-4 py-4" style="max-width: 1000px; margin: 0 auto;">
@@ -14,11 +14,11 @@
 
     <div class="mb-4 d-flex align-items-center gap-3">
         <div class="icon-shape-salmon">
-            <i class="bi bi-plus-lg"></i>
+            <i class="bi bi-arrow-left-right"></i>
         </div>
         <div>
-            <h2 class="fw-bold text-dark m-0" style="font-size: 24px; letter-spacing: -0.5px;">Novo Insumo</h2>
-            <p class="text-muted small m-0 mt-1">Insira os dados abaixo para registrar a matéria-prima ou mercadoria no estoque</p>
+            <h2 class="fw-bold text-dark m-0" style="font-size: 24px; letter-spacing: -0.5px;">Nova Movimentação</h2>
+            <p class="text-muted small m-0 mt-1">Registre entradas ou saídas de materiais para manter o controle do saldo</p>
         </div>
     </div>
 
@@ -26,66 +26,64 @@
         <form asp-action="InserirProcessar" method="post">
 
             <h5 class="text-dark fw-bold mb-4 pb-2" style="font-size: 15px; border-bottom: 2px solid #f1f5f9;">
-                <i class="bi bi-info-circle me-1 text-salmon"></i> Informações Básicas
+                <i class="bi bi-box-seam me-1 text-salmon"></i> Detalhes do Item
             </h5>
 
             <div class="row g-4">
-                <div class="col-md-6">
-                    <label class="form-label text-secondary fw-semibold small mb-2 text-uppercase">Nome do Insumo</label>
+                <div class="col-md-8">
+                    <label class="form-label text-secondary fw-semibold small mb-2 text-uppercase">Insumo / Produto</label>
                     <div class="input-group-custom">
-                        <i class="bi bi-tag-fill text-salmon input-icon"></i>
-                        <input asp-for="NomeInsumo" class="form-control-custom" placeholder="Ex: Farinha de Trigo ou Refrigerante" />
-                    </div>
-                    <span asp-validation-for="NomeInsumo" class="text-danger small mt-1 d-block fw-medium"></span>
-                </div>
-
-                <div class="col-md-6">
-                    <label asp-for="UnidadeMed" class="form-label text-secondary fw-semibold small mb-2 text-uppercase">Unidade de Medida</label>
-                    <div class="input-group-custom">
-                        <i class="bi bi-box-seam-fill text-salmon input-icon"></i>
-                        <select asp-for="UnidadeMed" class="form-select-custom">
-                            <option value="">-- Selecione uma Unidade --</option>
-                            <option value="KG">Quilograma (KG)</option>
-                            <option value="G">Grama (G)</option>
-                            <option value="L">Litro (L)</option>
-                            <option value="ML">Mililitro (ML)</option>
-                            <option value="UN">Unidade (UN)</option>
+                        <i class="bi bi-search text-salmon input-icon"></i>
+                        <select asp-for="IdInsumo" class="form-select-custom" asp-items="@Model.ListaInsumos">
+                            <option value="">-- Selecione o Insumo para movimentar --</option>
                         </select>
                     </div>
-                    <div class="form-text text-muted mt-1" style="font-size: 11px;">
-                        <i class="bi bi-lightning-charge text-warning"></i> Valores em <strong>KG</strong> e <strong>L</strong> se adaptam automaticamente.
+                    <span asp-validation-for="IdInsumo" class="text-danger small mt-1 d-block fw-medium"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label text-secondary fw-semibold small mb-2 text-uppercase">Tipo</label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-arrow-down-up text-salmon input-icon"></i>
+                        <select asp-for="TipoEs" class="form-select-custom">
+                            <option value="">-- Tipo --</option>
+                            <option value="E">Entrada (+)</option>
+                            <option value="S">Saída (-)</option>
+                        </select>
                     </div>
-                    <span asp-validation-for="UnidadeMed" class="text-danger small mt-1 d-block fw-medium"></span>
+                    <span asp-validation-for="TipoEs" class="text-danger small mt-1 d-block fw-medium"></span>
                 </div>
             </div>
 
             <h5 class="text-dark fw-bold mt-5 mb-4 pb-2" style="font-size: 15px; border-bottom: 2px solid #f1f5f9;">
-                <i class="bi bi-boxes me-1 text-salmon"></i> Parâmetros de Inventário
+                <i class="bi bi-calculator me-1 text-salmon"></i> Quantidade e Justificativa
             </h5>
 
             <div class="row g-4">
-                <div class="col-md-6">
-                    <label class="form-label text-secondary fw-semibold small mb-2 text-uppercase">Estoque Inicial</label>
+                <div class="col-md-4">
+                    <label class="form-label text-secondary fw-semibold small mb-2 text-uppercase">Quantidade</label>
                     <div class="input-group-custom">
-                        <i class="bi bi-stack text-salmon input-icon"></i>
-                        <input asp-for="EstoqueAtual" type="number" step="0.01" lang="en-US" class="form-control-custom font-monospace" placeholder="0.00" />
+                        <i class="bi bi-plus-circle-fill text-salmon input-icon"></i>
+                        <input asp-for="QtdMoviment" type="number" step="0.01" lang="en-US" class="form-control-custom font-monospace" placeholder="0.00" />
                     </div>
-                    <span asp-validation-for="EstoqueAtual" class="text-danger small mt-1 d-block fw-medium"></span>
+                    <span asp-validation-for="QtdMoviment" class="text-danger small mt-1 d-block fw-medium"></span>
                 </div>
 
-                <div class="col-md-6">
-                    <label class="form-label text-secondary fw-semibold small mb-2 text-uppercase">Ponto de Pedido (Mínimo Crítico)</label>
+                <div class="col-md-8">
+                    <label class="form-label text-secondary fw-semibold small mb-2 text-uppercase">Motivo / Justificativa</label>
                     <div class="input-group-custom">
-                        <i class="bi bi-exclamation-circle-fill text-salmon input-icon"></i>
-                        <input asp-for="PontoPedido" type="number" step="0.01" lang="en-US" class="form-control-custom font-monospace" placeholder="0.00" />
+                        <i class="bi bi-chat-left-text-fill text-salmon input-icon"></i>
+                        <input asp-for="Motivo" class="form-control-custom" placeholder="Ex: Compra mensal, Desperdício, Ajuste de inventário" />
                     </div>
-                    <span asp-validation-for="PontoPedido" class="text-danger small mt-1 d-block fw-medium"></span>
+                    <span asp-validation-for="Motivo" class="text-danger small mt-1 d-block fw-medium"></span>
                 </div>
             </div>
 
             <div class="d-flex justify-content-end align-items-center gap-2 mt-5 pt-3" style="border-top: 1px solid #f1f5f9;">
                 <a asp-action="Selecionar" class="btn-cancel">Cancelar</a>
-                <button type="submit" class="btn-submit shadow-sm"><i class="bi bi-check-lg me-1"></i> Salvar Registro</button>
+                <button type="submit" class="btn-submit shadow-sm">
+                    <i class="bi bi-check-lg me-1"></i> Confirmar Movimentação
+                </button>
             </div>
         </form>
     </div>
@@ -93,13 +91,12 @@
 
 <style>
     :root {
-        --salmon-primary: #FF8C69; /* Salmão */
-        --salmon-hover: #fa7a52; /* Salmão Darker */
-        --salmon-soft: #fff1ed; /* Salmão Fundo sutil */
+        --salmon-primary: #FF8C69;
+        --salmon-hover: #fa7a52;
+        --salmon-soft: #fff1ed;
         --text-dark: #334155;
     }
 
-    /* Formatação do Ícone do Topo */
     .icon-shape-salmon {
         width: 46px;
         height: 46px;
@@ -112,7 +109,6 @@
         font-size: 18px;
     }
 
-    /* Inputs Customizados */
     .input-group-custom {
         position: relative;
         display: flex;
@@ -151,7 +147,6 @@
             outline: none;
         }
 
-    /* Botão Salvar (Salmão) */
     .btn-submit {
         background-color: var(--salmon-primary);
         color: #ffffff;
@@ -171,7 +166,6 @@
             box-shadow: 0 6px 15px rgba(255, 140, 105, 0.25) !important;
         }
 
-    /* Botão Cancelar */
     .btn-cancel {
         background-color: #f1f5f9;
         color: #64748b;
@@ -203,7 +197,7 @@
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02) !important;
     }
 
-    /* Remove Setas nativas dos inputs numéricos */
+    /* Remove setas de input number */
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
         -webkit-appearance: none;

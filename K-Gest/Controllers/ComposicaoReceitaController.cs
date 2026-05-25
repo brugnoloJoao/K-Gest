@@ -8,15 +8,78 @@ namespace K_Gest.Controllers
 {
     public class ComposicaoReceitaController : Controller
     {
-        // --- LISTAGEM ---
         public IActionResult Selecionar()
         {
             ComposicaoReceita o_Comp = new ComposicaoReceita();
-            DataTable dt = o_Comp.SelecionarTodos();
+            DataTable dt = o_Comp.SelecionarAgrupado();
             return View("SelecionarView", dt);
         }
 
-        // --- INSERIR ---
+        [HttpGet]
+        public JsonResult ObterIngredientesJson(int id)
+        {
+            ComposicaoReceita o_Comp = new ComposicaoReceita();
+            DataTable dt = o_Comp.SelecionarPorReceita(id);
+
+            var lista = new List<object>();
+            foreach (DataRow row in dt.Rows)
+            {
+                decimal qtdOriginal = Convert.ToDecimal(row["qtdNecessaria"]);
+                string unidadeEx = row["unidadeExibicao"].ToString() ?? "";
+                decimal qtdEx = (unidadeEx.ToUpper() == "KG" || unidadeEx.ToUpper() == "L") ? qtdOriginal / 1000 : qtdOriginal;
+
+                lista.Add(new
+                {
+                    idComp = row["idComposicao"].ToString(),
+                    nomeInsumo = row["nomeInsumo"].ToString(),
+                    // Formata removendo zeros desnecessários à direita na string
+                    qtdEx = qtdEx.ToString("G29", System.Globalization.CultureInfo.CurrentCulture),
+                    unidadeEx = unidadeEx
+                });
+            }
+            return Json(lista);
+        }
+
+        [HttpGet]
+        public IActionResult EditarFicha(int id)
+        {
+            try
+            {
+                ComposicaoReceita o_Comp = new ComposicaoReceita();
+                DataTable dtItens = o_Comp.SelecionarPorReceita(id);
+
+                var vm = new ComposicaoReceitaViewModel
+                {
+                    IdReceita = id,
+                    ListaReceitas = ObterReceitas(),
+                    ListaInsumos = ObterInsumos(),
+                    Itens = new List<ItemComposicao>()
+                };
+
+                foreach (DataRow row in dtItens.Rows)
+                {
+                    vm.Itens.Add(new ItemComposicao
+                    {
+                        IdInsumo = Convert.ToInt32(row["idInsumo"]),
+                        NomeInsumo = row["nomeInsumo"].ToString(),
+                        Quantidade = Convert.ToDecimal(row["qtdNecessaria"]),
+                        UnidadeExibicao = row["unidadeExibicao"].ToString()
+                    });
+                }   
+                return View("InserirExibirView", vm);
+            }
+            catch (Exception ex)
+            {
+                return Content("Erro ao carregar: " + ex.Message);
+            }
+        }
+
+        public IActionResult ExcluirIngrediente(int id)
+        {
+            new ComposicaoReceita().ExcluirIngredienteIndividual(id);
+            return RedirectToAction("Selecionar");
+        }
+
         public IActionResult InserirExibir()
         {
             var vm = new ComposicaoReceitaViewModel
@@ -33,52 +96,26 @@ namespace K_Gest.Controllers
             ModelState.Remove("ListaReceitas");
             ModelState.Remove("ListaInsumos");
 
-            if (vm.IdReceita > 0 && vm.IdInsumo > 0)
+            if (vm.IdReceita > 0 && vm.Itens != null && vm.Itens.Count > 0)
             {
                 try
                 {
-                    ComposicaoReceita o_Comp = new ComposicaoReceita
-                    {
-                        qtdNecessaria = vm.QtdNecessaria,
-                        idReceita = vm.IdReceita,
-                        idInsumo = vm.IdInsumo
-                    };
-                    o_Comp.Inserir();
-                    TempData["MsgSucesso"] = "Salvo com sucesso!";
+                    ComposicaoReceita o_Comp = new ComposicaoReceita();
+                    o_Comp.InserirFichaTecnica(vm.IdReceita, vm.Itens);
+
+                    TempData["MsgSucesso"] = "Ficha Técnica salva com sucesso!";
                     return RedirectToAction("Selecionar");
                 }
                 catch (Exception ex) { TempData["MsgErro"] = ex.Message; }
             }
+            else
+            {
+                TempData["MsgErro"] = "Por favor, selecione a receita e adicione os ingredientes.";
+            }
+
             vm.ListaReceitas = ObterReceitas();
             vm.ListaInsumos = ObterInsumos();
             return View("InserirExibirView", vm);
-        }
-
-        // --- ALTERAR ---
-        public IActionResult AlterarExibir(int id) // 'id' deve vir da sua tabela na SelecionarView
-        {
-            try
-            {
-                ComposicaoReceita o_Comp = new ComposicaoReceita { idComposicao = id };
-                DataTable dt = o_Comp.SelecionarPorID();
-
-                if (dt != null && dt.Rows.Count > 0)
-                {
-                    DataRow row = dt.Rows[0];
-                    var vm = new ComposicaoReceitaViewModel
-                    {
-                        IdComposicao = Convert.ToInt32(row["idComposicao"]),
-                        IdReceita = Convert.ToInt32(row["idReceita"]),
-                        IdInsumo = Convert.ToInt32(row["idInsumo"]),
-                        QtdNecessaria = Convert.ToDecimal(row["qtdNecessaria"]),
-                        ListaReceitas = ObterReceitas(),
-                        ListaInsumos = ObterInsumos()
-                    };
-                    return View("AlterarExibirView", vm);
-                }
-            }
-            catch (Exception ex) { TempData["MsgErro"] = ex.Message; }
-            return RedirectToAction("Selecionar");
         }
 
         [HttpPost]
@@ -89,27 +126,28 @@ namespace K_Gest.Controllers
 
             try
             {
-                ComposicaoReceita o_Comp = new ComposicaoReceita
+                if (vm.IdReceita > 0)
                 {
-                    idComposicao = vm.IdComposicao,
-                    idReceita = vm.IdReceita,
-                    idInsumo = vm.IdInsumo,
-                    qtdNecessaria = vm.QtdNecessaria
-                };
-                o_Comp.Alterar();
-                TempData["MsgSucesso"] = "Alterado com sucesso!";
-                return RedirectToAction("Selecionar");
+                    ComposicaoReceita o_Comp = new ComposicaoReceita();
+                    var itensSalvar = vm.Itens ?? new List<ItemComposicao>();
+
+                    o_Comp.AtualizarFichaTecnica(vm.IdReceita, itensSalvar);
+
+                    TempData["MsgSucesso"] = "Ficha Técnica atualizada com sucesso!";
+                    return RedirectToAction("Selecionar");
+                }
+                else
+                {
+                    TempData["MsgErro"] = "Receita inválida.";
+                }
             }
-            catch (Exception ex)
-            {
-                TempData["MsgErro"] = ex.Message;
-                vm.ListaReceitas = ObterReceitas();
-                vm.ListaInsumos = ObterInsumos();
-                return View("AlterarExibirView", vm);
-            }
+            catch (Exception ex) { TempData["MsgErro"] = ex.Message; }
+
+            vm.ListaReceitas = ObterReceitas();
+            vm.ListaInsumos = ObterInsumos();
+            return View("InserirExibirView", vm);
         }
 
-        // --- EXCLUIR ---
         public IActionResult Excluir(int id)
         {
             try
@@ -122,7 +160,6 @@ namespace K_Gest.Controllers
             return RedirectToAction("Selecionar");
         }
 
-        // --- AUXILIARES ---
         private List<SelectListItem> ObterReceitas()
         {
             DataTable dt = new Receitas().SelecionarTodos();
@@ -141,8 +178,7 @@ namespace K_Gest.Controllers
                     select new SelectListItem
                     {
                         Value = dr["idInsumo"].ToString(),
-                        
-                        Text = $"{dr["nomeInsumo"]} ({dr["unidadeMed"]})"
+                        Text = $"{dr["nomeInsumo"]}"
                     }).ToList();
         }
     }

@@ -1,43 +1,200 @@
 ﻿@model K_Gest.Models.InsumosViewModel
 
-<div class="container mt-4">
-    <h2>Alterar Insumo</h2>
-    <hr />
-    <form asp-action="AlterarProcessar" method="post">
-        @* CAMPO OBRIGATÓRIO PARA O UPDATE FUNCIONAR *@
-        <input type="hidden" asp-for="IdInsumo" />
+@{
+    ViewData["Title"] = "Editar Insumo";
+}
 
-        <div class="form-group mb-3">
-            <label>Nome do Insumo</label>
-            <input asp-for="NomeInsumo" class="form-control" required />
-        </div>
+<div class="container-fluid px-4 py-4" style="max-width: 900px; margin: 0 auto;">
 
-        <div class="form-group mb-3">
-            <label>Unidade de Medida</label>
-            <select asp-for="UnidadeMed" class="form-control" required>
-                <option value="KG">Quilograma (KG)</option>
-                <option value="UN">Unidade (UN)</option>
-                <option value="L">Litro (L)</option>
-                <option value="G">Grama (G)</option>
-            </select>
-        </div>
+    @* Navegação de Retorno *@
+    <div class="mb-3">
+        <a asp-action="Selecionar" class="text-decoration-none small fw-semibold d-inline-flex align-items-center gap-1 back-link">
+            <i class="bi bi-chevron-left"></i> Voltar para a lista
+        </a>
+    </div>
 
-        <div class="form-group mb-3">
-            <label>Estoque Atual</label>
-            @* Mudamos para type="text" para o navegador não travar o ponto/vírgula *@
-            <input name="EstoqueAtual" type="text" class="form-control"
-                   value="@Model.EstoqueAtual.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)" />
+    @* Cabeçalho da Página *@
+    <div class="mb-4 d-flex align-items-center gap-3">
+        <div class="icon-shape-salmon">
+            <i class="bi bi-pencil-fill"></i>
         </div>
+        <div>
+            <h2 class="fw-bold text-dark m-0" style="font-size: 24px; letter-spacing: -0.5px;">Alterar Insumo</h2>
+            <p class="text-muted small m-0 mt-1">Atualize as informações de estoque e medidas do item selecionado.</p>
+        </div>
+    </div>
 
-        <div class="form-group mb-3">
-            <label>Ponto de Pedido</label>
-            <input name="PontoPedido" type="text" class="form-control"
-                   value="@Model.PontoPedido.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)" />
-        </div>
+    @* Card do Formulário *@
+    <div class="card border-0 shadow-premium" style="border-radius: 20px; background: #ffffff; overflow: hidden;">
+        <div class="card-body p-4 p-md-5">
+            <form asp-action="AlterarProcessar" method="post">
+                @* CAMPO OBRIGATÓRIO PARA O UPDATE *@
+                <input type="hidden" asp-for="IdInsumo" />
 
-        <div class="mt-4">
-            <button type="submit" class="btn btn-success">Salvar Alterações</button>
-            <a asp-action="Selecionar" class="btn btn-secondary">Cancelar</a>
+                <div class="row g-4">
+                    @* Nome do Insumo *@
+                    <div class="col-12">
+                        <label class="form-label text-secondary fw-bold small text-uppercase">Nome do Insumo</label>
+                        <div class="modern-input-group">
+                            <i class="bi bi-tag-fill text-salmon"></i>
+                            <input asp-for="NomeInsumo" class="form-control-modern" placeholder="Ex: Batata Inglesa" required />
+                        </div>
+                    </div>
+
+                    @* Unidade de Medida *@
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary fw-bold small text-uppercase">Unidade de Medida</label>
+                        <div class="modern-input-group">
+                            <i class="bi bi-box-seam-fill text-salmon"></i>
+                            <select asp-for="UnidadeMed" class="form-select-modern" required>
+                                <option value="KG">Quilograma (KG)</option>
+                                <option value="UN">Unidade (UN)</option>
+                                <option value="L">Litro (L)</option>
+                                <option value="G">Grama (G)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    @* Estoque Atual *@
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary fw-bold small text-uppercase">Estoque Atual</label>
+                        <div class="modern-input-group">
+                            <i class="bi bi-stack text-salmon"></i>
+                            <input name="EstoqueAtual" type="text" class="form-control-modern font-monospace"
+                                   value="@Model.EstoqueAtual.ToString("F2")" />
+                        </div>
+                    </div>
+
+                    @* Ponto de Pedido *@
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary fw-bold small text-uppercase">Ponto de Pedido (Mínimo)</label>
+                        <div class="modern-input-group">
+                            <i class="bi bi-exclamation-circle-fill text-salmon"></i>
+                            <input name="PontoPedido" type="text" class="form-control-modern font-monospace"
+                                   value="@Model.PontoPedido.ToString("F2")" />
+                        </div>
+                    </div>
+
+                    @* Rodapé de Ações *@
+                    <div class="col-12 mt-5 d-flex gap-2">
+                        <button type="submit" class="btn-salmon-action flex-grow-1 shadow-sm">
+                            <i class="bi bi-cloud-check-fill me-2"></i> Salvar Alterações
+                        </button>
+                        <a asp-action="Selecionar" class="btn-cancel-modern">
+                            Cancelar
+                        </a>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
+
+<style>
+    :root {
+        --salmon-primary: #FF8C69; /* Salmão Principal */
+        --salmon-hover: #fa7a52; /* Salmão um pouco mais escuro */
+        --salmon-soft: #fff1ed; /* Fundo salmão bem clarinho */
+        --text-dark: #334155;
+    }
+
+    /* Estilo do Ícone de Topo */
+    .icon-shape-salmon {
+        width: 48px;
+        height: 48px;
+        background-color: var(--salmon-soft);
+        color: var(--salmon-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        font-size: 20px;
+    }
+
+    /* Grupo de Input Moderno */
+    .modern-input-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+        .modern-input-group i {
+            position: absolute;
+            left: 16px;
+            z-index: 10;
+            font-size: 18px;
+        }
+
+    .text-salmon {
+        color: var(--salmon-primary);
+    }
+
+    /* Estilização dos Campos */
+    .form-control-modern, .form-select-modern {
+        width: 100%;
+        padding: 12px 16px 12px 48px;
+        background-color: #f8fafc;
+        border: 2px solid #f1f5f9;
+        border-radius: 12px;
+        color: var(--text-dark);
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+        .form-control-modern:focus, .form-select-modern:focus {
+            background-color: #fff;
+            border-color: var(--salmon-primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(255, 140, 105, 0.15);
+        }
+
+    /* Botões */
+    .btn-salmon-action {
+        background-color: var(--salmon-primary);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-salmon-action:hover {
+            background-color: var(--salmon-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(255, 140, 105, 0.3) !important;
+        }
+
+    .btn-cancel-modern {
+        background-color: #f1f5f9;
+        color: #64748b;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+        .btn-cancel-modern:hover {
+            background-color: #e2e8f0;
+            color: #334155;
+        }
+
+    /* Link de Voltar */
+    .back-link {
+        color: var(--salmon-primary);
+        transition: opacity 0.2s;
+    }
+
+        .back-link:hover {
+            opacity: 0.8;
+        }
+
+    .shadow-premium {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02) !important;
+    }
+</style>

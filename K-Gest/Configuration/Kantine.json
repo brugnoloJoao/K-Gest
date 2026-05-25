@@ -4,14 +4,15 @@
 //  }
 //}
 
-//{ // Connection string local
-//  "ConnectionStrings": {
-//    "StringConexaoSQLServer": "Server=localhost;Database=Kantine;Trusted_Connection=True;Encrypt=False;TrustServerCertificate=True;"
-//  }
-//}
-
-{
+{ // Connection string local
+>>>>>>> origin/back
   "ConnectionStrings": {
-    "StringConexaoSQLServer": "Server=.\\SQLEXPRESS;Database=Kantine;Trusted_Connection=True;Encrypt=False;TrustServerCertificate=True;"
+    "StringConexaoSQLServer": "Server=localhost;Database=Kantine;Trusted_Connection=True;Encrypt=False;TrustServerCertificate=True;"
   }
 }
+
+//{
+//  "ConnectionStrings": {
+//    "StringConexaoSQLServer": "Server=.\\SQLEXPRESS;Database=Kantine;Trusted_Connection=True;Encrypt=False;TrustServerCertificate=True;"
+//  }
+//}

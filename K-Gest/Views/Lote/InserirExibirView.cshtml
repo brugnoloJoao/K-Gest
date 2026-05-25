@@ -1,0 +1,113 @@
+﻿@model K_Gest.Models.LoteViewModel
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-success text-white py-3">
+                    <h4 class="mb-0"><i class="bi bi-box-seam-fill"></i> Cadastrar Novo Lote no Estoque</h4>
+                </div>
+                <div class="card-body p-4">
+
+                    <form asp-controller="Lote" asp-action="InserirProcessar" method="post" id="formLote">
+
+                        <input type="hidden" asp-for="IdInsumo" id="hdnIdInsumo" />
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Insumo / Ingrediente</label>
+                            <select id="selInsumo" asp-items="Model.ListaInsumos" class="form-select border-success"
+                                    style="@(Model.IdInsumo > 0 ? "pointer-events: none; background-color: #e9ecef;" : "")">
+                                <option value="">-- Escolha o Insumo para este Lote --</option>
+                            </select>
+                            @if (Model.IdInsumo > 0)
+                            {
+                                <small class="text-muted"><i class="bi bi-info-circle"></i> Vinculado automaticamente ao insumo selecionado na tela anterior.</small>
+                            }
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold text-dark">Número do Lote</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted">#</span>
+                                    <input type="number" asp-for="NumLote" id="txtNumLote" class="form-control border-success" placeholder="Ex: 202605" required min="1" />
+                                </div>
+                                <span asp-validation-for="NumLote" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold text-dark">Quantidade</label>
+                                <div class="input-group">
+                                    <input type="number" asp-for="Quantidade" id="txtQuantidade" step="0.01" class="form-control border-success" placeholder="Ex: 50" required min="1" />
+                                </div>
+                                <span asp-validation-for="Quantidade" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold text-dark">Data de Fabricação</label>
+                                <input type="date" asp-for="DtFabricacao" id="txtDtFabricacao" class="form-control border-success" asp-format="{0:yyyy-MM-dd}" required />
+                                <span asp-validation-for="DtFabricacao" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-bold text-dark">Data de Validade</label>
+                                <input type="date" asp-for="DtValidade" id="txtDtValidade" class="form-control border-success" asp-format="{0:yyyy-MM-dd}" required />
+                                <span asp-validation-for="DtValidade" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <hr class="text-muted my-4">
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success btn-lg flex-grow-1">
+                                <i class="bi bi-check-circle"></i> Salvar Lote
+                            </button>
+
+                            <a href="@(Model.IdInsumo > 0 ? $"/Lote/GerenciarLotes/{Model.IdInsumo}" : "/Lote/Selecionar")" class="btn btn-outline-secondary btn-lg px-4">
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Sincroniza dinamicamente o select visual com o input hidden do IdInsumo
+        const selInsumo = document.getElementById('selInsumo');
+        const hdnIdInsumo = document.getElementById('hdnIdInsumo');
+
+        if (selInsumo && hdnIdInsumo && hdnIdInsumo.value) {
+            selInsumo.value = hdnIdInsumo.value;
+        }
+
+        selInsumo.addEventListener('change', function () {
+            hdnIdInsumo.value = this.value;
+        });
+
+        // Validação corrigida para usar os IDs exatos definidos nos elementos HTML acima
+        const form = document.getElementById('formLote');
+        form.addEventListener('submit', function (e) {
+            const inputFabricacao = document.getElementById('txtDtFabricacao');
+            const inputValidade = document.getElementById('txtDtValidade');
+
+            if (inputFabricacao && inputValidade && inputFabricacao.value && inputValidade.value) {
+                const dtFab = new Date(inputFabricacao.value);
+                const dtVal = new Date(inputValidade.value);
+
+                if (dtVal <= dtFab) {
+                    e.preventDefault(); // Impede o envio se estiver errado
+                    alert('Atenção: A data de validade deve ser maior do que a data de fabricação do produto.');
+                }
+            }
+        });
+    </script>
+}

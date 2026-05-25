@@ -1,46 +1,197 @@
-﻿@model K_Gest.Models.ComposicaoReceitaViewModel
+﻿
+@model K_Gest.Models.ComposicaoReceitaViewModel
 
-<form asp-action="InserirProcessar" method="post">
-    <div class="row">
-        <div class="col-md-6">
-            <label>Receita</label>
-            <select asp-for="IdReceita" asp-items="Model.ListaReceitas" class="form-control">
-                <option value="">-- Selecione o Prato --</option>
-            </select>
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4><i class="bi bi-list-check"></i> Montar Ficha Técnica</h4>
         </div>
+        <div class="card-body">
+            <form id="frmFicha" action="@(Model.IdReceita > 0 ? "/ComposicaoReceita/AlterarProcessar" : "/ComposicaoReceita/InserirProcessar")" method="post">
 
-        <div class="col-md-6">
-            <label>Insumo</label>
-            <select asp-for="IdInsumo" asp-items="Model.ListaInsumos" class="form-control" id="selectInsumo">
-                <option value="">-- Selecione o Ingrediente --</option>
-            </select>
-        </div>
-    </div>
+                <input type="hidden" asp-for="IdReceita" id="hdnIdReceita" />
 
-    <div class="row mt-3">
-        <div class="col-md-4">
-            <label>Quantidade</label>
-            <div class="input-group">
-                <input asp-for="QtdNecessaria" class="form-control" type="number" step="0.001" />
-                <div class="input-group-append">
-                    <!-- Este span será preenchido pelo Script abaixo -->
-                    <span class="input-group-text" id="displayUnidade">...</span>
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Receita</label>
+                    <select id="selReceita" asp-items="Model.ListaReceitas" class="form-select border-primary" style="@(Model.IdReceita > 0 ? "pointer-events: none; background-color: #e9ecef;" : "")">
+                        <option value="">-- Escolha o Prato --</option>
+                    </select>
+                    @if (Model.IdReceita > 0)
+                    {
+                        <small class="text-muted">Para mudar o prato, crie uma nova ficha.</small>
+                    }
                 </div>
-            </div>
+
+                <div class="bg-light p-3 border rounded mb-3">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label">Ingrediente</label>
+                            <select id="selInsumo" class="form-select">
+                                <option value="">-- Selecione --</option>
+                                @foreach (var item in Model.ListaInsumos)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Quantidade</label>
+                            <input type="number" id="txtQtd" class="form-control" step="0.001" />
+                        </div>
+                        <div class="col-md-3">
+                        <label>Unidade de Medida</label>
+                            <select id="selUni" class="form-select" required>
+                                <option value="">-- Selecione --</option>
+                                <option value="KG">Quilograma (KG)</option>
+                                <option value="UN">Unidade (UN)</option>
+                                <option value="L">Litro (L)</option>
+                                <option value="G">Grama (G)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" id="btnAdd" class="btn btn-success w-100">Incluir</button>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-striped border" id="tblItens">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Ingrediente</th>
+                            <th>Quantidade</th>
+                            <th>Unidade de Medida</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Itens != null)
+                        {
+                            for (int i = 0; i < Model.Itens.Count; i++)
+                            {
+                                <tr data-origem="banco">
+                                    <td>
+                                        @Model.Itens[i].NomeInsumo
+                                        <input type="hidden" class="insumo-id" value="@Model.Itens[i].IdInsumo" />
+                                    </td>
+                                    <td>
+                                        @Model.Itens[i].QuantidadeExibicao.ToString("G29", System.Globalization.CultureInfo.CurrentCulture)
+
+                                        <input type="hidden" class="insumo-qtd" value="@Model.Itens[i].Quantidade.ToString("F3", System.Globalization.CultureInfo.InvariantCulture)" />
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info text-dark">@Model.Itens[i].UnidadeExibicao</span>
+                                        <input type="hidden" class="insumo-unidade" value="@Model.Itens[i].UnidadeExibicao" />
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-danger btn-remover">Remover</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">Salvar Ficha Técnica</button>
+                <a asp-action="Selecionar" class="btn btn-outline-secondary w-100 mt-2">Cancelar</a>
+            </form>
         </div>
     </div>
-
-    <button type="submit" class="btn btn-primary mt-4">Salvar Composição</button>
-</form>
+</div>
 
 @section Scripts {
     <script>
-        document.getElementById("selectInsumo").addEventListener("change", function () {
-            var combo = this;
-            var texto = combo.options[combo.selectedIndex].text;
-            // Pega o valor entre parênteses (ex: KG, UN, L)
-            var match = texto.match(/\(([^)]+)\)/);
-            document.getElementById("displayUnidade").innerText = match ? match[1] : "Medida";
+        const selReceita = document.getElementById('selReceita');
+        const hdnIdReceita = document.getElementById('hdnIdReceita');
+
+        if (selReceita && hdnIdReceita && hdnIdReceita.value) {
+            selReceita.value = hdnIdReceita.value;
+        }
+
+        selReceita.addEventListener('change', function () {
+            hdnIdReceita.value = this.value;
+        });
+
+        // Incluir novos itens manualmente na tabela
+        document.getElementById('btnAdd').addEventListener('click', function () {
+            const selIns = document.getElementById('selInsumo');
+            const qtd = document.getElementById('txtQtd');
+            const selUni = document.getElementById('selUni');
+            if (!selIns.value || !qtd.value || !selUni.value) return;
+
+            const idInsumo = selIns.value;
+            const nomeInsumo = selIns.options[selIns.selectedIndex].text;
+
+            const unidade = selUni.options[selUni.selectedIndex].text.match(/\(([^)]+)\)/);
+
+            const tbody = document.querySelector('#tblItens tbody');
+            const tr = document.createElement('tr');
+
+            tr.setAttribute('data-origem', 'tela');
+
+            // Padroniza a exibição na tela trocando ponto por vírgula se necessário
+            let qtdDigitada = qtd.value.replace('.', ',');
+
+            tr.innerHTML = `
+                                <td>
+                                    ${nomeInsumo}
+                                    <input type="hidden" class="insumo-id" value="${idInsumo}" />
+                                </td>
+                                <td>
+                                    ${qtdDigitada}
+                                    <input type="hidden" class="insumo-qtd" value="${qtd.value}" />
+                                </td>
+                                <td>
+                                    <span class="badge bg-info text-dark">${unidade[1]}</span>
+                                    <input type="hidden" class="insumo-unidade" value="${unidade[1]}" />
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger btn-remover">Remover</button>
+                                </td>
+                            `;
+
+            tbody.appendChild(tr);
+
+            selIns.value = "";
+            selIns.value = "";
+            qtd.value = "";
+        });
+
+        // Remover linhas da tabela
+        document.getElementById('tblItens').addEventListener('click', function (e) {
+            if (e.target && e.target.classList.contains('btn-remover')) {
+                e.target.closest('tr').remove();
+            }
+        });
+
+        // Processamento ao clicar em Salvar Ficha Técnica
+        document.getElementById('frmFicha').addEventListener('submit', function (e) {
+            const lines = document.querySelectorAll('#tblItens tbody tr');
+
+            lines.forEach((tr, index) => {
+                const inputId = tr.querySelector('.insumo-id');
+                const inputQtd = tr.querySelector('.insumo-qtd');
+                const inputUnidade = tr.querySelector('.insumo-unidade');
+
+                // Tratamento universal de ponto/vírgula para o parseFloat do JavaScript não quebrar decimais
+                let valorTexto = inputQtd.value.replace(',', '.');
+                let valorFinal = parseFloat(valorTexto);
+
+                const unidadeTexto = inputUnidade.value.toUpperCase();
+                const origen = tr.getAttribute('data-origem');
+
+                // Só multiplica se for inserido direto na tela agora
+                if (origen === "tela" && (unidadeTexto === "KG" || unidadeTexto === "L")) {
+                    valorFinal = valorFinal * 1000;
+                }
+
+                inputId.name = `Itens[${index}].IdInsumo`;
+                inputQtd.name = `Itens[${index}].Quantidade`;
+                inputUnidade.name = `Itens[${index}].UnidadeExibicao`;
+
+                // Devolve para o input em formato Invariant string (ponto) aceito de volta pelo C#
+                inputQtd.value = valorFinal.toString();
+            });
         });
     </script>
 }
+

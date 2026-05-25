@@ -1,0 +1,85 @@
+﻿@model K_Gest.Models.DashboardViewModel
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center py-4">
+        <div>
+            <h1 class="h2 fw-bold text-dark mb-1">
+                <i class="bi bi-speedometer2 text-primary"></i> Painel de Controle
+            </h1>
+            <p class="text-muted mb-0">Visão Geral da Kantine Gestão (K_Gest)</p>
+        </div>
+        <div class="text-muted small fw-semibold">
+            <i class="bi bi-calendar3"></i> @DateTime.Now.ToString("dddd, d 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-BR"))
+        </div>
+    </div>
+
+    @if (ViewBag.ErroDashboard != null)
+    {
+        <div class="alert alert-danger shadow-sm d-flex align-items-center" role="alert">
+            <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+            <div>
+                <strong>Erro de conexão com o banco de dados:</strong> @ViewBag.ErroDashboard
+            </div>
+        </div>
+    }
+
+    @* --- SEÇÃO 1: CARTÕES DE RESUMO VIBRANTES --- *@
+    <div class="row g-3 mb-4">
+
+        @* CARD 1: TOTAL DE INSUMOS *@
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white h-100 shadow-sm border-0 rounded-3 card-vibrante">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-uppercase fw-bold text-white-50 small mb-1">Insumos Cadastrados</h6>
+                            <h2 class="display-6 fw-bold mb-0">@Model.TotalInsumos</h2>
+                        </div>
+                        <i class="bi bi-basket3 fs-1 opacity-50"></i>
+                    </div>
+                    <div class="small text-white-50 mt-1">Vinculados a @Model.TotalReceitas Fichas Técnicas</div>
+                </div>
+                <div class="card-footer bg-transparent border-0 d-flex justify-content-between align-items-center">
+                    <a href="/Insumos/Selecionar" class="small text-white text-decoration-none stretched-link">
+                        Gerenciar Insumos <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        @* CARD 2: ESTOQUE CRÍTICO OU ZERADO *@
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-danger text-white h-100 shadow-sm border-0 rounded-3 card-vibrante">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-uppercase fw-bold text-white-50 small mb-1">Abaixo do Ponto Mínimo</h6>
+                            <h2 class="display-6 fw-bold mb-0">@Model.InsumosAbaixoPontoPedido</h2>
+                        </div>
+                        <i class="bi bi-cart-x fs-1 opacity-50"></i>
+                    </div>
+                    <div class="small text-white-50 mt-1">Existem @Model.InsumosZerados com estoque totalmente zerado</div>
+                </div>
+                <div class="card-footer bg-transparent border-0 d-flex justify-content-between align-items-center">
+                    <a href="/Insumos/Selecionar" class="small text-white text-decoration-none stretched-link">
+                        Ver Compras Necessárias <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        @* CARD 3: ALERTAS DE VALIDADE *@
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-orange text-white h-100 shadow-sm border-0 rounded-3 card-vibrante">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-uppercase fw-bold text-white-50 small mb-1">Validades Críticas</h6>
+                            <h2 class="display-6 fw-bold mb-0">@Model.LotesEmAlerta</h2>
+                        </div>
+                        <i class="bi bi-clock-history fs-1 opacity-50"></i>
+                    </div>
+                    <div class="small text-white-50 mt-1">Vencendo nos próximos 15 dias | @Model.LotesVencidos Vencidos</div>
+                </div>
+                <div class="card-footer bg-transparent border-0 d-flex justify-content-between align-items-center">
+                    <a href="/Lote/Selecionar" class="small text-white
