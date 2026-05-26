@@ -141,6 +141,10 @@ namespace K_Gest.Controllers
         {
             try
             {
+                if (ModelState.ContainsKey("ListaInsumos"))
+                {
+                    ModelState.Remove("ListaInsumos");
+                }
                 if (ModelState.IsValid)
                 {
                     MovimentacaoEstoque o_Movimentacao = new MovimentacaoEstoque();
@@ -151,19 +155,21 @@ namespace K_Gest.Controllers
                     o_Movimentacao.motivo = o_MovimentacaoEstoqueVM.Motivo;
                     o_Movimentacao.idInsumo = o_MovimentacaoEstoqueVM.IdInsumo;
 
+
                     // AGORA VOCÊ PASSA A UNIDADE AQUI DENTRO DOS PARÊNTESES
                     // Isso resolve o erro de "nenhum argumento fornecido"
-                    o_Movimentacao.Inserir(o_MovimentacaoEstoqueVM.UnidadeMed);
+                    o_Movimentacao.Inserir(ObterUnidadeMedPorIDInsumo(o_Movimentacao.idInsumo));
 
                     TempData["MsgSucesso"] = "Movimentação realizada!";
                     return RedirectToAction("Selecionar");
                 }
-                return View("InserirExibir", o_MovimentacaoEstoqueVM);
+                o_MovimentacaoEstoqueVM.ListaInsumos = ObterInsumos();
+                return View("InserirSaida", o_MovimentacaoEstoqueVM);
             }
             catch (Exception ex)
             {
                 TempData["MsgErro"] = ex.Message;
-                return View("InserirExibir", o_MovimentacaoEstoqueVM);
+                return View("InserirSaida", o_MovimentacaoEstoqueVM);
             }
         }
 
@@ -329,6 +335,15 @@ namespace K_Gest.Controllers
                         Value = dr["idInsumo"].ToString(),
                         Text = $"{dr["nomeInsumo"]} ({dr["unidadeMed"]})"
                     }).ToList();
+        }
+        private string ObterUnidadeMedPorIDInsumo(int idInsumo)
+        {
+            DataTable dt = new Insumos { idInsumo = idInsumo }.SelecionarPorID();
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                return dt.Rows[0]["unidadeMed"].ToString();
+            }
+            return string.Empty; // Retorna vazio se não encontrar o insumo
         }
     }
 }

@@ -170,10 +170,16 @@
                 <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Lote" ? "active" : "")">
                     <a href="/Lote/Selecionar"><i class="bi bi-layers"></i> Lotes</a>
                 </li>
+                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "HistoricoVendas" ? "active" : "")">
+                    <a href="/HistoricoVendas/Selecionar"><i class="bi bi-clock-history"></i> Histórico de Vendas</a>
+                </li>
             </ul>
 
             <div class="sidebar-section-title">Movimentação</div>
             <ul class="list-unstyled components">
+                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "MovimentacaoEstoque" && ViewContext.RouteData.Values["action"]?.ToString() == "Selecionar" ? "active" : "")">
+        <a href="/MovimentacaoEstoque/Selecionar"><i class="bi bi-arrow-left-right text-info"></i>Geral</a>
+    </li>
                 <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "MovimentacaoEstoque" && ViewContext.RouteData.Values["action"]?.ToString() == "Entradas" ? "active" : "")">
                     <a href="/MovimentacaoEstoque/Entradas"><i class="bi bi-plus-circle-fill text-salmon"></i> Entradas</a>
                 </li>

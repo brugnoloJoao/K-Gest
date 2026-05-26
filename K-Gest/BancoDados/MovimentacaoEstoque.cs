@@ -50,7 +50,7 @@ namespace K_Gest.BancoDados
 
                 SqlCommand cmd1 = new SqlCommand(cmdMovimentacao, con, tran);
                 cmd1.Parameters.AddWithValue("@tipoEs", tipoEs);
-                cmd1.Parameters.AddWithValue("@qtdMoviment", qtdMoviment); // Salva o valor original (ex: 10)
+                cmd1.Parameters.AddWithValue("@qtdMoviment", qtdReal); // Salva o valor original (ex: 10)
                 cmd1.Parameters.AddWithValue("@motivo", motivo);
                 cmd1.Parameters.AddWithValue("@idInsumo", idInsumo);
                 cmd1.ExecuteNonQuery();
