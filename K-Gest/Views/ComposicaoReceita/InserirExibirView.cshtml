@@ -24,7 +24,7 @@
 
                 <div class="bg-light p-3 border rounded mb-3">
                     <div class="row g-2 align-items-end">
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <label class="form-label">Ingrediente</label>
                             <select id="selInsumo" class="form-select">
                                 <option value="">-- Selecione --</option>
@@ -36,8 +36,17 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Quantidade</label>
-                            <input type="number" id="txtQtd" class="form-control" step="0.001" placeholder="Ex: 0.2 para 200g" />
+                            <input type="number" id="txtQtd" class="form-control" step="0.001" />
                         </div>
+                        <div class="col-md-3">
+                            <label>Unidade de Medida</label>
+                            <select id="selUni" class="form-select" required>
+                                <option value="">-- Selecione --</option>
+                                <option value="KG">Quilograma (KG)</option>
+                                <option value="UN">Unidade (UN)</option>
+                                <option value="L">Litro (L)</option>
+                                <option value="G">Grama (G)</option>
+                            </select>
                         <div class="col-md-3">
                             <button type="button" id="btnAdd" class="btn btn-success w-100">Incluir</button>
                         </div>
@@ -48,8 +57,8 @@
                     <thead class="table-dark">
                         <tr>
                             <th>Ingrediente</th>
-                            <th>Quantidade</th>
-                            <th>Unidade Original</th>
+                                <th>Quantidade</th>
+                                <th>Unidade de Medida</th>
                             <th>Ação</th>
                         </tr>
                     </thead>
@@ -69,8 +78,8 @@
                                         <input type="hidden" class="insumo-qtd" value="@Model.Itens[i].Quantidade.ToString("F3", System.Globalization.CultureInfo.InvariantCulture)" />
                                     </td>
                                     <td>
-                                        <span class="badge bg-info text-dark">@Model.Itens[i].UnidadeMed</span>
-                                        <input type="hidden" class="insumo-unidade" value="@Model.Itens[i].UnidadeMed" />
+                                            <span class="badge bg-info text-dark">@Model.Itens[i].UnidadeExibicao</span>
+                                            <input type="hidden" class="insumo-unidade" value="@Model.Itens[i].UnidadeExibicao" />
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-danger btn-remover">Remover</button>
@@ -103,16 +112,15 @@
 
         // Incluir novos itens manualmente na tabela
         document.getElementById('btnAdd').addEventListener('click', function () {
-            const sel = document.getElementById('selInsumo');
+            const selIns = document.getElementById('selInsumo');
             const qtd = document.getElementById('txtQtd');
+            const selUni = document.getElementById('selUni');
+            if (!selIns.value || !qtd.value || !selUni.value) return;
 
-            if (!sel.value || !qtd.value) return;
+            const idInsumo = selIns.value;
+            const nomeInsumo = selIns.options[selIns.selectedIndex].text;
 
-            const idInsumo = sel.value;
-            const textoCombo = sel.options[sel.selectedIndex].text;
-
-            const unidade = textoCombo.substring(textoCombo.lastIndexOf("(") + 1, textoCombo.lastIndexOf(")"));
-            const nomeInsumo = textoCombo.split(' (')[0];
+            const unidade = selUni.options[selUni.selectedIndex].text.match(/\(([^)]+)\)/);
 
             const tbody = document.querySelector('#tblItens tbody');
             const tr = document.createElement('tr');
@@ -132,8 +140,8 @@
                                     <input type="hidden" class="insumo-qtd" value="${qtd.value}" />
                                 </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">${unidade}</span>
-                                    <input type="hidden" class="insumo-unidade" value="${unidade}" />
+                                    <span class="badge bg-info text-dark">${unidade[1]}</span>
+                                    <input type="hidden" class="insumo-unidade" value="${unidade[1]}" />
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-sm btn-danger btn-remover">Remover</button>
@@ -142,7 +150,8 @@
 
             tbody.appendChild(tr);
 
-            sel.value = "";
+            selIns.value = "";
+            selUni.value = "";
             qtd.value = "";
         });
 
@@ -176,7 +185,7 @@
 
                 inputId.name = `Itens[${index}].IdInsumo`;
                 inputQtd.name = `Itens[${index}].Quantidade`;
-                inputUnidade.name = `Itens[${index}].UnidadeMed`;
+                inputUnidade.name = `Itens[${index}].UnidadeExibicao`;
 
                 // Devolve para o input em formato Invariant string (ponto) aceito de volta pelo C#
                 inputQtd.value = valorFinal.toString();

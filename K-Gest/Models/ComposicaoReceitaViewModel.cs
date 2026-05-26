@@ -19,9 +19,9 @@ namespace K_Gest.Models
         public int IdInsumo { get; set; }
         public string? NomeInsumo { get; set; }
         public decimal Quantidade { get; set; }
-        public string? UnidadeMed { get; set; }
+        public string? UnidadeExibicao { get; set; }
 
         // Divide por 1000 apenas se for KG ou L para o utilizador ver "1" em vez de "1000"
-        public decimal QuantidadeExibicao => (UnidadeMed?.ToUpper() == "KG" || UnidadeMed?.ToUpper() == "L") ? Quantidade / 1000 : Quantidade;
+        public decimal QuantidadeExibicao => (UnidadeExibicao?.ToUpper() == "KG" || UnidadeExibicao?.ToUpper() == "L") ? Quantidade / 1000 : Quantidade;
     }
 }
