@@ -7,7 +7,7 @@ namespace K_Gest.BancoDados
     {
         public int? idEstoque;
         public string tipoEs; // "E" para Entrada, "S" para Saída
-        public int qtdMoviment;
+        public decimal qtdMoviment;
         public string motivo;
         public int idInsumo;
 
@@ -42,7 +42,7 @@ namespace K_Gest.BancoDados
             try
             {
                 // 1. Calculamos o valor convertido para somar/subtrair no estoque principal
-                decimal qtdReal = CalcularValorConvertido(this.qtdMoviment, unidadeSelecionada);
+                decimal qtdReal = ConverterParaBanco(this.qtdMoviment, unidadeSelecionada);
 
                 // 2. Registra o histórico na tabela Movimentacao_Estoque
                 string cmdMovimentacao = @"INSERT INTO Movimentacao_Estoque(tipoEs, qtdMoviment, motivo, idInsumo) 
@@ -50,7 +50,7 @@ namespace K_Gest.BancoDados
 
                 SqlCommand cmd1 = new SqlCommand(cmdMovimentacao, con, tran);
                 cmd1.Parameters.AddWithValue("@tipoEs", tipoEs);
-                cmd1.Parameters.AddWithValue("@qtdMoviment", qtdMoviment); // Salva o valor original (ex: 10)
+                cmd1.Parameters.AddWithValue("@qtdMoviment", qtdReal); // Salva o valor original (ex: 10)
                 cmd1.Parameters.AddWithValue("@motivo", motivo);
                 cmd1.Parameters.AddWithValue("@idInsumo", idInsumo);
                 cmd1.ExecuteNonQuery();
@@ -80,23 +80,76 @@ namespace K_Gest.BancoDados
             }
             finally { con.Close(); }
         }
-
-        // --- ADICIONE ESTE MÉTODO AUXILIAR AQUI ---
-        private decimal CalcularValorConvertido(decimal qtd, string unidade)
+        public void InserirPorLote()
         {
-            if (string.IsNullOrEmpty(unidade)) return qtd;
+            con.Open();
+            SqlTransaction tran = con.BeginTransaction();
 
+            try
+            {
+
+                // Registra o histórico na tabela Movimentacao_Estoque
+                string cmdMovimentacao = @"INSERT INTO Movimentacao_Estoque(tipoEs, qtdMoviment, motivo, idInsumo) 
+                                         VALUES(@tipoEs, @qtdMoviment, @motivo, @idInsumo)";
+
+                SqlCommand cmd1 = new SqlCommand(cmdMovimentacao, con, tran);
+                cmd1.Parameters.AddWithValue("@tipoEs", tipoEs);
+                cmd1.Parameters.AddWithValue("@qtdMoviment", qtdMoviment); 
+                cmd1.Parameters.AddWithValue("@motivo", motivo);
+                cmd1.Parameters.AddWithValue("@idInsumo", idInsumo);
+                cmd1.ExecuteNonQuery();
+
+                // Atualiza a tabela Insumos com o valor CONVERTIDO (ex: 10000)
+                string operacao = (tipoEs.ToUpper() == "E") ? "+" : "-";
+                string cmdInsumo = $"UPDATE Insumos SET estoqueAtual = estoqueAtual {operacao} @qtdReal WHERE idInsumo = @idInsumo";
+
+                SqlCommand cmd2 = new SqlCommand(cmdInsumo, con, tran);
+
+                // Parâmetro tipado para evitar estouro aritmético
+                SqlParameter paramQtd = new SqlParameter("@qtdReal", SqlDbType.Decimal);
+                paramQtd.Precision = 18;
+                paramQtd.Scale = 2;
+                paramQtd.Value = qtdMoviment;
+
+                cmd2.Parameters.Add(paramQtd);
+                cmd2.Parameters.AddWithValue("@idInsumo", idInsumo);
+                cmd2.ExecuteNonQuery();
+
+                tran.Commit();
+            }
+            catch (Exception ex)
+            {
+                tran.Rollback();
+                throw new Exception("Erro ao processar movimentação: " + ex.Message);
+            }
+            finally { con.Close(); }
+        }
+
+         // --- MÉTODOS DE CONVERSÃO ---
+
+        public decimal ConverterParaBanco(decimal valor, string unidade)
+        {
+            if (string.IsNullOrEmpty(unidade)) return valor;
             switch (unidade.ToUpper())
             {
                 case "KG":
                 case "L":
-                    return qtd * 1000; // 10 KG vira 10000 G
-                case "G":
-                case "ML":
-                case "UN":
-                    return qtd; // Mantém a base
+                    return valor * 1000; // Converte para gramas ou mililitros
                 default:
-                    return qtd;
+                    return valor;
+            }
+        }
+
+        public decimal ConverterParaTela(decimal valor, string unidade)
+        {
+            if (string.IsNullOrEmpty(unidade)) return valor;
+            switch (unidade.ToUpper())
+            {
+                case "KG":
+                case "L":
+                    return valor / 1000; // Converte de volta para KG ou L
+                default:
+                    return valor;
             }
         }
 
@@ -151,7 +204,46 @@ namespace K_Gest.BancoDados
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
+        public DataTable SelecionarEntradas()
+        {
+            try
+            {
+                string cmdSQL = @"SELECT M.idEstoque, M.tipoEs, M.qtdMoviment, M.motivo, 
+                                 I.nomeInsumo, I.unidadeMed, M.idInsumo
+                          FROM Movimentacao_Estoque M
+                          INNER JOIN Insumos I ON M.idInsumo = I.idInsumo
+                          WHERE M.tipoEs = 'E'
+                          ORDER BY M.idEstoque DESC";
 
+                SqlDataAdapter da = new SqlDataAdapter(cmdSQL, con);
+                DataTable dt = new DataTable();
+                con.Open();
+                da.Fill(dt);
+                con.Close();
+                return dt;
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
+        public DataTable SelecionarSaidas()
+        {
+            try
+            {
+                string cmdSQL = @"SELECT M.idEstoque, M.tipoEs, M.qtdMoviment, M.motivo, 
+                                 I.nomeInsumo, I.unidadeMed, M.idInsumo
+                          FROM Movimentacao_Estoque M
+                          INNER JOIN Insumos I ON M.idInsumo = I.idInsumo
+                          WHERE M.tipoEs = 'S'
+                          ORDER BY M.idEstoque DESC";
+
+                SqlDataAdapter da = new SqlDataAdapter(cmdSQL, con);
+                DataTable dt = new DataTable();
+                con.Open();
+                da.Fill(dt);
+                con.Close();
+                return dt;
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
         public DataTable SelecionarPorID()
         {
             try

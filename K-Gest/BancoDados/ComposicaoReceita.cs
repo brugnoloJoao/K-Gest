@@ -1,6 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using K_Gest.Models;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
+using Microsoft.Data.SqlClient;
 using System.Data;
-using K_Gest.Models;
 
 namespace K_Gest.BancoDados
 {
@@ -29,9 +30,10 @@ namespace K_Gest.BancoDados
             {
                 foreach (var i in itens)
                 {
-                    string sql = "INSERT INTO Composicao_Receita (qtdNecessaria, idReceita, idInsumo) VALUES(@q,@r,@i)";
+                    string sql = "INSERT INTO Composicao_Receita (qtdNecessaria, idReceita, idInsumo, unidadeExibicao) VALUES(@q,@r,@i, @u)";
                     SqlCommand cmd = new SqlCommand(sql, con, tr);
                     cmd.Parameters.AddWithValue("@q", i.Quantidade);
+                    cmd.Parameters.AddWithValue("@u", i.UnidadeExibicao);
                     cmd.Parameters.AddWithValue("@r", idR);
                     cmd.Parameters.AddWithValue("@i", i.IdInsumo);
                     cmd.ExecuteNonQuery();

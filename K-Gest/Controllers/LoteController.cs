@@ -63,7 +63,8 @@ namespace K_Gest.Controllers
                 // Alimenta as ViewBags de forma segura para a tela de gerenciamento de lotes
                 ViewBag.IdInsumo = insumoId;
                 ViewBag.NomeInsumo = dtInsumos.Columns.Contains("nomeInsumo") ? insumoRow["nomeInsumo"].ToString() : insumoRow[1].ToString();
-                ViewBag.UnidadeMed = dtInsumos.Columns.Contains("unidadeMed") ? insumoRow["unidadeMed"].ToString() : "";
+                string unidadeMed = dtInsumos.Columns.Contains("unidadeMed") ? insumoRow["unidadeMed"].ToString() : "";
+                ViewBag.UnidadeMed = unidadeMed;
 
                 // Busca os lotes vinculados
                 Lote o_Lote = new Lote();
@@ -72,6 +73,11 @@ namespace K_Gest.Controllers
                 if (dtLotes == null)
                 {
                     dtLotes = new DataTable();
+                }
+
+                foreach (DataRow row in dtLotes.Rows)
+                {
+                    row["quantidade"] = o_Lote.ConverterParaTela(Convert.ToDecimal(row["quantidade"]), unidadeMed);
                 }
 
                 return View("GerenciarLotesView", dtLotes);
@@ -112,11 +118,34 @@ namespace K_Gest.Controllers
                         dtFabricacao = vm.DtFabricacao,
                         dtValidade = vm.DtValidade,
                         numLote = vm.NumLote,
-                        idInsumo = vm.IdInsumo
+                        idInsumo = vm.IdInsumo,
+                        
                     };
+                    
+                    Insumos o_Insumo = new Insumos();
+                    o_Insumo.idInsumo = vm.IdInsumo;
+                    
+                    
+                    decimal estoqueAtual = o_Insumo.ObterEstoqueAtual();
+                    string unidadeMed = o_Insumo.ObterUnidadeMedida();
 
+                    o_Lote.quantidade = o_Lote.ConverterParaBanco(vm.Quantidade, unidadeMed);
                     // Executa o comando INSERT no banco de dados
                     o_Lote.Inserir();
+
+                    decimal somaLotes = o_Lote.TotalLotes();
+
+                    if (somaLotes - estoqueAtual > 0)
+                    {
+                        MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque
+                        {
+                            tipoEs = "E",
+                            qtdMoviment = somaLotes - estoqueAtual,
+                            motivo = "Ajuste automático de estoque após cadastro de lote",
+                            idInsumo = vm.IdInsumo
+                        };
+                        o_MovimentacaoEstoque.InserirPorLote();
+                    }
 
                     TempData["MsgSucesso"] = "Lote cadastrado com sucesso!";
 
@@ -209,8 +238,41 @@ namespace K_Gest.Controllers
             try
             {
                 Lote o_Lote = new Lote { idLote = id };
+
+                // Pega o idInsumo ANTES de excluir o lote
+                int idInsumo = o_Lote.ObterIDInsumoPorIDLote();
+
+                Insumos o_Insumo = new Insumos { idInsumo = idInsumo };
+
+                // Pega o estoque atual ANTES da exclusão/movimentação
+                decimal estoqueAtual = o_Insumo.ObterEstoqueAtual();
+
+                // Exclui o lote do banco de dados
                 o_Lote.Excluir();
+
+                // Calcula a nova soma dos lotes (agora sem o lote excluído)
+                // É importante passar o idInsumo para a instância do lote saber o que somar
+                o_Lote.idInsumo = idInsumo;
+                decimal somaLotes = o_Lote.TotalLotes();
+
+                // Lógica da Movimentação de Saída
+                // Se o estoque atual for MAIOR que a soma restante dos lotes, precisamos tirar a diferença
+                if (estoqueAtual - somaLotes > 0)
+                {
+                    MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque
+                    {
+                        tipoEs = "S", // "S" para Saída
+                        qtdMoviment = estoqueAtual - somaLotes, // A diferença exata que precisa ser baixada
+                        motivo = "Ajuste automático de estoque após exclusão de lote",
+                        idInsumo = idInsumo
+                    };
+                    o_MovimentacaoEstoque.InserirPorLote();
+                }
+
                 TempData["MsgSucesso"] = "Lote excluído com sucesso!";
+
+                // Pequeno ajuste aqui: usando object de rota (new { id = ... }) para garantir que a URL seja montada corretamente
+                return RedirectToAction("GerenciarLotes", new { id = idInsumo });
             }
             catch (Exception ex)
             {

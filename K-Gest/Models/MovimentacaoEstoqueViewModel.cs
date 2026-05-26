@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace K_Gest.Models
 {
@@ -14,7 +15,7 @@ namespace K_Gest.Models
         [Required(ErrorMessage = "Quantidade é obrigatória.")]
         [Range(1, int.MaxValue, ErrorMessage = "Quantidade deve ser maior que zero.")]
         [Display(Name = "Quantidade")]
-        public int QtdMoviment { get; set; }
+        public decimal QtdMoviment { get; set; }
 
         [StringLength(500, ErrorMessage = "O motivo deve ter no máximo 500 caracteres.")]
         [Display(Name = "Motivo")]
@@ -27,5 +28,7 @@ namespace K_Gest.Models
 
         // PROPRIEDADE NOVA: Necessária para a conversão de unidades (KG, L, G, ML)
         public string UnidadeMed { get; set; } = string.Empty;
+
+        public List<SelectListItem> ListaInsumos { get; set; }
     }
 }

@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Data;
-using K_Gest.BancoDados;
+﻿using K_Gest.BancoDados;
 using K_Gest.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Data;
 
 
 namespace K_Gest.Controllers
@@ -18,9 +19,14 @@ namespace K_Gest.Controllers
             {
                 MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque();
 
-                DataTable dtInsumos = o_MovimentacaoEstoque.SelecionarTodos();
+                DataTable dtMoviment = o_MovimentacaoEstoque.SelecionarTodos();
 
-                return View("SelecionarView", dtInsumos);
+                foreach (DataRow row in dtMoviment.Rows)
+                {
+                    row["qtdMoviment"] = o_MovimentacaoEstoque.ConverterParaTela(Convert.ToDecimal(row["qtdMoviment"]), row["unidadeMed"].ToString());
+                }
+
+                return View("SelecionarView", dtMoviment);
             }
             catch (Exception ex)
             {
@@ -29,7 +35,50 @@ namespace K_Gest.Controllers
                 return View("SelecionarView");
             }
         }
+        public IActionResult Entradas()
+        {
+            try
+            {
+                MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque();
 
+                DataTable dtMoviment = o_MovimentacaoEstoque.SelecionarEntradas();
+
+                foreach (DataRow row in dtMoviment.Rows)
+                {
+                    row["qtdMoviment"] = o_MovimentacaoEstoque.ConverterParaTela(Convert.ToDecimal(row["qtdMoviment"]), row["unidadeMed"].ToString());
+                }
+
+                return View("EntradasView", dtMoviment);
+            }
+            catch (Exception ex)
+            {
+                TempData["MsgErro"] = $"Erro: {ex.Message}";
+
+                return View("SelecionarView");
+            }
+        }
+        public IActionResult Saidas()
+        {
+            try
+            {
+                MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque();
+
+                DataTable dtMoviment = o_MovimentacaoEstoque.SelecionarSaidas();
+
+                foreach (DataRow row in dtMoviment.Rows)
+                {
+                    row["qtdMoviment"] = o_MovimentacaoEstoque.ConverterParaTela(Convert.ToDecimal(row["qtdMoviment"]), row["unidadeMed"].ToString());
+                }
+
+                return View("SaidasView", dtMoviment);
+            }
+            catch (Exception ex)
+            {
+                TempData["MsgErro"] = $"Erro: {ex.Message}";
+
+                return View("SaidasView");
+            }
+        }
         //-----------------------------------------------------------
         // INSERIR - EXIBIR
         //----------------------------------------------------------- 
@@ -37,14 +86,12 @@ namespace K_Gest.Controllers
         {
             try
             {
-                // Precisamos buscar os insumos para o usuário selecionar na View
-                Insumos o_Insumos = new Insumos();
-                DataTable dtInsumos = o_Insumos.SelecionarTodos();
+                MovimentacaoEstoqueViewModel o_MovimentVM = new MovimentacaoEstoqueViewModel();
 
                 // Passamos via ViewBag para preencher um <select>
-                ViewBag.ListaInsumos = dtInsumos;
+                o_MovimentVM.ListaInsumos = ObterInsumos();
 
-                return View("InserirExibirView");
+                return View("InserirExibirView", o_MovimentVM);
             }
             catch (Exception ex)
             {
@@ -52,38 +99,104 @@ namespace K_Gest.Controllers
                 return RedirectToAction("Selecionar");
             }
         }
+        public IActionResult InserirSaida()
+        {
+            try
+            {
+                MovimentacaoEstoqueViewModel o_MovimentVM = new MovimentacaoEstoqueViewModel();
 
+                // Passamos via ViewBag para preencher um <select>
+                o_MovimentVM.ListaInsumos = ObterInsumos();
+
+                return View("InserirSaidaView", o_MovimentVM);
+            }
+            catch (Exception ex)
+            {
+                TempData["MsgErro"] = $"Erro ao carregar insumos: {ex.Message}";
+                return RedirectToAction("Saida");
+            }
+        }
+        public IActionResult InserirEntrada()
+        {
+            try
+            {
+                MovimentacaoEstoqueViewModel o_MovimentacaoEstoqueVM = new MovimentacaoEstoqueViewModel();
+
+                // Passamos via ViewBag para preencher um <select>
+                o_MovimentacaoEstoqueVM.ListaInsumos = ObterInsumos();
+
+                return View("InserirEntradaView", o_MovimentacaoEstoqueVM);
+            }
+            catch (Exception ex)
+            {
+                TempData["MsgErro"] = $"Erro ao carregar insumos: {ex.Message}";
+                return RedirectToAction("Saida");
+            }
+        }
         //-----------------------------------------------------------
         // INSERIR - PROCESSAR
         //-----------------------------------------------------------
         [HttpPost]
-        public IActionResult InserirProcessar(MovimentacaoEstoqueViewModel o_MovimentacaoVM)
+        public IActionResult InserirProcessar(MovimentacaoEstoqueViewModel o_MovimentacaoEstoqueVM)
         {
             try
             {
+                if (ModelState.ContainsKey("ListaInsumos"))
+                {
+                    ModelState.Remove("ListaInsumos");
+                }
+
                 if (ModelState.IsValid)
                 {
                     MovimentacaoEstoque o_Movimentacao = new MovimentacaoEstoque();
 
                     // Preenche os dados básicos
-                    o_Movimentacao.tipoEs = o_MovimentacaoVM.TipoEs;
-                    o_Movimentacao.qtdMoviment = o_MovimentacaoVM.QtdMoviment;
-                    o_Movimentacao.motivo = o_MovimentacaoVM.Motivo;
-                    o_Movimentacao.idInsumo = o_MovimentacaoVM.IdInsumo;
+                    o_Movimentacao.tipoEs = o_MovimentacaoEstoqueVM.TipoEs;
+                    o_Movimentacao.qtdMoviment = o_MovimentacaoEstoqueVM.QtdMoviment;
+                    o_Movimentacao.motivo = o_MovimentacaoEstoqueVM.Motivo;
+                    o_Movimentacao.idInsumo = o_MovimentacaoEstoqueVM.IdInsumo;
 
-                    // AGORA VOCÊ PASSA A UNIDADE AQUI DENTRO DOS PARÊNTESES
-                    // Isso resolve o erro de "nenhum argumento fornecido"
-                    o_Movimentacao.Inserir(o_MovimentacaoVM.UnidadeMed);
+                    string unidadeMed = ObterUnidadeMedPorIDInsumo(o_Movimentacao.idInsumo);
 
-                    TempData["MsgSucesso"] = "Movimentação realizada!";
-                    return RedirectToAction("Selecionar");
+                    if (o_Movimentacao.tipoEs == "S")
+                    {
+                        decimal estoqueAtual = ObterEstoqueAtualDeInsumo(o_Movimentacao.idInsumo);
+
+                        if (o_Movimentacao.qtdMoviment > estoqueAtual)
+                        {
+                            // Se for maior, impede a gravação e avisa o usuário
+                            TempData["MsgErro"] = $"Saldo insuficiente! Você tentou retirar {o_Movimentacao.ConverterParaTela(o_Movimentacao.qtdMoviment, unidadeMed)} {unidadeMed}, mas o estoque atual é de apenas {o_Movimentacao.ConverterParaTela(estoqueAtual, unidadeMed)} {unidadeMed}.";
+
+                            // Recarrega as listas da View para o usuário corrigir o valor
+                            o_MovimentacaoEstoqueVM.ListaInsumos = ObterInsumos();
+                            return View("SaidasView", o_MovimentacaoEstoqueVM);
+                        }
+
+                        o_Movimentacao.Inserir(unidadeMed);
+
+                        // Define o sucesso ANTES do redirect
+                        TempData["MsgSucesso"] = "Movimentação de saída realizada com sucesso!";
+                        return RedirectToAction("Saidas");
+                    }
+                    else
+                    {
+                        o_Movimentacao.Inserir(unidadeMed);
+
+                        // Define o sucesso ANTES do redirect
+                        TempData["MsgSucesso"] = "Movimentação de entrada realizada com sucesso!";
+                        return RedirectToAction("Entradas");
+                    }
                 }
-                return View("InserirExibir", o_MovimentacaoVM);
+
+                // Se o ModelState falhar, recarrega a lista e devolve para a tela de origem
+                o_MovimentacaoEstoqueVM.ListaInsumos = ObterInsumos();
+                return View("InserirSaida", o_MovimentacaoEstoqueVM);
             }
             catch (Exception ex)
             {
-                TempData["MsgErro"] = ex.Message;
-                return View("InserirExibir", o_MovimentacaoVM);
+                TempData["MsgErro"] = "Erro ao processar movimentação: " + ex.Message;
+                o_MovimentacaoEstoqueVM.ListaInsumos = ObterInsumos();
+                return View("InserirSaida", o_MovimentacaoEstoqueVM);
             }
         }
 
@@ -181,9 +294,12 @@ namespace K_Gest.Controllers
                 //Campos que não podem ser nulos
                 o_MovimentacaoEstoqueVM.IdEstoque = idEstoque;
                 o_MovimentacaoEstoqueVM.TipoEs = pesqSetores.Rows[0]["TipoEs"].ToString();
-                o_MovimentacaoEstoqueVM.QtdMoviment = Convert.ToInt32(pesqSetores.Rows[0]["QtdMoviment"]);
+                o_MovimentacaoEstoqueVM.QtdMoviment = Convert.ToDecimal(pesqSetores.Rows[0]["QtdMoviment"]);
                 o_MovimentacaoEstoqueVM.Motivo = pesqSetores.Rows[0]["Motivo"].ToString();
                 o_MovimentacaoEstoqueVM.IdInsumo = Convert.ToInt32(pesqSetores.Rows[0]["IdInsumo"]);
+
+                // Passamos via ViewBag para preencher um <select>
+                o_MovimentacaoEstoqueVM.ListaInsumos = ObterInsumos();
 
                 return View("ExcluirExibirView", o_MovimentacaoEstoqueVM);
             }
@@ -206,7 +322,7 @@ namespace K_Gest.Controllers
 
                 o_MovimentacaoEstoque.Excluir();
 
-                TempData["MsgSucesso"] = "Setor excluído com sucesso!";
+                TempData["MsgSucesso"] = "Movimentação excluída com sucesso!";
                 return RedirectToAction("Selecionar");
             }
             catch (Exception ex)
@@ -232,7 +348,38 @@ namespace K_Gest.Controllers
 
         //    return View("ListaComprasView", dtParaComprar);
         //}
+        private List<SelectListItem> ObterInsumos()
+        {
+            // Nota: Conforme o código anterior, sua classe de dados chama-se 'Insumos'
+            DataTable dt = new Insumos().SelecionarTodos();
+
+            if (dt == null) return new List<SelectListItem>();
+
+            return (from DataRow dr in dt.Rows
+                    select new SelectListItem
+                    {
+                        // Adapte a string de coluna se no seu banco de insumos for minúsculo (ex: "idInsumo" / "nomeInsumo")
+                        Value = dr["idInsumo"].ToString(),
+                        Text = $"{dr["nomeInsumo"]} ({dr["unidadeMed"]})"
+                    }).ToList();
+        }
+        private string ObterUnidadeMedPorIDInsumo(int idInsumo)
+        {
+            DataTable dt = new Insumos { idInsumo = idInsumo }.SelecionarPorID();
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                return dt.Rows[0]["unidadeMed"].ToString();
+            }
+            return string.Empty; // Retorna vazio se não encontrar o insumo
+        }
+        private decimal ObterEstoqueAtualDeInsumo(int idInsumo)
+        {
+            DataTable dt = new Insumos { idInsumo = idInsumo }.SelecionarPorID();
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                return Convert.ToDecimal(dt.Rows[0]["estoqueAtual"].ToString());
+            }
+            return 0;
+        }
     }
-
-
 }

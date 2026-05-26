@@ -157,5 +157,33 @@ namespace K_Gest.BancoDados
             }
             catch (Exception ex) { throw new Exception("Erro ao buscar insumo por ID: " + ex.Message); }
         }
+        public decimal ObterEstoqueAtual()
+        {
+            try
+            {
+                string cmdSQL = "SELECT EstoqueAtual FROM Insumos WHERE IdInsumo = @IdInsumo";
+                SqlCommand cmd = new SqlCommand(cmdSQL, con);
+                cmd.Parameters.AddWithValue("@IdInsumo", idInsumo);
+                con.Open();
+                object result = cmd.ExecuteScalar();
+                return result != null ? Convert.ToDecimal(result) : 0;
+            }
+            catch (Exception ex) { throw new Exception("Erro ao obter estoque atual: " + ex.Message); }
+            finally { if (con.State == ConnectionState.Open) con.Close(); }
+        }
+        public string ObterUnidadeMedida()
+        {
+            try
+            {
+                string cmdSQL = "SELECT UnidadeMed FROM Insumos WHERE IdInsumo = @IdInsumo";
+                SqlCommand cmd = new SqlCommand(cmdSQL, con);
+                cmd.Parameters.AddWithValue("@IdInsumo", idInsumo);
+                con.Open();
+                object result = cmd.ExecuteScalar();
+                return result != null ? result.ToString() : string.Empty;
+            }
+            catch (Exception ex) { throw new Exception("Erro ao obter unidade de medida: " + ex.Message); }
+            finally { if (con.State == ConnectionState.Open) con.Close(); }
+        }
     }
 }

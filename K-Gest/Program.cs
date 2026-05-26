@@ -1,3 +1,4 @@
+using K_Gest.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
@@ -19,6 +20,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Login/Index"; // Redireciona para cá se tentar acessar sem login
         options.ExpireTimeSpan = TimeSpan.FromHours(2);
     });
+
+// Registra o serviço de segundo plano
+builder.Services.AddHostedService<VerificadorValidadeService>();
 
 var app = builder.Build();
 
