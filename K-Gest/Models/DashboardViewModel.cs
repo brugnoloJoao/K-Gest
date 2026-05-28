@@ -37,7 +37,7 @@ namespace K_Gest.Models
         public string tipoEs { get; set; } = string.Empty;
         public string NomeInsumo { get; set; } = string.Empty;
         public string UnidadeMed { get; set; } = string.Empty;
-        public decimal qtdMoviment { get; set; }
+        public decimal qtdMoviment { get; set; } 
         public DateTime dataMoviment { get; set; }
         public string motivo { get; set; } = string.Empty;
     }

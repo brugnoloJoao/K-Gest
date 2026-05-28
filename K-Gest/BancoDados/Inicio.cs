@@ -74,7 +74,7 @@ namespace K_Gest.BancoDados
 
                 // 3. Gráfico de Barras - Entradas por Motivo
                 string sqlMotivosEntrada = @"
-                    SELECT COALESCE(motivo, 'Não informado') as motivo, ISNULL(SUM(qtdMoviment), 0) as total 
+                    SELECT COALESCE(motivo, 'Não informado') as motivo, COUNT(*) as total 
                     FROM Movimentacao_Estoque 
                     WHERE tipoEs = 'E' OR tipoEs = 'Entrada'
                     GROUP BY motivo";
@@ -94,7 +94,7 @@ namespace K_Gest.BancoDados
 
                 // 4. Gráfico de Barras - Saídas por Motivo
                 string sqlMotivosSaida = @"
-                    SELECT COALESCE(motivo, 'Não informado') as motivo, ISNULL(SUM(qtdMoviment), 0) as total 
+                    SELECT COALESCE(motivo, 'Não informado') as motivo, COUNT(*) as total 
                     FROM Movimentacao_Estoque 
                     WHERE tipoEs = 'S' OR tipoEs = 'Saída'
                     GROUP BY motivo";
@@ -140,7 +140,7 @@ namespace K_Gest.BancoDados
                             tipoEs = tipoEsTratado,
                             NomeInsumo = nomeInsumoTratado,
                             UnidadeMed = unidadeMedTratada,
-                            qtdMoviment = qtdTratada,
+                            qtdMoviment = (unidadeMedTratada?.ToUpper() == "KG" || unidadeMedTratada?.ToUpper() == "L") ? qtdTratada / 1000 : qtdTratada,
                             dataMoviment = dataTratada,
                             motivo = motivoTratado
                         });

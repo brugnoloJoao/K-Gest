@@ -19,6 +19,8 @@ namespace K_Gest.Controllers
             {
                 Inicio bd = new Inicio();
                 DashboardViewModel dashboardDados = bd.CarregarDadosDashboard();
+
+
                 return View("IndexView", dashboardDados);
             }
             catch (Exception ex)
