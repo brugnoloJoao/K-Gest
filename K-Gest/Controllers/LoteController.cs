@@ -181,13 +181,21 @@ namespace K_Gest.Controllers
                 if (dt != null && dt.Rows.Count > 0)
                 {
                     DataRow row = dt.Rows[0];
+                    int idInsumo = Convert.ToInt32(row["IdInsumo"]);
+
+                    // Busca a unidade de medida para converter o valor guardado para o formato da tela
+                    Insumos o_Insumo = new Insumos { idInsumo = idInsumo };
+                    string unidadeMed = o_Insumo.ObterUnidadeMedida();
+                    decimal qtdTela = o_Lote.ConverterParaTela(Convert.ToDecimal(row["Quantidade"]), unidadeMed);
+
                     var vm = new LoteViewModel
                     {
                         IdLote = Convert.ToInt32(row["IdLote"]),
                         DtFabricacao = Convert.ToDateTime(row["DtFabricacao"]),
                         DtValidade = Convert.ToDateTime(row["DtValidade"]),
                         NumLote = Convert.ToInt32(row["NumLote"]),
-                        IdInsumo = Convert.ToInt32(row["IdInsumo"]),
+                        IdInsumo = idInsumo,
+                        Quantidade = qtdTela, // Carrega o valor ajustado (ex: KG ou UN)
                         ListaInsumos = ObterInsumos()
                     };
                     return View("AlterarExibirView", vm);
@@ -195,7 +203,7 @@ namespace K_Gest.Controllers
             }
             catch (Exception ex)
             {
-                TempData["MsgErro"] = ex.Message;
+                TempData["MsgErro"] = "Erro ao carregar dados do lote: " + ex.Message;
             }
 
             return RedirectToAction("Selecionar");
@@ -205,26 +213,83 @@ namespace K_Gest.Controllers
         public IActionResult AlterarProcessar(LoteViewModel vm)
         {
             ModelState.Remove("ListaInsumos");
+            ModelState.Remove("Quantidade");
+            ModelState.Remove("DtFabricacao");
+            ModelState.Remove("DtValidade");
 
             try
             {
-                Lote o_Lote = new Lote
+                if (vm.IdLote <= 0 && Request.Form.ContainsKey("IdLote"))
                 {
-                    idLote = vm.IdLote,
-                    dtFabricacao = vm.DtFabricacao,
-                    dtValidade = vm.DtValidade,
-                    numLote = vm.NumLote,
-                    idInsumo = vm.IdInsumo
-                };
+                    vm.IdLote = Convert.ToInt32(Request.Form["IdLote"]);
+                }
 
+                Lote o_Lote = new Lote { idLote = vm.IdLote };
+
+                // 1. Captura o estado e estoque ANTES da atualização do lote
+                int idInsumoOriginal = o_Lote.ObterIDInsumoPorIDLote();
+
+                if (idInsumoOriginal <= 0)
+                {
+                    TempData["MsgErro"] = "Não foi possível identificar o lote original para alteração.";
+                    return RedirectToAction("Selecionar");
+                }
+
+                if (vm.IdInsumo <= 0) vm.IdInsumo = idInsumoOriginal;
+
+                Insumos o_Insumo = new Insumos { idInsumo = idInsumoOriginal };
+                decimal estoqueAtualAntes = o_Insumo.ObterEstoqueAtual();
+                string unidadeMed = o_Insumo.ObterUnidadeMedida();
+
+                // 2. Prepara os novos dados vindos do formulário
+                o_Lote.dtFabricacao = vm.DtFabricacao;
+                o_Lote.dtValidade = vm.DtValidade;
+                o_Lote.numLote = vm.NumLote;
+                o_Lote.idInsumo = vm.IdInsumo;
+                o_Lote.quantidade = o_Lote.ConverterParaBanco(vm.Quantidade, unidadeMed);
+
+                // 3. Executa a atualização (UPDATE) no banco
                 o_Lote.Alterar();
 
+                // 4. Calcula a nova soma de lotes vinculados ao Insumo após a alteração
+                o_Lote.idInsumo = vm.IdInsumo;
+                decimal novaSomaLotes = o_Lote.TotalLotes();
+
+                // 5. Lógica de movimentação automática seguindo o padrão
+                decimal diferenca = novaSomaLotes - estoqueAtualAntes;
+
+                if (diferenca > 0)
+                {
+                    MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque
+                    {
+                        tipoEs = "E",
+                        qtdMoviment = diferenca,
+                        // TEXTO ENCURTADO: 37 caracteres (cabe perfeitamente no VARCHAR(50))
+                        motivo = "Ajuste automatico de lote (Entrada)",
+                        idInsumo = vm.IdInsumo
+                    };
+                    o_MovimentacaoEstoque.InserirPorLote();
+                }
+                else if (diferenca < 0)
+                {
+                    MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque
+                    {
+                        tipoEs = "S",
+                        qtdMoviment = Math.Abs(diferenca),
+                        // TEXTO ENCURTADO: 35 caracteres (cabe perfeitamente no VARCHAR(50))
+                        motivo = "Ajuste automatico de lote (Saida)",
+                        idInsumo = vm.IdInsumo
+                    };
+                    o_MovimentacaoEstoque.InserirPorLote();
+                }
+
                 TempData["MsgSucesso"] = "Lote atualizado com sucesso!";
-                return RedirectToAction("Selecionar");
+
+                return RedirectToAction("GerenciarLotes", new { id = vm.IdInsumo });
             }
             catch (Exception ex)
             {
-                TempData["MsgErro"] = ex.Message;
+                TempData["MsgErro"] = "Erro ao atualizar lote: " + ex.Message;
                 vm.ListaInsumos = ObterInsumos();
                 return View("AlterarExibirView", vm);
             }

@@ -1,15 +1,15 @@
-﻿@model K_Gest.Models.ReceitasViewModel
+﻿@model K_Gest.Models.LoteViewModel
 
 @{
-    ViewData["Title"] = "Editar Receita";
+    ViewData["Title"] = "Editar Lote";
 }
 
 <div class="container-fluid px-4 py-4" style="max-width: 900px; margin: 0 auto;">
 
-    @* Navegação de Retorno *@
+    @* Navegação de Retorno Dinâmica para o Gerenciador do Insumo *@
     <div class="mb-3">
-        <a asp-action="Selecionar" class="text-decoration-none small fw-semibold d-inline-flex align-items-center gap-1 back-link">
-            <i class="bi bi-chevron-left"></i> Voltar para a lista
+        <a asp-action="GerenciarLotes" asp-route-id="@Model.IdInsumo" class="text-decoration-none small fw-semibold d-inline-flex align-items-center gap-1 back-link">
+            <i class="bi bi-chevron-left"></i> Voltar para os lotes
         </a>
     </div>
 
@@ -19,8 +19,8 @@
             <i class="bi bi-pencil-fill"></i>
         </div>
         <div>
-            <h2 class="fw-bold text-dark m-0" style="font-size: 24px; letter-spacing: -0.5px;">Alterar Receita</h2>
-            <p class="text-muted small m-0 mt-1">Atualize o nome e as especificações do prato selecionado.</p>
+            <h2 class="fw-bold text-dark m-0" style="font-size: 24px; letter-spacing: -0.5px;">Alterar Lote</h2>
+            <p class="text-muted small m-0 mt-1">Atualize as informações de identificação, validades e volumes deste lote.</p>
         </div>
     </div>
 
@@ -28,18 +28,45 @@
     <div class="card border-0 shadow-premium" style="border-radius: 20px; background: #ffffff; overflow: hidden;">
         <div class="card-body p-4 p-md-5">
             <form asp-action="AlterarProcessar" method="post">
-                @* CAMPO OBRIGATÓRIO PARA O UPDATE *@
-                <input type="hidden" asp-for="IdReceita" />
+                @* CAMPOS OBRIGATÓRIOS PARA O UPDATE E MAPEAMENTO *@
+                <input type="hidden" asp-for="IdLote" />
+                <input type="hidden" asp-for="IdInsumo" />
 
                 <div class="row g-4">
-                    @* Nome do Prato *@
-                    <div class="col-12">
-                        <label class="form-label text-secondary fw-bold small text-uppercase">Nome do Prato</label>
+                    @* Número do Lote *@
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary fw-bold small text-uppercase">Número do Lote</label>
                         <div class="modern-input-group">
-                            <i class="bi bi-journal-bookmark-fill text-salmon"></i>
-                            <input asp-for="NomePrato" class="form-control-modern" placeholder="Ex: Estrogonofe de Frango" required />
+                            <i class="bi bi-hash text-salmon"></i>
+                            <input asp-for="NumLote" type="number" class="form-control-modern font-monospace" placeholder="Ex: 20240101" required />
                         </div>
-                        <span asp-validation-for="NomePrato" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    @* Quantidade do Lote (Mudado para asp-for para não quebrar o binding) *@
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary fw-bold small text-uppercase">Quantidade</label>
+                        <div class="modern-input-group">
+                            <i class="bi bi-box-seam-fill text-salmon"></i>
+                            <input asp-for="Quantidade" type="text" class="form-control-modern font-monospace" required />
+                        </div>
+                    </div>
+
+                    @* Data de Fabricação *@
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary fw-bold small text-uppercase">Data de Fabricação</label>
+                        <div class="modern-input-group">
+                            <i class="bi bi-calendar-check text-salmon"></i>
+                            <input asp-for="DtFabricacao" type="date" class="form-control-modern" required />
+                        </div>
+                    </div>
+
+                    @* Data de Validade *@
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary fw-bold small text-uppercase">Data de Validade</label>
+                        <div class="modern-input-group">
+                            <i class="bi bi-calendar-x text-salmon"></i>
+                            <input asp-for="DtValidade" type="date" class="form-control-modern" required />
+                        </div>
                     </div>
 
                     @* Rodapé de Ações *@
@@ -47,7 +74,7 @@
                         <button type="submit" class="btn-salmon-action flex-grow-1 shadow-sm">
                             <i class="bi bi-cloud-check-fill me-2"></i> Salvar Alterações
                         </button>
-                        <a asp-action="Selecionar" class="btn-cancel-modern">
+                        <a asp-action="GerenciarLotes" asp-route-id="@Model.IdInsumo" class="btn-cancel-modern text-center">
                             Cancelar
                         </a>
                     </div>
@@ -97,7 +124,7 @@
     }
 
     /* Estilização dos Campos */
-    .form-control-modern, .form-select-modern {
+    .form-control-modern {
         width: 100%;
         padding: 12px 16px 12px 48px;
         background-color: #f8fafc;
@@ -108,7 +135,7 @@
         transition: all 0.3s ease;
     }
 
-        .form-control-modern:focus, .form-select-modern:focus {
+        .form-control-modern:focus {
             background-color: #fff;
             border-color: var(--salmon-primary);
             outline: none;
@@ -144,7 +171,6 @@
         text-decoration: none;
         font-size: 14px;
         transition: all 0.2s ease;
-        text-align: center;
     }
 
         .btn-cancel-modern:hover {

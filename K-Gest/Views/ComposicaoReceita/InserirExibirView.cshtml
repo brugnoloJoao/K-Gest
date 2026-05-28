@@ -1,27 +1,54 @@
-﻿
-@model K_Gest.Models.ComposicaoReceitaViewModel
+﻿@model K_Gest.Models.ComposicaoReceitaViewModel
 
-<div class="container mt-4">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <h4><i class="bi bi-list-check"></i> Montar Ficha Técnica</h4>
+@{
+    ViewData["Title"] = "Montar Ficha Técnica";
+}
+
+<div class="container-fluid px-4 py-4" style="max-width: 1000px; margin: 0 auto;">
+
+    @* Navegação de Retorno *@
+    <div class="mb-3">
+        <a asp-action="Selecionar" class="text-decoration-none small fw-semibold d-inline-flex align-items-center gap-1 back-link">
+            <i class="bi bi-chevron-left"></i> Voltar para a lista
+        </a>
+    </div>
+
+    @* Cabeçalho da Página *@
+    <div class="mb-4 d-flex align-items-center gap-3">
+        <div class="icon-shape-salmon">
+            <i class="bi bi-list-check"></i>
         </div>
-        <div class="card-body">
+        <div>
+            <h2 class="fw-bold text-dark m-0" style="font-size: 24px; letter-spacing: -0.5px;">Montar Ficha Técnica</h2>
+            <p class="text-muted small m-0 mt-1">Combine os insumos e monte as proporções da receita do prato.</p>
+        </div>
+    </div>
+
+    @* Card Principal *@
+    <div class="card border-0 shadow-premium" style="border-radius: 20px; background: #ffffff; overflow: hidden;">
+        <div class="card-body p-4 p-md-5">
             <form id="frmFicha" action="@(Model.IdReceita > 0 ? "/ComposicaoReceita/AlterarProcessar" : "/ComposicaoReceita/InserirProcessar")" method="post">
 
                 <input type="hidden" asp-for="IdReceita" id="hdnIdReceita" />
 
-                <div class="mb-4">
-                    <label class="form-label fw-bold">Receita</label>
-                    <select id="selReceita" asp-items="Model.ListaReceitas" class="form-select border-primary" style="@(Model.IdReceita > 0 ? "pointer-events: none; background-color: #e9ecef;" : "")">
-                        <option value="">-- Escolha o Prato --</option>
-                    </select>
+                @* Seção: Seleção da Receita *@
+                <div class="mb-5">
+                    <label class="form-label text-secondary fw-bold small text-uppercase">Receita / Prato</label>
+                    <div class="modern-input-group">
+                        <i class="bi bi-journal-bookmark-fill text-salmon"></i>
+                        <select id="selReceita" asp-items="Model.ListaReceitas" class="form-select-modern" style="@(Model.IdReceita > 0 ? "pointer-events: none; background-color: #f1f5f9; color: #94a3b8;" : "")">
+                            <option value=""> Escolha o Prato </option>
+                        </select>
+                    </div>
                     @if (Model.IdReceita > 0)
                     {
-                        <small class="text-muted">Para mudar o prato, crie uma nova ficha.</small>
+                        <div class="form-text text-muted mt-2 small d-flex align-items-center gap-1">
+                            <i class="bi bi-info-circle"></i> Para mudar o prato, crie uma nova ficha técnica.
+                        </div>
                     }
                 </div>
 
+<<<<<<< HEAD
                 <div class="bg-light p-3 border rounded mb-3">
                     <div class="row g-2 align-items-end">
                         <div class="col-md-3">
@@ -47,13 +74,58 @@
                                 <option value="L">Litro (L)</option>
                                 <option value="G">Grama (G)</option>
                             </select>
+=======
+                @* Seção Adicionar Ingrediente (Sub-Card Interno) *@
+                <div class="p-4 border rounded-4 mb-5" style="background-color: #f8fafc; border-color: #e2e8f0 !important;">
+                    <h5 class="fw-bold text-dark mb-4" style="font-size: 16px;"><i class="bi bi-plus-circle-fill text-salmon me-2"></i>Adicionar Ingrediente à Ficha</h5>
+
+                    <div class="row g-4 align-items-end">
+                        <div class="col-lg-4 col-md-6">
+                            <label class="form-label text-secondary fw-bold xs-uppercase">Ingrediente</label>
+                            <div class="modern-input-group">
+                                <i class="bi bi-tag-fill text-salmon"></i>
+                                <select id="selInsumo" class="form-select-modern">
+                                    <option value="">Selecione </option>
+                                    @foreach (var item in Model.ListaInsumos)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                            </div>
                         </div>
-                        <div class="col-md-3">
-                            <button type="button" id="btnAdd" class="btn btn-success w-100">Incluir</button>
+
+                        <div class="col-lg-3 col-md-6">
+                            <label class="form-label text-secondary fw-bold xs-uppercase">Quantidade</label>
+                            <div class="modern-input-group">
+                                <i class="bi bi-calculator text-salmon"></i>
+                                <input type="number" id="txtQtd" class="form-control-modern font-monospace" step="0.001" placeholder="0,000" />
+                            </div>
+>>>>>>> origin/front2
+                        </div>
+
+                        <div class="col-lg-3 col-md-6">
+                            <label class="form-label text-secondary fw-bold xs-uppercase">Unidade de Medida</label>
+                            <div class="modern-input-group">
+                                <i class="bi bi-box-seam-fill text-salmon"></i>
+                                <select id="selUni" class="form-select-modern">
+                                    <option value="">-- Selecione --</option>
+                                    <option value="KG">Quilograma (KG)</option>
+                                    <option value="UN">Unidade (UN)</option>
+                                    <option value="L">Litro (L)</option>
+                                    <option value="G">Grama (G)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-2 col-md-6">
+                            <button type="button" id="btnAdd" class="btn-salmon-action w-100" style="padding: 12px 0;">
+                                <i class="bi bi-plus-lg"></i> Incluir
+                            </button>
                         </div>
                     </div>
                 </div>
 
+<<<<<<< HEAD
                 <table class="table table-striped border" id="tblItens">
                     <thead class="table-dark">
                         <tr>
@@ -86,17 +158,239 @@
                                         <button type="button" class="btn btn-sm btn-danger btn-remover">Remover</button>
                                     </td>
                                 </tr>
+=======
+                @* Tabela de Itens *@
+                <div class="table-responsive rounded-4 border mb-4" style="border-color: #e2e8f0 !important;">
+                    <table class="table table-modern align-middle mb-0" id="tblItens">
+                        <thead>
+                            <tr>
+                                <th>Ingrediente</th>
+                                <th>Quantidade</th>
+                                <th>Unidade</th>
+                                <th class="text-center" style="width: 100px;">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Itens != null)
+                            {
+                                for (int i = 0; i < Model.Itens.Count; i++)
+                                {
+                                    <tr data-origem="banco">
+                                        <td class="fw-semibold text-dark">
+                                            @Model.Itens[i].NomeInsumo
+                                            <input type="hidden" class="insumo-id" value="@Model.Itens[i].IdInsumo" />
+                                        </td>
+                                        <td class="font-monospace fw-bold text-secondary">
+                                            @Model.Itens[i].QuantidadeExibicao.ToString("G29", System.Globalization.CultureInfo.CurrentCulture)
+                                            <input type="hidden" class="insumo-qtd" value="@Model.Itens[i].Quantidade.ToString("F3", System.Globalization.CultureInfo.InvariantCulture)" />
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-salmon-soft">@Model.Itens[i].UnidadeExibicao</span>
+                                            <input type="hidden" class="insumo-unidade" value="@Model.Itens[i].UnidadeExibicao" />
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn-delete-modern btn-remover">
+                                                <i class="bi bi-trash3-fill"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+>>>>>>> origin/front2
                             }
-                        }
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
 
-                <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">Salvar Ficha Técnica</button>
-                <a asp-action="Selecionar" class="btn btn-outline-secondary w-100 mt-2">Cancelar</a>
+                @* Rodapé de Ações do Formulário *@
+                <div class="row g-3 mt-4">
+                    <div class="col-md-8">
+                        <button type="submit" class="btn-salmon-action w-100 shadow-sm">
+                            <i class="bi bi-cloud-check-fill me-2"></i> Salvar Ficha Técnica
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <a asp-action="Selecionar" class="btn-cancel-modern w-100 d-block text-center">
+                            Cancelar
+                        </a>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
 </div>
+
+<style>
+    :root {
+        --salmon-primary: #FF8C69;
+        --salmon-hover: #fa7a52;
+        --salmon-soft: #fff1ed;
+        --text-dark: #334155;
+    }
+
+    .icon-shape-salmon {
+        width: 48px;
+        height: 48px;
+        background-color: var(--salmon-soft);
+        color: var(--salmon-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        font-size: 20px;
+    }
+
+    .modern-input-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+        .modern-input-group i {
+            position: absolute;
+            left: 16px;
+            z-index: 10;
+            font-size: 18px;
+        }
+
+    .text-salmon {
+        color: var(--salmon-primary);
+    }
+
+    .xs-uppercase {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-control-modern, .form-select-modern {
+        width: 100%;
+        padding: 12px 16px 12px 48px;
+        background-color: #ffffff;
+        border: 2px solid #f1f5f9;
+        border-radius: 12px;
+        color: var(--text-dark);
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+        .form-control-modern:focus, .form-select-modern:focus {
+            background-color: #fff;
+            border-color: var(--salmon-primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(255, 140, 105, 0.15);
+        }
+
+    /* Estilização Moderna de Tabela */
+    .table-modern thead {
+        background-color: #f1f5f9;
+    }
+
+        .table-modern thead th {
+            color: #475569;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            padding: 16px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+    .table-modern tbody tr {
+        transition: background-color 0.2s ease;
+    }
+
+        .table-modern tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+    .table-modern tbody td {
+        padding: 16px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #475569;
+        font-size: 14px;
+    }
+
+    /* Badge Salmão Customizada */
+    .badge-salmon-soft {
+        background-color: var(--salmon-soft);
+        color: var(--salmon-primary);
+        font-weight: 700;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+    }
+
+    /* Botões */
+    .btn-salmon-action {
+        background-color: var(--salmon-primary);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .btn-salmon-action:hover {
+            background-color: var(--salmon-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(255, 140, 105, 0.3) !important;
+        }
+
+    .btn-cancel-modern {
+        background-color: #f1f5f9;
+        color: #64748b;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+        .btn-cancel-modern:hover {
+            background-color: #e2e8f0;
+            color: #334155;
+        }
+
+    .btn-delete-modern {
+        background-color: #fff1f2;
+        color: #f43f5e;
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+        .btn-delete-modern:hover {
+            background-color: #ffe4e6;
+            color: #e11d48;
+            transform: scale(1.05);
+        }
+
+    .back-link {
+        color: var(--salmon-primary);
+        transition: opacity 0.2s;
+    }
+
+        .back-link:hover {
+            opacity: 0.8;
+        }
+
+    .shadow-premium {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02) !important;
+    }
+</style>
 
 @section Scripts {
     <script>
@@ -120,18 +414,20 @@
 
             const idInsumo = selIns.value;
             const nomeInsumo = selIns.options[selIns.selectedIndex].text;
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/front2
             const unidade = selUni.options[selUni.selectedIndex].text.match(/\(([^)]+)\)/);
 
             const tbody = document.querySelector('#tblItens tbody');
             const tr = document.createElement('tr');
-
             tr.setAttribute('data-origem', 'tela');
 
-            // Padroniza a exibição na tela trocando ponto por vírgula se necessário
             let qtdDigitada = qtd.value.replace('.', ',');
 
             tr.innerHTML = `
+<<<<<<< HEAD
                                 <td>
                                     ${nomeInsumo}
                                     <input type="hidden" class="insumo-id" value="${idInsumo}" />
@@ -148,17 +444,41 @@
                                     <button type="button" class="btn btn-sm btn-danger btn-remover">Remover</button>
                                 </td>
                             `;
+=======
+                        <td class="fw-semibold text-dark">
+                            ${nomeInsumo}
+                            <input type="hidden" class="insumo-id" value="${idInsumo}" />
+                        </td>
+                        <td class="font-monospace fw-bold text-secondary">
+                            ${qtdDigitada}
+                            <input type="hidden" class="insumo-qtd" value="${qtd.value}" />
+                        </td>
+                        <td>
+                            <span class="badge badge-salmon-soft">${unidade[1]}</span>
+                            <input type="hidden" class="insumo-unidade" value="${unidade[1]}" />
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn-delete-modern btn-remover">
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
+                        </td>
+                    `;
+>>>>>>> origin/front2
 
             tbody.appendChild(tr);
 
             selIns.value = "";
+<<<<<<< HEAD
             selIns.value = "";
+=======
+            selUni.value = "";
+>>>>>>> origin/front2
             qtd.value = "";
         });
 
-        // Remover linhas da tabela
+        // Remover linhas da tabela (Event Delegation)
         document.getElementById('tblItens').addEventListener('click', function (e) {
-            if (e.target && e.target.classList.contains('btn-remover')) {
+            if (e.target && e.target.closest('.btn-remover')) {
                 e.target.closest('tr').remove();
             }
         });
@@ -172,14 +492,12 @@
                 const inputQtd = tr.querySelector('.insumo-qtd');
                 const inputUnidade = tr.querySelector('.insumo-unidade');
 
-                // Tratamento universal de ponto/vírgula para o parseFloat do JavaScript não quebrar decimais
                 let valorTexto = inputQtd.value.replace(',', '.');
                 let valorFinal = parseFloat(valorTexto);
 
                 const unidadeTexto = inputUnidade.value.toUpperCase();
                 const origen = tr.getAttribute('data-origem');
 
-                // Só multiplica se for inserido direto na tela agora
                 if (origen === "tela" && (unidadeTexto === "KG" || unidadeTexto === "L")) {
                     valorFinal = valorFinal * 1000;
                 }
@@ -188,10 +506,8 @@
                 inputQtd.name = `Itens[${index}].Quantidade`;
                 inputUnidade.name = `Itens[${index}].UnidadeExibicao`;
 
-                // Devolve para o input em formato Invariant string (ponto) aceito de volta pelo C#
                 inputQtd.value = valorFinal.toString();
             });
         });
     </script>
 }
-

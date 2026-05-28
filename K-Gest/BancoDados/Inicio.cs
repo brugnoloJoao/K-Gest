@@ -1,5 +1,8 @@
 ﻿using Microsoft.Data.SqlClient;
-using System.Data;
+using System;
+using System.IO;
+using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 using K_Gest.Models;
 
 namespace K_Gest.BancoDados
@@ -18,13 +21,21 @@ namespace K_Gest.BancoDados
 
         public DashboardViewModel CarregarDadosDashboard()
         {
-            var model = new DashboardViewModel();
+            // Garante que as listas internas do ViewModel iniciem vazias e nunca nulas
+            var model = new DashboardViewModel
+            {
+                MotivosEntrada = new List<string>(),
+                QtdsEntrada = new List<decimal>(),
+                MotivosSaida = new List<string>(),
+                QtdsSaida = new List<decimal>(),
+                UltimasMovimentacoes = new List<MovimentacaoItemDashboard>()
+            };
 
             try
             {
                 con.Open();
 
-                // 1. Contar Total de Insumos e Receitas (Totalmente fiel ao seu diagrama)
+                // 1. Contar Total de Insumos, Receitas e Alertas
                 string sqlContadores = @"
                     SELECT 
                         (SELECT COUNT(*) FROM Insumos) as TotalInsumos,
@@ -39,16 +50,16 @@ namespace K_Gest.BancoDados
                 {
                     if (dr.Read())
                     {
-                        model.TotalInsumos = Convert.ToInt32(dr["TotalInsumos"]);
-                        model.TotalReceitas = Convert.ToInt32(dr["TotalReceitas"]);
-                        model.InsumosAbaixoPontoPedido = Convert.ToInt32(dr["AbaixoPonto"]);
-                        model.InsumosZerados = Convert.ToInt32(dr["Zerados"]);
-                        model.LotesEmAlerta = Convert.ToInt32(dr["LotesAlerta"]);
-                        model.LotesVencidos = Convert.ToInt32(dr["LotesVencidos"]);
+                        model.TotalInsumos = dr["TotalInsumos"] != DBNull.Value ? Convert.ToInt32(dr["TotalInsumos"]) : 0;
+                        model.TotalReceitas = dr["TotalReceitas"] != DBNull.Value ? Convert.ToInt32(dr["TotalReceitas"]) : 0;
+                        model.InsumosAbaixoPontoPedido = dr["AbaixoPonto"] != DBNull.Value ? Convert.ToInt32(dr["AbaixoPonto"]) : 0;
+                        model.InsumosZerados = dr["Zerados"] != DBNull.Value ? Convert.ToInt32(dr["Zerados"]) : 0;
+                        model.LotesEmAlerta = dr["LotesAlerta"] != DBNull.Value ? Convert.ToInt32(dr["LotesAlerta"]) : 0;
+                        model.LotesVencidos = dr["LotesVencidos"] != DBNull.Value ? Convert.ToInt32(dr["LotesVencidos"]) : 0;
                     }
                 }
 
-                // 2. Histórico de Vendas (Últimos 10 dias) - Usando 'dataVend' correta
+                // 2. Histórico de Vendas (Últimos 10 dias)
                 string sqlVendas = @"
                     SELECT ISNULL(SUM(qtdVendida), 0) as Qtd 
                     FROM Historico_Vendas 
@@ -56,99 +67,96 @@ namespace K_Gest.BancoDados
 
                 using (SqlCommand cmd = new SqlCommand(sqlVendas, con))
                 {
-                    model.QtdPratosVendidos = Convert.ToInt32(cmd.ExecuteScalar());
+                    object resultadoVendas = cmd.ExecuteScalar();
+                    model.QtdPratosVendidos = resultadoVendas != DBNull.Value ? Convert.ToInt32(resultadoVendas) : 0;
                     model.TotalVendidoDezDias = model.QtdPratosVendidos * 25.00m;
                 }
 
-                // 3. Gráfico de Linha Ajustado: Puxa Entradas da fabricação de Lotes e Saídas do Histórico de Vendas
-                string sqlGraficoLinha = @"
-                    SELECT 
-                        Datas.DiaFormatado,
-                        ISNULL(Entradas.QtdEntrada, 0) as Entradas,
-                        ISNULL(Saidas.QtdSaida, 0) as Saidas
-                    FROM (
-                        SELECT DISTINCT FORMAT(dtFabricacao, 'dd/MM') as DiaFormatado, CAST(dtFabricacao AS DATE) as DataPura FROM Lote WHERE dtFabricacao >= DATEADD(day, -7, GETDATE())
-                        UNION
-                        SELECT DISTINCT FORMAT(dataVend, 'dd/MM') as DiaFormatado, CAST(dataVend AS DATE) as DataPura FROM Historico_Vendas WHERE dataVend >= DATEADD(day, -7, GETDATE())
-                    ) Datas
-                    LEFT JOIN (
-                        SELECT FORMAT(dtFabricacao, 'dd/MM') as DiaFormatado, SUM(1) as QtdEntrada 
-                        FROM Lote GROUP BY FORMAT(dtFabricacao, 'dd/MM')
-                    ) Entradas ON Datas.DiaFormatado = Entradas.DiaFormatado
-                    LEFT JOIN (
-                        SELECT FORMAT(dataVend, 'dd/MM') as DiaFormatado, SUM(qtdVendida) as QtdSaida 
-                        FROM Historico_Vendas GROUP BY FORMAT(dataVend, 'dd/MM')
-                    ) Saidas ON Datas.DiaFormatado = Saidas.DiaFormatado
-                    ORDER BY Datas.DataPura ASC";
+                // 3. Gráfico de Barras - Entradas por Motivo
+                string sqlMotivosEntrada = @"
+                    SELECT COALESCE(motivo, 'Não informado') as motivo, ISNULL(SUM(qtdMoviment), 0) as total 
+                    FROM Movimentacao_Estoque 
+                    WHERE tipoEs = 'E' OR tipoEs = 'Entrada'
+                    GROUP BY motivo";
 
-                using (SqlCommand cmd = new SqlCommand(sqlGraficoLinha, con))
+                using (SqlCommand cmd = new SqlCommand(sqlMotivosEntrada, con))
                 using (SqlDataReader dr = cmd.ExecuteReader())
                 {
                     while (dr.Read())
                     {
-                        model.DatasGraficoLinha.Add(dr["DiaFormatado"].ToString()!);
-                        model.DadosEntradasGrafico.Add(Convert.ToDecimal(dr["Entradas"]));
-                        model.DadosSaidasGrafico.Add(Convert.ToDecimal(dr["Saidas"]));
+                        string motivo = dr["motivo"] != DBNull.Value ? dr["motivo"].ToString()! : "Não informado";
+                        decimal total = dr["total"] != DBNull.Value ? Convert.ToDecimal(dr["total"]) : 0m;
+
+                        model.MotivosEntrada.Add(motivo);
+                        model.QtdsEntrada.Add(total);
                     }
                 }
 
-                if (model.DatasGraficoLinha.Count == 0)
-                {
-                    model.DatasGraficoLinha.Add(DateTime.Now.ToString("dd/MM"));
-                    model.DadosEntradasGrafico.Add(0);
-                    model.DadosSaidasGrafico.Add(0);
-                }
+                // 4. Gráfico de Barras - Saídas por Motivo
+                string sqlMotivosSaida = @"
+                    SELECT COALESCE(motivo, 'Não informado') as motivo, ISNULL(SUM(qtdMoviment), 0) as total 
+                    FROM Movimentacao_Estoque 
+                    WHERE tipoEs = 'S' OR tipoEs = 'Saída'
+                    GROUP BY motivo";
 
-                // 4. Gráfico de Rosquinha: Top 5 Receitas Mais Vendidas
-                string sqlTopReceitas = @"
-                    SELECT TOP 5 r.nomePrato, SUM(h.qtdVendida) as Total
-                    FROM Historico_Vendas h
-                    INNER JOIN Receitas r ON h.idReceita = r.idReceita
-                    GROUP BY r.nomePrato
-                    ORDER BY Total DESC";
-
-                using (SqlCommand cmd = new SqlCommand(sqlTopReceitas, con))
+                using (SqlCommand cmd = new SqlCommand(sqlMotivosSaida, con))
                 using (SqlDataReader dr = cmd.ExecuteReader())
                 {
                     while (dr.Read())
                     {
-                        model.NomesTopReceitas.Add(dr["nomePrato"].ToString()!);
-                        model.QtdVendasTopReceitas.Add(Convert.ToInt32(dr["Total"]));
+                        string motivo = dr["motivo"] != DBNull.Value ? dr["motivo"].ToString()! : "Não informado";
+                        decimal total = dr["total"] != DBNull.Value ? Convert.ToDecimal(dr["total"]) : 0m;
+
+                        model.MotivosSaida.Add(motivo);
+                        model.QtdsSaida.Add(total);
                     }
                 }
 
-                // 5. Tabela: Últimas Movimentações (Adaptada para ler sem a coluna de data)
+                // 5. Tabela: Últimas Movimentações 
                 string sqlUltimasMov = @"
-                    SELECT TOP 5 m.tipoEs, i.nomeInsumo, i.unidadeMed, m.qtdMoviment, m.motivo
+                    SELECT TOP 5 m.tipoEs, i.nomeInsumo, i.unidadeMed, m.qtdMoviment, m.dataMoviment, m.motivo
                     FROM Movimentacao_Estoque m
                     INNER JOIN Insumos i ON m.idInsumo = i.idInsumo
-                    ORDER BY m.idEstoque DESC"; // Ordena pelo ID incremental já que não há data
+                    ORDER BY m.idEstoque DESC";
 
                 using (SqlCommand cmd = new SqlCommand(sqlUltimasMov, con))
                 using (SqlDataReader dr = cmd.ExecuteReader())
                 {
                     while (dr.Read())
                     {
+                        // Tratamento individual seguro para cada campo da tabela
+                        string tipoEsTratado = dr["tipoEs"] != DBNull.Value ? dr["tipoEs"].ToString()! : "E";
+                        string nomeInsumoTratado = dr["nomeInsumo"] != DBNull.Value ? dr["nomeInsumo"].ToString()! : "Insumo Oculto";
+                        string unidadeMedTratada = dr["unidadeMed"] != DBNull.Value ? dr["unidadeMed"].ToString()! : "un";
+                        decimal qtdTratada = dr["qtdMoviment"] != DBNull.Value ? Convert.ToDecimal(dr["qtdMoviment"]) : 0m;
+                        string motivoTratado = dr["motivo"] != DBNull.Value ? dr["motivo"].ToString()! : "Sem justificativa";
+
+                        DateTime dataTratada = dr["dataMoviment"] == DBNull.Value
+                            ? DateTime.Now
+                            : Convert.ToDateTime(dr["dataMoviment"]);
+
                         model.UltimasMovimentacoes.Add(new MovimentacaoItemDashboard
                         {
-                            tipoEs = dr["tipoEs"].ToString()!,
-                            NomeInsumo = dr["nomeInsumo"].ToString()!,
-                            UnidadeMed = dr["unidadeMed"].ToString()!,
-                            qtdMoviment = Convert.ToDecimal(dr["qtdMoviment"]),
-                            dataMoviment = DateTime.Now, // Fallback visual seguro
-                            motivo = dr["motivo"].ToString()!
+                            tipoEs = tipoEsTratado,
+                            NomeInsumo = nomeInsumoTratado,
+                            UnidadeMed = unidadeMedTratada,
+                            qtdMoviment = qtdTratada,
+                            dataMoviment = dataTratada,
+                            motivo = motivoTratado
                         });
                     }
                 }
-
-                con.Close();
-                return model;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                if (con.State == ConnectionState.Open) con.Close();
-                throw new Exception("Erro ao processar dados do Dashboard: " + ex.Message);
+                throw;
             }
+            finally
+            {
+                con.Close();
+            }
+
+            return model;
         }
     }
 }
