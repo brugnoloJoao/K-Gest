@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace K_Gest.Models
 {
@@ -20,5 +21,6 @@ namespace K_Gest.Models
         [Range(1, int.MaxValue, ErrorMessage = "IdReceita inválido.")]
         [Display(Name = "Receita")]
         public int IdReceita { get; set; }
+        public List<SelectListItem>? ListaReceitas { get; set; }
     }
 }
