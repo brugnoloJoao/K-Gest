@@ -10,6 +10,7 @@ namespace K_Gest.BancoDados
         public decimal qtdMoviment;
         public string motivo;
         public int idInsumo;
+        public DateTime? dataMoviment;
 
         SqlConnection con;
 
@@ -190,7 +191,7 @@ namespace K_Gest.BancoDados
             try
             {
                 string cmdSQL = @"SELECT M.idEstoque, M.tipoEs, M.qtdMoviment, M.motivo, 
-                                 I.nomeInsumo, I.unidadeMed, M.idInsumo
+                                 I.nomeInsumo, I.unidadeMed, M.idInsumo, M.dataMoviment
                           FROM Movimentacao_Estoque M
                           INNER JOIN Insumos I ON M.idInsumo = I.idInsumo
                           ORDER BY M.idEstoque DESC";
@@ -209,7 +210,7 @@ namespace K_Gest.BancoDados
             try
             {
                 string cmdSQL = @"SELECT M.idEstoque, M.tipoEs, M.qtdMoviment, M.motivo, 
-                                 I.nomeInsumo, I.unidadeMed, M.idInsumo
+                                 I.nomeInsumo, I.unidadeMed, M.idInsumo, M.dataMoviment
                           FROM Movimentacao_Estoque M
                           INNER JOIN Insumos I ON M.idInsumo = I.idInsumo
                           WHERE M.tipoEs = 'E'
@@ -229,7 +230,7 @@ namespace K_Gest.BancoDados
             try
             {
                 string cmdSQL = @"SELECT M.idEstoque, M.tipoEs, M.qtdMoviment, M.motivo, 
-                                 I.nomeInsumo, I.unidadeMed, M.idInsumo
+                                 I.nomeInsumo, I.unidadeMed, M.idInsumo, M.dataMoviment
                           FROM Movimentacao_Estoque M
                           INNER JOIN Insumos I ON M.idInsumo = I.idInsumo
                           WHERE M.tipoEs = 'S'

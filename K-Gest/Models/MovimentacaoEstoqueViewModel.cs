@@ -28,7 +28,7 @@ namespace K_Gest.Models
 
         // PROPRIEDADE NOVA: Necessária para a conversão de unidades (KG, L, G, ML)
         public string UnidadeMed { get; set; } = string.Empty;
-
+       public DateTime? DataMoviment { get; set; }
         public List<SelectListItem> ListaInsumos { get; set; }
     }
 }
