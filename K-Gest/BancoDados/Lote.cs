@@ -104,9 +104,9 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                // AJUSTADO: Mudado de 'Lotes' para 'Lote' para manter consistência com o banco
+                // CORRIGIDO: Adicionada a vírgula depois de @NumLote
                 string cmdSQL = "UPDATE Lote SET dtFabricacao = @DtFabricacao, dtValidade = @DtValidade, " +
-                                "numLote = @NumLote quantidade = @Quantidade, idInsumo = @IdInsumo WHERE idLote = @IdLote";
+                                "numLote = @NumLote, quantidade = @Quantidade, idInsumo = @IdInsumo WHERE idLote = @IdLote";
 
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
                 cmd.Parameters.AddWithValue("@IdLote", idLote);
