@@ -47,34 +47,6 @@
                         </div>
                     }
                 </div>
-
-<<<<<<< HEAD
-                <div class="bg-light p-3 border rounded mb-3">
-                    <div class="row g-2 align-items-end">
-                        <div class="col-md-3">
-                            <label class="form-label">Ingrediente</label>
-                            <select id="selInsumo" class="form-select">
-                                <option value="">-- Selecione --</option>
-                                @foreach (var item in Model.ListaInsumos)
-                                {
-                                    <option value="@item.Value">@item.Text</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Quantidade</label>
-                            <input type="number" id="txtQtd" class="form-control" step="0.001" />
-                        </div>
-                        <div class="col-md-3">
-                        <label>Unidade de Medida</label>
-                            <select id="selUni" class="form-select" required>
-                                <option value="">-- Selecione --</option>
-                                <option value="KG">Quilograma (KG)</option>
-                                <option value="UN">Unidade (UN)</option>
-                                <option value="L">Litro (L)</option>
-                                <option value="G">Grama (G)</option>
-                            </select>
-=======
                 @* Seção Adicionar Ingrediente (Sub-Card Interno) *@
                 <div class="p-4 border rounded-4 mb-5" style="background-color: #f8fafc; border-color: #e2e8f0 !important;">
                     <h5 class="fw-bold text-dark mb-4" style="font-size: 16px;"><i class="bi bi-plus-circle-fill text-salmon me-2"></i>Adicionar Ingrediente à Ficha</h5>
@@ -100,7 +72,6 @@
                                 <i class="bi bi-calculator text-salmon"></i>
                                 <input type="number" id="txtQtd" class="form-control-modern font-monospace" step="0.001" placeholder="0,000" />
                             </div>
->>>>>>> origin/front2
                         </div>
 
                         <div class="col-lg-3 col-md-6">
@@ -124,41 +95,6 @@
                         </div>
                     </div>
                 </div>
-
-<<<<<<< HEAD
-                <table class="table table-striped border" id="tblItens">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Ingrediente</th>
-                            <th>Quantidade</th>
-                            <th>Unidade de Medida</th>
-                            <th>Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.Itens != null)
-                        {
-                            for (int i = 0; i < Model.Itens.Count; i++)
-                            {
-                                <tr data-origem="banco">
-                                    <td>
-                                        @Model.Itens[i].NomeInsumo
-                                        <input type="hidden" class="insumo-id" value="@Model.Itens[i].IdInsumo" />
-                                    </td>
-                                    <td>
-                                        @Model.Itens[i].QuantidadeExibicao.ToString("G29", System.Globalization.CultureInfo.CurrentCulture)
-
-                                        <input type="hidden" class="insumo-qtd" value="@Model.Itens[i].Quantidade.ToString("F3", System.Globalization.CultureInfo.InvariantCulture)" />
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-info text-dark">@Model.Itens[i].UnidadeExibicao</span>
-                                        <input type="hidden" class="insumo-unidade" value="@Model.Itens[i].UnidadeExibicao" />
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-danger btn-remover">Remover</button>
-                                    </td>
-                                </tr>
-=======
                 @* Tabela de Itens *@
                 <div class="table-responsive rounded-4 border mb-4" style="border-color: #e2e8f0 !important;">
                     <table class="table table-modern align-middle mb-0" id="tblItens">
@@ -195,7 +131,6 @@
                                         </td>
                                     </tr>
                                 }
->>>>>>> origin/front2
                             }
                         </tbody>
                     </table>
@@ -405,6 +340,56 @@
             hdnIdReceita.value = this.value;
         });
 
+        // --- VALIDAÇÃO DE GRANDEZAS FÍSICAS ---
+        const selInsumo = document.getElementById('selInsumo');
+        const selUni = document.getElementById('selUni');
+
+        // Mapeamento de grupos de grandezas equivalentes
+        const gruposGrandezas = {
+            'KG': ['KG', 'G'],
+            'G':  ['KG', 'G'],
+            'L':  ['L', 'ML'],
+            'ML': ['L', 'ML'],
+            'UN': ['UN']
+        };
+
+        selInsumo.addEventListener('change', function () {
+            const opcaoSelecionada = this.options[this.selectedIndex].text;
+            
+            // Restaura o select de unidades antes de filtrar
+            Array.from(selUni.options).forEach(opt => {
+                opt.disabled = false;
+                opt.style.display = 'block';
+            });
+            selUni.value = ""; // Limpa seleção anterior
+
+            if (!this.value) return;
+
+            // Captura o que está dentro dos últimos parênteses do texto do insumo (ex: "Arroz (KG)" -> "KG")
+            const match = opcaoSelecionada.match(/\(([^)]+)\)[^()]*$/);
+            if (!match) return;
+
+            const unidadePadraoInsumo = match[1].toUpperCase();
+            const unidadesPermitidas = gruposGrandezas[unidadePadraoInsumo] || [unidadePadraoInsumo];
+
+            // Filtra as opções do select de unidades
+            Array.from(selUni.options).forEach(opt => {
+                if (opt.value === "") return; // Ignora o "-- Selecione --"
+
+                if (!unidadesPermitidas.includes(opt.value.toUpperCase())) {
+                    opt.disabled = true;
+                    opt.style.display = 'none'; // Esconde visualmente no Chrome/Firefox
+                }
+            });
+
+            // Se houver apenas uma opção possível (ex: UN), já seleciona automaticamente
+            const opcionaisVisiveis = Array.from(selUni.options).filter(opt => !opt.disabled && opt.value !== "");
+            if (opcionaisVisiveis.length === 1) {
+                selUni.value = opcionaisVisiveis[0].value;
+            }
+        });
+
+
         // Incluir novos itens manualmente na tabela
         document.getElementById('btnAdd').addEventListener('click', function () {
             const selIns = document.getElementById('selInsumo');
@@ -413,12 +398,12 @@
             if (!selIns.value || !qtd.value || !selUni.value) return;
 
             const idInsumo = selIns.value;
-            const nomeInsumo = selIns.options[selIns.selectedIndex].text;
-<<<<<<< HEAD
+            
+            // Remove a unidade do texto para salvar um nome limpo na tabela se preferir
+            let nomeInsumo = selIns.options[selIns.selectedIndex].text;
+            nomeInsumo = nomeInsumo.replace(/\s*\([^)]+\)\s*$/, ''); 
 
-=======
->>>>>>> origin/front2
-            const unidade = selUni.options[selUni.selectedIndex].text.match(/\(([^)]+)\)/);
+            const unidade = selUni.options[selUni.selectedIndex].value; // Pega direto o Value (KG, G, L...)
 
             const tbody = document.querySelector('#tblItens tbody');
             const tr = document.createElement('tr');
@@ -427,53 +412,36 @@
             let qtdDigitada = qtd.value.replace('.', ',');
 
             tr.innerHTML = `
-<<<<<<< HEAD
-                                <td>
-                                    ${nomeInsumo}
-                                    <input type="hidden" class="insumo-id" value="${idInsumo}" />
-                                </td>
-                                <td>
-                                    ${qtdDigitada}
-                                    <input type="hidden" class="insumo-qtd" value="${qtd.value}" />
-                                </td>
-                                <td>
-                                    <span class="badge bg-info text-dark">${unidade[1]}</span>
-                                    <input type="hidden" class="insumo-unidade" value="${unidade[1]}" />
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-danger btn-remover">Remover</button>
-                                </td>
-                            `;
-=======
-                        <td class="fw-semibold text-dark">
-                            ${nomeInsumo}
-                            <input type="hidden" class="insumo-id" value="${idInsumo}" />
-                        </td>
-                        <td class="font-monospace fw-bold text-secondary">
-                            ${qtdDigitada}
-                            <input type="hidden" class="insumo-qtd" value="${qtd.value}" />
-                        </td>
-                        <td>
-                            <span class="badge badge-salmon-soft">${unidade[1]}</span>
-                            <input type="hidden" class="insumo-unidade" value="${unidade[1]}" />
-                        </td>
-                        <td class="text-center">
-                            <button type="button" class="btn-delete-modern btn-remover">
-                                <i class="bi bi-trash3-fill"></i>
-                            </button>
-                        </td>
-                    `;
->>>>>>> origin/front2
+                <td class="fw-semibold text-dark">
+                    ${nomeInsumo}
+                    <input type="hidden" class="insumo-id" value="${idInsumo}" />
+                </td>
+                <td class="font-monospace fw-bold text-secondary">
+                    ${qtdDigitada}
+                    <input type="hidden" class="insumo-qtd" value="${qtd.value}" />
+                </td>
+                <td>
+                    <span class="badge badge-salmon-soft">${unidade}</span>
+                    <input type="hidden" class="insumo-unidade" value="${unidade}" />
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn-delete-modern btn-remover">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </td>
+            `;
 
             tbody.appendChild(tr);
 
             selIns.value = "";
-<<<<<<< HEAD
-            selIns.value = "";
-=======
             selUni.value = "";
->>>>>>> origin/front2
             qtd.value = "";
+            
+            // Reseta o estado do select de unidades
+            Array.from(selUni.options).forEach(opt => {
+                opt.disabled = false;
+                opt.style.display = 'block';
+            });
         });
 
         // Remover linhas da tabela (Event Delegation)
@@ -498,6 +466,7 @@
                 const unidadeTexto = inputUnidade.value.toUpperCase();
                 const origen = tr.getAttribute('data-origem');
 
+                // Conversão de grandezas para a unidade base (multiplica por 1000 se for KG ou L)
                 if (origen === "tela" && (unidadeTexto === "KG" || unidadeTexto === "L")) {
                     valorFinal = valorFinal * 1000;
                 }

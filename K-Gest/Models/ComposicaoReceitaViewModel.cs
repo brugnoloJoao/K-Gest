@@ -23,9 +23,5 @@ namespace K_Gest.Models
 
         // Divide por 1000 apenas se for KG ou L para o utilizador ver "1" em vez de "1000"
         public decimal QuantidadeExibicao => (UnidadeExibicao?.ToUpper() == "KG" || UnidadeExibicao?.ToUpper() == "L") ? Quantidade / 1000 : Quantidade;
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/front2
     }
 }

@@ -79,8 +79,8 @@ namespace K_Gest.BancoDados
 
                 // 3. Gerar Histórico na Movimentação de Estoque
                 string cmdMovimentacao = @"
-                    INSERT INTO Movimentacao_Estoque (tipoEs, qtdMoviment, motivo, idInsumo)
-                    SELECT 'S', (C.qtdNecessaria * @QtdVendida), 'Venda Realizada', C.idInsumo
+                    INSERT INTO Movimentacao_Estoque (tipoEs, qtdMoviment, motivo, idInsumo, dataMoviment)
+                    SELECT 'S', (C.qtdNecessaria * @QtdVendida), 'Venda Realizada', C.idInsumo, GETDATE()
                     FROM Composicao_Receita C WHERE C.idReceita = @IdReceita";
 
                 SqlCommand cmd3 = new SqlCommand(cmdMovimentacao, con, transacao);
@@ -141,8 +141,8 @@ namespace K_Gest.BancoDados
 
                 //Gerar Histórico na Movimentação de Estoque
                 string cmdMovimentacao = @"
-                    INSERT INTO Movimentacao_Estoque (tipoEs, qtdMoviment, motivo, idInsumo)
-                    SELECT 'E', (C.qtdNecessaria * @QtdVendida), 'Venda Cadastrada Excluída', C.idInsumo
+                    INSERT INTO Movimentacao_Estoque (tipoEs, qtdMoviment, motivo, idInsumo, dataMoviment)
+                    SELECT 'E', (C.qtdNecessaria * @QtdVendida), 'Venda Cadastrada Excluída', C.idInsumo, GETDATE()
                     FROM Composicao_Receita C WHERE C.idReceita = @IdReceita";
 
                 SqlCommand cmd2 = new SqlCommand(cmdMovimentacao, con, transacao);

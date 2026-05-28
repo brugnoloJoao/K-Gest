@@ -173,12 +173,13 @@ namespace K_Gest.Controllers
 
         private List<SelectListItem> ObterInsumos()
         {
+            // Certifique-se de que sua query/classe Insumos traga a coluna da unidade de medida (ex: unidadeMed)
             DataTable dt = new Insumos().SelecionarTodos();
             return (from DataRow dr in dt.Rows
                     select new SelectListItem
                     {
                         Value = dr["idInsumo"].ToString(),
-                        Text = $"{dr["nomeInsumo"]}"
+                        Text = $"{dr["nomeInsumo"]} ({dr["unidadeMed"].ToString().ToUpper()})" // Ex: "Açúcar (KG)"
                     }).ToList();
         }
     }

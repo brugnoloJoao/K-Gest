@@ -45,8 +45,8 @@ namespace K_Gest.BancoDados
                 decimal qtdReal = ConverterParaBanco(this.qtdMoviment, unidadeSelecionada);
 
                 // 2. Registra o histórico na tabela Movimentacao_Estoque
-                string cmdMovimentacao = @"INSERT INTO Movimentacao_Estoque(tipoEs, qtdMoviment, motivo, idInsumo) 
-                                         VALUES(@tipoEs, @qtdMoviment, @motivo, @idInsumo)";
+                string cmdMovimentacao = @"INSERT INTO Movimentacao_Estoque(tipoEs, qtdMoviment, motivo, idInsumo, dataMoviment) 
+                                         VALUES(@tipoEs, @qtdMoviment, @motivo, @idInsumo, GETDATE())";
 
                 SqlCommand cmd1 = new SqlCommand(cmdMovimentacao, con, tran);
                 cmd1.Parameters.AddWithValue("@tipoEs", tipoEs);
@@ -89,8 +89,8 @@ namespace K_Gest.BancoDados
             {
 
                 // Registra o histórico na tabela Movimentacao_Estoque
-                string cmdMovimentacao = @"INSERT INTO Movimentacao_Estoque(tipoEs, qtdMoviment, motivo, idInsumo) 
-                                         VALUES(@tipoEs, @qtdMoviment, @motivo, @idInsumo)";
+                string cmdMovimentacao = @"INSERT INTO Movimentacao_Estoque(tipoEs, qtdMoviment, motivo, idInsumo, dataMoviment) 
+                                         VALUES(@tipoEs, @qtdMoviment, @motivo, @idInsumo, GETDATE())";
 
                 SqlCommand cmd1 = new SqlCommand(cmdMovimentacao, con, tran);
                 cmd1.Parameters.AddWithValue("@tipoEs", tipoEs);
@@ -269,26 +269,41 @@ namespace K_Gest.BancoDados
 
             try
             {
-                
-                // Precisamos saber se era Entrada ou Saída para devolver ao estoque corretamente
+                // Busca os dados da movimentação que será excluída
                 string sqlBusca = "SELECT tipoEs, qtdMoviment, idInsumo FROM Movimentacao_Estoque WHERE idEstoque = @idEstoque";
                 SqlCommand cmdBusca = new SqlCommand(sqlBusca, con, tran);
                 cmdBusca.Parameters.AddWithValue("@idEstoque", idEstoque);
 
                 SqlDataReader dr = cmdBusca.ExecuteReader();
-                dr.Read();
+                if (!dr.Read())
+                {
+                    dr.Close();
+                    throw new Exception("Movimentação não encontrada.");
+                }
 
-                // Atribuímos às variáveis locais para garantir que temos os valores do BD
-                string v_tipo = dr["tipoEs"].ToString();
-                int v_qtd = Convert.ToInt32(dr["qtdMoviment"]);
+                string v_tipo = dr["tipoEs"].ToString().ToUpper();
+                decimal v_qtd = Convert.ToDecimal(dr["qtdMoviment"]); // Usando decimal para bater com estoque
                 int v_idInsumo = Convert.ToInt32(dr["idInsumo"]);
 
                 dr.Close();
 
-                //  Lógica de Estorno
-                string opEstorno = (v_tipo.ToUpper() == "E") ? "-" : "+";
+                // Busca o estoque atual do insumo para validar a regra de estoque negativo
+                string sqlEstoque = "SELECT estoqueAtual FROM Insumos WHERE idInsumo = @idInsumo";
+                SqlCommand cmdEstoque = new SqlCommand(sqlEstoque, con, tran);
+                cmdEstoque.Parameters.AddWithValue("@idInsumo", v_idInsumo);
 
-                // Aqui usamos nomes de parâmetros que remetem aos seus atributos
+                decimal v_estoqueAtual = Convert.ToDecimal(cmdEstoque.ExecuteScalar());
+
+                // Se for exclusão de Entrada e a quantidade a retirar for MAIOR que o estoque atual...
+                if (v_tipo == "E" && v_qtd > v_estoqueAtual)
+                {
+                    // Forçamos a quantidade a ser retirada a ser exatamente o saldo atual, zerando o estoque.
+                    v_qtd = v_estoqueAtual;
+                }
+
+                // Lógica de Estorno (continua igual, mas com o v_qtd potencialmente ajustado)
+                string opEstorno = (v_tipo == "E") ? "-" : "+";
+
                 string sqlEstorno = $"UPDATE Insumos SET estoqueAtual = estoqueAtual {opEstorno} @qtdMoviment WHERE idInsumo = @idInsumo";
                 SqlCommand cmdEstorno = new SqlCommand(sqlEstorno, con, tran);
 
@@ -296,7 +311,7 @@ namespace K_Gest.BancoDados
                 cmdEstorno.Parameters.AddWithValue("@idInsumo", v_idInsumo);
                 cmdEstorno.ExecuteNonQuery();
 
-               
+                // 5. Deleta a movimentação física
                 string sqlDel = "DELETE FROM Movimentacao_Estoque WHERE idEstoque = @idEstoque";
                 SqlCommand cmdDel = new SqlCommand(sqlDel, con, tran);
                 cmdDel.Parameters.AddWithValue("@idEstoque", idEstoque);
