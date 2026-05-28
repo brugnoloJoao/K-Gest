@@ -284,7 +284,7 @@ namespace K_Gest.Controllers
                 MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque();
 
                 o_MovimentacaoEstoque.idEstoque = idEstoque;
-                DataTable pesqSetores = o_MovimentacaoEstoque.SelecionarPorID();
+                DataTable pesqMovimentacaoEstoque = o_MovimentacaoEstoque.SelecionarPorID();
 
                 //--------------------------------------------------
                 // Preencher a Model com os dados do Banco de Dados
@@ -293,10 +293,11 @@ namespace K_Gest.Controllers
 
                 //Campos que não podem ser nulos
                 o_MovimentacaoEstoqueVM.IdEstoque = idEstoque;
-                o_MovimentacaoEstoqueVM.TipoEs = pesqSetores.Rows[0]["TipoEs"].ToString();
-                o_MovimentacaoEstoqueVM.QtdMoviment = Convert.ToDecimal(pesqSetores.Rows[0]["QtdMoviment"]);
-                o_MovimentacaoEstoqueVM.Motivo = pesqSetores.Rows[0]["Motivo"].ToString();
-                o_MovimentacaoEstoqueVM.IdInsumo = Convert.ToInt32(pesqSetores.Rows[0]["IdInsumo"]);
+                o_MovimentacaoEstoqueVM.TipoEs = pesqMovimentacaoEstoque.Rows[0]["TipoEs"].ToString();
+                o_MovimentacaoEstoqueVM.QtdMoviment = Convert.ToDecimal(pesqMovimentacaoEstoque.Rows[0]["QtdMoviment"]);
+                o_MovimentacaoEstoqueVM.Motivo = pesqMovimentacaoEstoque.Rows[0]["Motivo"].ToString();
+                o_MovimentacaoEstoqueVM.IdInsumo = Convert.ToInt32(pesqMovimentacaoEstoque.Rows[0]["IdInsumo"]);
+                o_MovimentacaoEstoqueVM.DataMoviment = Convert.ToDateTime(pesqMovimentacaoEstoque.Rows[0]["DataMoviment"]);
 
                 // Passamos via ViewBag para preencher um <select>
                 o_MovimentacaoEstoqueVM.ListaInsumos = ObterInsumos();
