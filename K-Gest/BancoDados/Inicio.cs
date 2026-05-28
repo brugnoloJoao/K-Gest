@@ -1,9 +1,10 @@
-﻿using Microsoft.Data.SqlClient;
-using System;
-using System.IO;
-using System.Collections.Generic;
+﻿using K_Gest.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using K_Gest.Models;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
 
 namespace K_Gest.BancoDados
 {
@@ -157,6 +158,69 @@ namespace K_Gest.BancoDados
             }
 
             return model;
+        }
+        public DataTable ObterListaCompras()
+        {
+            DataTable dt = new DataTable();
+
+            string sql = @"
+            WITH DemandaPrevista AS (
+            -- 1. Calcula o consumo estimado puro (em G, ML ou UN) com base nas vendas dos últimos 7 dias
+                SELECT 
+                    cr.idInsumo,
+                    SUM(CAST(hv.qtdVendida AS DECIMAL(10,3)) * cr.qtdNecessaria) AS qtdDemandada
+                FROM Historico_Vendas hv
+                INNER JOIN Receitas r ON hv.idReceita = r.idReceita
+                INNER JOIN Composicao_Receita cr ON r.idReceita = cr.idReceita
+                WHERE hv.dataVend >= DATEADD(day, -7, CAST(GETDATE() AS DATE))
+                GROUP BY cr.idInsumo
+            ),
+            AnaliseValidades AS (
+             -- 2. Calcula perdas e alertas de lote usando as mesmas unidades da tabela Insumos
+                SELECT 
+                    idInsumo,
+                    SUM(CASE WHEN dtValidade < CAST(GETDATE() AS DATE) THEN CAST(quantidade AS DECIMAL(10,3)) ELSE 0 END) AS qtdVencida,
+                    SUM(CASE WHEN dtValidade >= CAST(GETDATE() AS DATE) AND dtValidade <= DATEADD(day, 7, CAST(GETDATE() AS DATE)) THEN CAST(quantidade AS DECIMAL(10,3)) ELSE 0 END) AS qtdVencendoSemana
+                FROM Lote
+                GROUP BY idInsumo
+        )
+        -- 3. Consolida os dados brutos (Tudo operando na menor unidade: G, ML, UN)
+        SELECT 
+            i.idInsumo,
+            i.nomeInsumo,
+            i.unidadeMed, -- Aqui virá KG ou L, mas sabemos que o valor numérico abaixo está em G ou ML
+            (i.estoqueAtual - ISNULL(v.qtdVencida, 0)) AS estoqueAtual,
+            i.pontoPedido,
+            ISNULL(d.qtdDemandada, 0) AS demandaSemanal,
+            ISNULL(v.qtdVencendoSemana, 0) AS qtdVencendoSemana,
+            
+            -- Fórmula Híbrida Direta: (Vendas + PontoPedido + Vencendo) - Estoque Válido
+            ((ISNULL(d.qtdDemandada, 0) + i.pontoPedido + ISNULL(v.qtdVencendoSemana, 0)) - (i.estoqueAtual - ISNULL(v.qtdVencida, 0))) AS qtdSugerida
+        FROM Insumos i
+        LEFT JOIN DemandaPrevista d ON i.idInsumo = d.idInsumo
+        LEFT JOIN AnaliseValidades v ON i.idInsumo = v.idInsumo
+        WHERE ((ISNULL(d.qtdDemandada, 0) + i.pontoPedido + ISNULL(v.qtdVencendoSemana, 0)) - (i.estoqueAtual - ISNULL(v.qtdVencida, 0))) > 0
+        ORDER BY i.nomeInsumo ASC;";
+
+            try
+            {
+                con.Open();
+                using (SqlCommand cmd = new SqlCommand(sql, con))
+                using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(dt);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                con.Close();
+            }
+
+            return dt;
         }
     }
 }

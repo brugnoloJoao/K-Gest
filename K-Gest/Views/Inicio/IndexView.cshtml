@@ -14,11 +14,17 @@
             </div>
         </div>
 
-        <div class="d-flex align-items-center gap-3">
-            <div class="text-muted small fw-semibold sub-text-toggle">
-                <i class="bi bi-calendar3"></i> @DateTime.Now.ToString("dddd, d 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-BR"))
-            </div>
-        </div>
+        @* Lado Direito: Botão Gerador de Lista + Data Atual *@
+    <div class="d-flex align-items-center gap-4 flex-wrap">
+    <div class="text-muted small fw-semibold sub-text-toggle">
+        <i class="bi bi-calendar3"></i> @DateTime.Now.ToString("dddd, d 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-BR"))
+    </div>
+    
+    @* BOTÃO INTEGRADO: Direciona para a Action que criamos no InicioController *@
+    <a asp-controller="Inicio" asp-action="GerarListaCompras" class="btn-salmon-dashboard d-inline-flex align-items-center gap-2 shadow-sm">
+        <i class="bi bi-cart-check-fill"></i> Previsão de Compras
+    </a>
+</div>
     </div>
 
     @if (ViewBag.ErroDashboard != null)
@@ -354,6 +360,28 @@
     .table-toggle tbody tr:hover {
     background-color: rgba(255, 255, 255, 0.02) !important;
     }
+
+    .btn-salmon-dashboard {
+        background-color: var(--salmon-primary);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .btn-salmon-dashboard:hover {
+        background-color: #fa7a52;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 15px rgba(255, 140, 105, 0.25) !important;
+    }
+    html.dark-mode .btn-salmon-dashboard {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
 
     .icon-shape-salmon {
     width: 48px;
