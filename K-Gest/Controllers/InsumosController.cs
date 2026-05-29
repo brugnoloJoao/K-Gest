@@ -144,7 +144,7 @@ namespace K_Gest.Controllers
             catch (Exception ex)
             {
                 TempData["MsgErro"] = ex.Message;
-                return View("ExcluirExibirView", vm);
+                return RedirectToAction("Selecionar");
             }
         }
     }

@@ -1,0 +1,1117 @@
+﻿/* =============================================================
+   K-Gest — CSS Externo
+     1. Variáveis Globais (:root)
+     2. Estilos Globais (presentes em praticamente todas as views)
+     3. Componentes Compartilhados (presentes em múltiplas views)
+     4. Estilos Específicos por View/Contexto
+   ============================================================= */
+
+
+/* ─────────────────────────────────────────────────────────────
+   1. VARIÁVEIS GLOBAIS
+   Declaradas em toda view, centralizadas aqui uma única vez.
+   ───────────────────────────────────────────────────────────── */
+:root {
+    /* Paleta Salmão */
+    --salmon-primary: #FF8C69;
+    --salmon-hover: #fa7a52;
+    --salmon-soft: #fff1ed;
+    /* Paleta Danger */
+    --danger-primary: #ef4444;
+    --danger-hover: #dc2626;
+    --danger-soft: #fef2f2;
+    /* Texto & Superfícies */
+    --text-dark: #334155;
+    --text-muted: #94a3b8;
+    --text-subtle: #64748b;
+    --border-color: #e2e8f0;
+    --bg-main: #f8fafc;
+    /* Layout */
+    --sidebar-bg: #ffffff;
+    --sidebar-hover: #fff1ed;
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   2. ESTILOS GLOBAIS — _Layout
+   Presentes no layout base, afetam todas as páginas.
+   ───────────────────────────────────────────────────────────── */
+body {
+    background-color: var(--bg-main);
+    overflow-x: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--text-dark);
+}
+
+a {
+    color: #0077cc;
+}
+
+    a.navbar-brand {
+        white-space: normal;
+        text-align: center;
+        word-break: break-all;
+    }
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+#content {
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+#sidebar {
+    min-width: 270px;
+    max-width: 270px;
+    background-color: var(--sidebar-bg);
+    color: var(--text-dark);
+    min-height: 100vh;
+    transition: all 0.3s ease;
+    border-right: 1px solid var(--border-color);
+}
+
+.sidebar-header {
+    padding: 24px 20px;
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+}
+
+    .sidebar-header .logo-text {
+        font-size: 22px;
+        font-weight: 800;
+        background: linear-gradient(45deg, var(--salmon-primary), #fa7a52);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sidebar-header .logo-sub {
+        font-size: 11px;
+        color: var(--text-muted);
+        display: block;
+        margin-top: 5px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+
+.sidebar-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 24px 20px 8px 25px;
+    letter-spacing: 1.2px;
+}
+
+#sidebar ul.components {
+    padding: 0 12px;
+}
+
+#sidebar ul li {
+    margin-bottom: 4px;
+}
+
+    #sidebar ul li a {
+        padding: 12px 16px;
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        color: #64748b;
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+    }
+
+        #sidebar ul li a:hover {
+            color: var(--salmon-primary);
+            background-color: var(--sidebar-hover);
+        }
+
+    #sidebar ul li.active > a {
+        color: #ffffff;
+        background-color: var(--salmon-primary);
+        box-shadow: 0 4px 12px rgba(255, 140, 105, 0.25);
+    }
+
+    #sidebar ul li a i {
+        margin-right: 12px;
+        font-size: 18px;
+    }
+
+/* Navbar Topo */
+.top-navbar {
+    background-color: #ffffff;
+    color: var(--text-dark);
+    padding: 18px 30px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.user-profile-box {
+    background-color: #f8fafc;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    border: 1px solid var(--border-color);
+}
+
+/* Utilitários Bootstrap legados (do _Layout original) */
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.border-top {
+    border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px;
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   3. COMPONENTES COMPARTILHADOS
+   Classes repetidas em 3 ou mais views, unificadas aqui.
+   ───────────────────────────────────────────────────────────── */
+
+/* --- 3.1 Sombra Premium ------------------------------------ */
+/* Presente em TODAS as views */
+.shadow-premium {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02) !important;
+}
+
+html.dark-mode .shadow-premium {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* --- 3.2 Texto com Cor Salmão ----------------------------- */
+/* Presente em: _Layout, Insumos, ComposicaoReceita, HistoricoVendas,
+   MovimentacaoEstoque, Receitas */
+.text-salmon {
+    color: var(--salmon-primary) !important;
+}
+
+/* --- 3.3 Link de Voltar ------------------------------------ */
+/* Presente em praticamente todas as views de form/detalhe */
+.back-link {
+    color: var(--salmon-primary);
+    transition: opacity 0.2s ease;
+}
+
+    .back-link:hover {
+        opacity: 0.8;
+    }
+
+/* --- 3.4 Ícone Shape Salmão (variante padrão 48px) --------- */
+/* Presente em: ListaCompras, Insumos/Selecionar,
+   ComposicaoReceita, HistoricoVendas/Selecionar,
+   Lote/Alterar, Lote/Gerenciar, Lote/Selecionar,
+   MovimentacaoEstoque/Entrada, MovimentacaoEstoque/Saidas,
+   MovimentacaoEstoque/Selecionar, Receitas */
+.icon-shape-salmon {
+    width: 48px;
+    height: 48px;
+    background-color: var(--salmon-soft);
+    color: var(--salmon-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    font-size: 20px;
+    transition: background-color 0.3s ease;
+}
+
+/* Variante menor: views de formulário com ícone 46px/12px/18px
+   (Insumos/Inserir, HistoricoVendas/Inserir, Receitas/Inserir,
+    MovimentacaoEstoque/Excluir e Inserir*) */
+.icon-shape-salmon-sm {
+    width: 46px;
+    height: 46px;
+    background-color: var(--salmon-soft);
+    color: var(--salmon-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 18px;
+}
+
+/* --- 3.5 Botão Principal Salmão (ação / CTA) -------------- */
+/* Presente em: ListaCompras, Insumos/Selecionar,
+   ComposicaoReceita, HistoricoVendas/Selecionar,
+   Lote/Alterar, Lote/Gerenciar, MovimentacaoEstoque,
+   Receitas/Selecionar e Alterar */
+.btn-salmon-action {
+    background-color: var(--salmon-primary);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+    .btn-salmon-action:hover {
+        background-color: var(--salmon-hover);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 15px rgba(255, 140, 105, 0.25) !important;
+    }
+
+/* Variante "heavy" usada em views de Alterar/Inserir com uppercase
+   (Insumos/Alterar, ComposicaoReceita/Inserir, Lote/Alterar,
+    Receitas/Alterar) */
+.btn-salmon-action-heavy {
+    background-color: var(--salmon-primary);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+    .btn-salmon-action-heavy:hover {
+        background-color: var(--salmon-hover);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(255, 140, 105, 0.3) !important;
+    }
+
+/* --- 3.6 Botão Submit (Salvar) ----------------------------- */
+/* Presente em: Insumos/Inserir, HistoricoVendas/Inserir,
+   MovimentacaoEstoque/InserirEntrada, InserirExibir, InserirSaida,
+   Receitas/Inserir */
+.btn-submit {
+    background-color: var(--salmon-primary);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 12px 26px;
+    border: none;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+    .btn-submit:hover {
+        background-color: var(--salmon-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 15px rgba(255, 140, 105, 0.25) !important;
+    }
+
+/* --- 3.7 Botão Cancelar (versão leve) ---------------------- */
+/* Presente em: Insumos/Inserir, HistoricoVendas/Excluir e Inserir,
+   MovimentacaoEstoque/Excluir, InserirEntrada, InserirExibir,
+   InserirSaida, Receitas/Inserir */
+.btn-cancel {
+    background-color: #f1f5f9;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+    .btn-cancel:hover {
+        background-color: #e2e8f0;
+        color: var(--text-dark);
+    }
+
+/* Variante "modern" com padding maior (Insumos/Alterar,
+   ComposicaoReceita/Inserir, Lote/Alterar, Receitas/Alterar) */
+.btn-cancel-modern {
+    background-color: #f1f5f9;
+    color: #64748b;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+    .btn-cancel-modern:hover {
+        background-color: #e2e8f0;
+        color: #334155;
+    }
+
+/* --- 3.8 Botões de Ação Modernos (ícone quadrado 34px) ------ */
+/* Presente em: Insumos/Selecionar, ComposicaoReceita/Selecionar,
+   HistoricoVendas/Selecionar, Lote/Gerenciar,
+   MovimentacaoEstoque/Entrada, Saidas, Selecionar,
+   Receitas/Selecionar */
+.btn-action-modern {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    padding: 0;
+    font-size: 15px;
+    background-color: #f8fafc;
+    transition: all 0.2s ease;
+}
+
+/* Estilo Editar (salmão no hover) */
+.btn-edit-salmon {
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+}
+
+    .btn-edit-salmon:hover {
+        border-color: var(--salmon-primary);
+        color: white;
+        background-color: var(--salmon-primary);
+        box-shadow: 0 4px 10px rgba(255, 140, 105, 0.2);
+    }
+
+/* Estilo Deletar (vermelho no hover) */
+.btn-delete-salmon {
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+}
+
+    .btn-delete-salmon:hover {
+        border-color: #ef4444;
+        color: white;
+        background-color: #ef4444;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+    }
+
+/* --- 3.9 Botão Excluir (ação destrutiva inline/form) ------- */
+/* Presente em: HistoricoVendas/Excluir, MovimentacaoEstoque/Excluir */
+.btn-delete {
+    background-color: var(--danger-primary);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 12px 26px;
+    border: none;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+    .btn-delete:hover {
+        background-color: var(--danger-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 15px rgba(239, 68, 68, 0.25) !important;
+    }
+
+/* --- 3.10 Inputs Customizados (variante "custom") ----------- */
+/* Presente em: Insumos/Inserir, HistoricoVendas/Excluir e Inserir,
+   MovimentacaoEstoque/InserirEntrada, InserirExibir, InserirSaida,
+   Receitas/Inserir */
+.input-group-custom {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.input-icon {
+    position: absolute;
+    left: 16px;
+    font-size: 16px;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.form-control-custom,
+.form-select-custom {
+    width: 100%;
+    padding: 12px 16px 12px 48px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dark);
+    background-color: #f8fafc;
+    border: 2px solid #f1f5f9;
+    border-radius: 12px;
+    transition: all 0.2s ease-in-out;
+}
+
+    .form-control-custom:focus,
+    .form-select-custom:focus {
+        background-color: #ffffff;
+        border-color: var(--salmon-primary);
+        box-shadow: 0 0 0 4px rgba(255, 140, 105, 0.15);
+        outline: none;
+    }
+
+/* --- 3.11 Inputs Customizados (variante "modern") ----------- */
+/* Presente em: Insumos/Alterar, ComposicaoReceita/Inserir,
+   Lote/Alterar, Receitas/Alterar */
+.modern-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+    .modern-input-group i {
+        position: absolute;
+        left: 16px;
+        z-index: 10;
+        font-size: 18px;
+    }
+
+.form-control-modern,
+.form-select-modern {
+    width: 100%;
+    padding: 12px 16px 12px 48px;
+    background-color: #f8fafc;
+    border: 2px solid #f1f5f9;
+    border-radius: 12px;
+    color: var(--text-dark);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+    .form-control-modern:focus,
+    .form-select-modern:focus {
+        background-color: #fff;
+        border-color: var(--salmon-primary);
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(255, 140, 105, 0.15);
+    }
+
+/* --- 3.12 Tabela — Hover nas Linhas ------------------------ */
+/* Presente em: Insumos/Selecionar, ComposicaoReceita/Selecionar,
+   HistoricoVendas/Selecionar, Lote/Gerenciar,
+   MovimentacaoEstoque/Entrada, Saidas, Selecionar,
+   Receitas/Selecionar */
+.table-hover tbody tr:hover {
+    background-color: #f8fafc !important;
+}
+
+/* --- 3.13 Tabela — Bordas Finas Padronizadas --------------- */
+/* Presente nas mesmas views acima */
+.table > :not(caption) > * > * {
+    border-bottom-width: 1px;
+    border-bottom-color: #f1f5f9;
+}
+
+/* --- 3.14 Dark Mode — Hover Sutil em Tabelas --------------- */
+/* Presente em: Inicio/IndexView, Inicio/ListaComprasView */
+html.dark-mode .table-toggle tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* --- 3.15 Remove Setas de Input Number -------------------- */
+/* Presente em: Insumos/Inserir, HistoricoVendas/Inserir,
+   MovimentacaoEstoque/InserirEntrada, InserirExibir, InserirSaida */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   4. ESTILOS ESPECÍFICOS POR VIEW / CONTEXTO
+   Classes que aparecem em apenas 1 ou 2 views.
+   Manter aqui para não poluir as views com <style> interno.
+   ───────────────────────────────────────────────────────────── */
+
+/* --- 4.1 Inicio/IndexView ---------------------------------- */
+.btn-salmon-dashboard {
+    background-color: var(--salmon-primary);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+    .btn-salmon-dashboard:hover {
+        background-color: #fa7a52;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 15px rgba(255, 140, 105, 0.25) !important;
+    }
+
+html.dark-mode .btn-salmon-dashboard {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Ícones de Status do Dashboard */
+.icon-shape-danger-soft {
+    width: 48px;
+    height: 48px;
+    background-color: #fef2f2;
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    font-size: 20px;
+}
+
+html.dark-mode .icon-shape-danger-soft {
+    background-color: #2d1919;
+}
+
+.icon-shape-warning-soft {
+    width: 48px;
+    height: 48px;
+    background-color: #fef9c3;
+    color: #ca8a04;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    font-size: 20px;
+}
+
+html.dark-mode .icon-shape-warning-soft {
+    background-color: #2d2a15;
+}
+
+.icon-shape-success-soft {
+    width: 48px;
+    height: 48px;
+    background-color: #ecfdf5;
+    color: #10b981;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    font-size: 20px;
+}
+
+html.dark-mode .icon-shape-success-soft {
+    background-color: #13281f;
+}
+
+.italic-motivo {
+    font-style: italic;
+    font-size: 13px;
+}
+
+/* --- 4.2 Inicio/ListaComprasView — Impressão -------------- */
+@media print {
+    .mb-3,
+    .btn-salmon-action,
+    .icon-shape-salmon {
+        display: none !important;
+    }
+
+    body {
+        background: white;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+
+    th {
+        background-color: #f1f5f9 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    td {
+        background-color: transparent !important;
+    }
+}
+
+/* --- 4.3 Insumos/ExcluirExibir e Receitas/ExcluirExibir --- */
+/* Alerta de Confirmação de Exclusão */
+.alert-danger-custom {
+    background-color: var(--danger-soft);
+    color: #991b1b;
+    border-radius: 16px;
+}
+
+html.dark-mode .alert-danger-custom {
+    background-color: #2d1919;
+    color: #fca5a5;
+}
+
+.icon-shape-danger-alert {
+    width: 42px;
+    height: 42px;
+    background-color: #fca5a5;
+    color: #b91c1c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+html.dark-mode .icon-shape-danger-alert {
+    background-color: #7f1d1d;
+    color: #fca5a5;
+}
+
+.btn-danger-premium {
+    background-color: var(--danger-primary);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+    .btn-danger-premium:hover {
+        background-color: var(--danger-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 15px rgba(239, 68, 68, 0.25) !important;
+    }
+
+.btn-cancel-action {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+    .btn-cancel-action:hover {
+        background-color: #e2e8f0;
+        color: #334155;
+    }
+
+html.dark-mode .btn-cancel-action {
+    background-color: #334155;
+    border-color: #475569;
+    color: #cbd5e1;
+}
+
+    html.dark-mode .btn-cancel-action:hover {
+        background-color: #475569;
+        color: #ffffff;
+    }
+
+/* --- 4.4 ComposicaoReceita/InserirExibirView -------------- */
+.xs-uppercase {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Tabela estilizada de ingredientes */
+.table-modern thead {
+    background-color: #f1f5f9;
+}
+
+    .table-modern thead th {
+        color: #475569;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+        padding: 16px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+.table-modern tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+    .table-modern tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+.table-modern tbody td {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #475569;
+    font-size: 14px;
+}
+
+.badge-salmon-soft {
+    background-color: var(--salmon-soft);
+    color: var(--salmon-primary);
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+/* Botão Deletar Ingrediente da Composição */
+.btn-delete-modern {
+    background-color: #fff1f2;
+    color: #f43f5e;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+    .btn-delete-modern:hover {
+        background-color: #ffe4e6;
+        color: #e11d48;
+        transform: scale(1.05);
+    }
+
+/* --- 4.5 ComposicaoReceita/SelecionarView ----------------- */
+.btn-action-pill {
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 30px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-view-salmon {
+    background-color: var(--salmon-soft);
+    color: var(--salmon-primary);
+}
+
+    .btn-view-salmon:hover {
+        background-color: var(--salmon-primary);
+        color: white;
+    }
+
+/* Item de lista no Modal */
+.modal-list-item {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background-color 0.2s ease;
+}
+
+    .modal-list-item:hover {
+        background-color: #f8fafc;
+    }
+
+/* --- 4.6 HistoricoVendas/ExcluirExibirView ---------------- */
+/* Ícone de perigo para contextos de histórico */
+.icon-shape-danger {
+    width: 46px;
+    height: 46px;
+    background-color: var(--danger-soft);
+    color: var(--danger-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 18px;
+}
+
+/* Campo desabilitado para exibição somente leitura */
+.form-control-custom:disabled,
+.form-select-custom:disabled {
+    color: #64748b;
+    background-color: #f8fafc;
+    border: 2px solid #e2e8f0;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+/* --- 4.7 Lote/SelecionarView ------------------------------ */
+/* Botão em bloco para cards de lote */
+.btn-action-block {
+    height: 42px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 13.5px;
+    text-decoration: none;
+    background-color: #f8fafc;
+    transition: all 0.2s ease;
+}
+
+/* Efeito de elevação do card de lote */
+.lote-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 25px 35px -5px rgba(0, 0, 0, 0.08), 0 12px 15px -5px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Truncagem de texto em 2 linhas */
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+
+/* =============================================================
+   5. RESPONSIVIDADE — Media Queries
+   ============================================================= */
+
+/* ─────────────────────────────────────────────────────────────
+   5.1 Botão Toggle Sidebar
+   Oculto em desktop, aparece em tablet/mobile via media query
+   ───────────────────────────────────────────────────────────── */
+#sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.40);
+    z-index: 1040;
+    transition: opacity 0.3s ease;
+}
+
+    #sidebar-overlay.active {
+        display: block;
+    }
+
+#sidebarToggle {
+    display: none; /* visível só via media query abaixo */
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background-color: var(--salmon-soft);
+    color: var(--salmon-primary);
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    flex-shrink: 0;
+}
+
+    #sidebarToggle:hover {
+        background-color: var(--salmon-primary);
+        color: #ffffff;
+    }
+
+
+/* ─────────────────────────────────────────────────────────────
+   5.2 Tablet (≤ 992px) — sidebar vira drawer
+   ───────────────────────────────────────────────────────────── */
+@media (max-width: 992px) {
+
+    /* Sidebar sai da tela para a esquerda */
+    #sidebar {
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 270px;
+        min-width: 270px;
+        max-width: 270px;
+        height: 100vh;
+        z-index: 1050;
+        overflow-y: auto;
+        transition: left 0.3s ease;
+        box-shadow: none;
+    }
+
+        #sidebar.active {
+            left: 0;
+            box-shadow: 6px 0 24px rgba(0, 0, 0, 0.12);
+        }
+
+    /* Conteúdo ocupa 100% */
+    #content {
+        width: 100%;
+        margin-left: 0 !important;
+    }
+
+    /* Wrapper não é mais flex row fixo */
+    .wrapper {
+        display: block;
+    }
+
+    /* Mostra o botão hambúrguer */
+    #sidebarToggle {
+        display: inline-flex;
+    }
+
+    .top-navbar {
+        padding: 14px 20px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background-color: #ffffff;
+    }
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   5.3 Mobile (≤ 768px)
+   ───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+    /* Padding interno das páginas */
+    #content .p-4 {
+        padding: 16px !important;
+    }
+
+    /* Navbar compacta */
+    .top-navbar {
+        padding: 12px 16px;
+    }
+
+    /* Container de páginas */
+    .container-fluid.px-4 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    /* Cabeçalho de página (título + botão de ação) — empilha em coluna */
+    .page-header-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+
+    /* Botão "Novo" ocupa largura total no mobile */
+    .btn-salmon-action {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 16px;
+    }
+
+    /* Tabelas: scroll horizontal */
+    .table-responsive,
+    .card .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Cabeçalho de seção dentro do card */
+    .card-header-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 10px;
+    }
+
+    /* Ícones menores */
+    .icon-shape-salmon,
+    .icon-shape-salmon-sm,
+    .icon-shape-danger-soft,
+    .icon-shape-warning-soft,
+    .icon-shape-success-soft {
+        width: 40px;
+        height: 40px;
+        font-size: 17px;
+        border-radius: 12px;
+    }
+
+    /* User profile box compacto */
+    .user-profile-box {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+    /* Botões de submit/cancel empilháveis */
+    .btn-submit,
+    .btn-delete,
+    .btn-cancel,
+    .btn-cancel-modern,
+    .btn-salmon-action-heavy {
+        width: 100%;
+        justify-content: center;
+        font-size: 14px;
+    }
+
+    /* Impede transform em hover (melhora performance em touch) */
+    .lote-card:hover {
+        transform: none;
+    }
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   5.4 Mobile pequeno (≤ 480px)
+   ───────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+
+    /* Logo menor */
+    .sidebar-header .logo-text {
+        font-size: 18px;
+    }
+
+    /* Título de página menor */
+    h2.fw-bold {
+        font-size: 20px !important;
+    }
+
+    /* Tabela: fonte menor para caber mais colunas */
+    .table-modern thead th,
+    .table-modern tbody td,
+    .table thead th,
+    .table tbody td {
+        font-size: 12px;
+        padding: 10px 8px;
+    }
+
+    /* Badge menor */
+    .badge-salmon-soft {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+
+    /* Botões de ação sem hover de elevação */
+    .btn-submit:hover,
+    .btn-salmon-action:hover,
+    .btn-salmon-action-heavy:hover {
+        transform: none;
+    }
+}

@@ -201,77 +201,6 @@ namespace K_Gest.Controllers
         }
 
         //-----------------------------------------------------------
-        // ALTERAR - EXIBIR
-        //-----------------------------------------------------------
-        //public IActionResult AlterarExibir(int idEstoque)
-        //{
-        //    try
-        //    {
-        //        //--------------------------------------------------
-        //        // Buscar dados do MovimentacaoEstoque no banco de dados
-        //        //--------------------------------------------------
-        //        MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque();
-
-        //        o_MovimentacaoEstoque.idEstoque = idEstoque;
-        //        DataTable pesqSetores = o_MovimentacaoEstoque.SelecionarPorID();
-
-        //        //--------------------------------------------------
-        //        // Preencher a Model com os dados do Banco de Dados
-        //        //--------------------------------------------------
-        //        MovimentacaoEstoqueViewModel o_MovimentacaoEstoqueVM = new MovimentacaoEstoqueViewModel();
-
-        //        //Campos que não podem ser nuloso_MovimentacaoEstoque.tipoEs = o_MovimentacaoEstoqueVM.TipoEs;
-
-        //        o_MovimentacaoEstoqueVM.IdEstoque = idEstoque;
-        //        o_MovimentacaoEstoqueVM.TipoEs = pesqSetores.Rows[0]["TipoEs"].ToString();
-        //        o_MovimentacaoEstoqueVM.QtdMoviment = Convert.ToInt32(pesqSetores.Rows[0]["QtdMoviment"]);
-        //        o_MovimentacaoEstoqueVM.Motivo = pesqSetores.Rows[0]["Motivo"].ToString();
-        //        o_MovimentacaoEstoqueVM.IdInsumo = Convert.ToInt32(pesqSetores.Rows[0]["IdInsumo"]);
-
-        //        return View("AlterarExibirView", o_MovimentacaoEstoqueVM);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        TempData["MsgErro"] = $"Erro: {ex.Message}";
-        //        return View("AlterarExibirView");
-        //    }
-        //}
-
-        //-----------------------------------------------------------
-        // ALTERAR - PROCESSAR
-        //-----------------------------------------------------------
-        //public IActionResult AlterarProcessar(MovimentacaoEstoqueViewModel o_MovimentacaoEstoqueVM)
-        //{
-        //    try
-        //    {
-        //        // Se os campos forem validados entra aqui
-        //        if (ModelState.IsValid)
-        //        {
-        //            MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque();
-
-        //            //Passando os valores que estão na model para a classe que insere no Banco de Dados
-        //            o_MovimentacaoEstoque.idEstoque = o_MovimentacaoEstoqueVM.IdEstoque;
-        //            o_MovimentacaoEstoque.tipoEs = o_MovimentacaoEstoqueVM.TipoEs;
-        //            o_MovimentacaoEstoque.qtdMoviment = o_MovimentacaoEstoqueVM.QtdMoviment;
-        //            o_MovimentacaoEstoque.motivo = o_MovimentacaoEstoqueVM.Motivo;
-        //            o_MovimentacaoEstoque.idInsumo = o_MovimentacaoEstoqueVM.IdInsumo;
-        //            o_MovimentacaoEstoque.Alterar();
-
-        //            TempData["MsgSucesso"] = "Movimentação de estoque alterada com sucesso!";
-
-        //            return RedirectToAction("Selecionar");
-        //        }
-        //        return View("AlterarExibirView", o_MovimentacaoEstoqueVM);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        TempData["MsgErro"] = $"Erro: {ex.Message}";
-        //        return View("AlterarExibirView", o_MovimentacaoEstoqueVM);
-        //    }
-
-        //}
-
-        //-----------------------------------------------------------
         // EXCLUIR - EXIBIR
         //----------------------------------------------------------- 
         public IActionResult ExcluirExibir(int idEstoque)
@@ -329,26 +258,10 @@ namespace K_Gest.Controllers
             catch (Exception ex)
             {
                 TempData["MsgErro"] = $"Erro: {ex.Message}";
-                return View("ExcluirExibirView", o_MovimentacaoEstoqueVM);
+                return RedirectToAction("Selecionar");
             }
         }
-        public IActionResult RelatorioDesperdicio()
-        {
-            MovimentacaoEstoque o_Movimentacao = new MovimentacaoEstoque();
-            // Exemplo de chamada para um método que filtra por motivo no SQL
-            DataTable dtDesperdicio = o_Movimentacao.SelecionarPorMotivo("Desperdício");
 
-            return View("DashboardDesperdicio", dtDesperdicio);
-        }
-
-        //public IActionResult ListaComprasAutomatica()
-        //{
-        //    Insumos o_Insumos = new Insumos();
-        //    // No SQL: SELECT * FROM Insumos WHERE estoqueAtual <= pontoPedido
-        //    DataTable dtParaComprar = o_Insumos.SelecionarAbaixoDoPontoPedido();
-
-        //    return View("ListaComprasView", dtParaComprar);
-        //}
         private List<SelectListItem> ObterInsumos()
         {
             // Nota: Conforme o código anterior, sua classe de dados chama-se 'Insumos'
