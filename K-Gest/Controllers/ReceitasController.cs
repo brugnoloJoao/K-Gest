@@ -175,13 +175,6 @@ namespace K_Gest.Controllers
                 Receitas o_Receitas = new Receitas();
                 o_Receitas.idReceita = o_ReceitasVM.IdReceita;
 
-                // 🔍 Verificar se existem máquinas vinculadas
-                //if (o_Receitas.PossuiMaquinasVinculadas())
-                //{
-                //    TempData["MsgErro"] = "Não é possível excluir este setor pois existem máquinas vinculadas a ele.";
-                //    return RedirectToAction("Selecionar");
-                //}
-
                 o_Receitas.Excluir();
 
                 TempData["MsgSucesso"] = "Receita excluída com sucesso!";

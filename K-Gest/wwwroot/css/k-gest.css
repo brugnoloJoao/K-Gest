@@ -941,6 +941,27 @@ html.dark-mode .btn-cancel-action {
         color: #ffffff;
     }
 
+#darkModeToggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background-color: var(--salmon-soft);
+    color: var(--salmon-primary);
+    border: none;
+    cursor: pointer;
+    font-size: 17px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    flex-shrink: 0;
+}
+
+    #darkModeToggle:hover {
+        background-color: var(--salmon-primary);
+        color: #ffffff;
+    }
+
 
 /* ─────────────────────────────────────────────────────────────
    5.2 Tablet (≤ 992px) — sidebar vira drawer
@@ -1113,5 +1134,279 @@ html.dark-mode .btn-cancel-action {
     .btn-salmon-action:hover,
     .btn-salmon-action-heavy:hover {
         transform: none;
+    }
+}
+
+
+/* =============================================================
+   6. DARK MODE
+   Ativado quando <html> tem a classe "dark-mode".
+   O script em _Layout lê localStorage e aplica antes do render
+   (anti-flash), e persiste a preferência ao clicar no botão.
+   ============================================================= */
+
+/* --- 6.1 Variáveis Globais no Modo Escuro ----------------- */
+html.dark-mode {
+    --bg-main: #0f172a;
+    --sidebar-bg: #1e293b;
+    --sidebar-hover: rgba(255, 140, 105, 0.12);
+    --text-dark: #e2e8f0;
+    --text-muted: #64748b;
+    --text-subtle: #94a3b8;
+    --border-color: #334155;
+    --salmon-soft: rgba(255, 140, 105, 0.15);
+}
+
+    /* --- 6.2 Layout Base -------------------------------------- */
+    html.dark-mode body {
+        background-color: var(--bg-main);
+        color: var(--text-dark);
+    }
+
+    html.dark-mode #sidebar {
+        background-color: var(--sidebar-bg);
+        border-right-color: var(--border-color);
+    }
+
+    html.dark-mode .sidebar-header {
+        background-color: var(--sidebar-bg);
+        border-bottom-color: var(--border-color);
+    }
+
+    html.dark-mode #sidebar ul li a {
+        color: #94a3b8;
+    }
+
+        html.dark-mode #sidebar ul li a:hover {
+            color: var(--salmon-primary);
+            background-color: var(--sidebar-hover);
+        }
+
+    html.dark-mode .top-navbar {
+        background-color: var(--sidebar-bg);
+        border-bottom-color: var(--border-color);
+    }
+
+    html.dark-mode .user-profile-box {
+        background-color: var(--bg-main);
+        border-color: var(--border-color);
+        color: #94a3b8;
+    }
+
+    /* Botão dark mode no modo escuro */
+    html.dark-mode #darkModeToggle {
+        background-color: var(--salmon-soft);
+    }
+
+    /* Botão hambúrguer no modo escuro */
+    html.dark-mode #sidebarToggle {
+        background-color: var(--salmon-soft);
+    }
+
+    /* --- 6.3 Utilitários Bootstrap ---------------------------- */
+    html.dark-mode .text-dark {
+        color: var(--text-dark) !important;
+    }
+
+    html.dark-mode .text-muted {
+        color: var(--text-muted) !important;
+    }
+
+    html.dark-mode .bg-white {
+        background-color: var(--sidebar-bg) !important;
+    }
+
+    html.dark-mode .border-top {
+        border-top-color: var(--border-color) !important;
+    }
+
+    html.dark-mode .border-bottom {
+        border-bottom-color: var(--border-color) !important;
+    }
+
+    /* --- 6.4 Cards Bootstrap ---------------------------------- */
+    html.dark-mode .card {
+        background-color: var(--sidebar-bg);
+        border-color: var(--border-color);
+        color: var(--text-dark);
+    }
+
+    html.dark-mode .card-header,
+    html.dark-mode .card-footer {
+        background-color: rgba(255, 255, 255, 0.03);
+        border-color: var(--border-color);
+    }
+
+    /* --- 6.5 Tabelas Bootstrap -------------------------------- */
+    html.dark-mode .table {
+        color: var(--text-dark);
+        border-color: var(--border-color);
+    }
+
+        html.dark-mode .table > :not(caption) > * > * {
+            border-bottom-color: var(--border-color);
+            background-color: transparent;
+            color: var(--text-dark);
+        }
+
+        html.dark-mode .table thead th,
+        html.dark-mode .table > thead > tr > th {
+            background-color: #0f172a;
+            color: #94a3b8;
+            border-bottom-color: var(--border-color);
+        }
+
+    html.dark-mode .table-hover tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.04) !important;
+    }
+
+    html.dark-mode .table-modern thead {
+        background-color: #0f172a;
+    }
+
+        html.dark-mode .table-modern thead th {
+            color: #94a3b8;
+            border-bottom-color: var(--border-color);
+        }
+
+    html.dark-mode .table-modern tbody td {
+        border-bottom-color: var(--border-color);
+        color: #94a3b8;
+    }
+
+    html.dark-mode .table-modern tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.04);
+    }
+
+    /* --- 6.6 Inputs & Selects --------------------------------- */
+    html.dark-mode .form-control,
+    html.dark-mode .form-select,
+    html.dark-mode textarea {
+        background-color: #0f172a;
+        border-color: var(--border-color);
+        color: var(--text-dark);
+    }
+
+        html.dark-mode .form-control:focus,
+        html.dark-mode .form-select:focus {
+            background-color: var(--sidebar-bg);
+            border-color: var(--salmon-primary);
+            color: var(--text-dark);
+        }
+
+        html.dark-mode .form-control::placeholder {
+            color: #64748b;
+        }
+
+    html.dark-mode .form-control-custom,
+    html.dark-mode .form-select-custom {
+        background-color: #0f172a;
+        border-color: var(--border-color);
+        color: var(--text-dark);
+    }
+
+        html.dark-mode .form-control-custom:focus,
+        html.dark-mode .form-select-custom:focus {
+            background-color: var(--sidebar-bg);
+        }
+
+    html.dark-mode .form-control-modern,
+    html.dark-mode .form-select-modern {
+        background-color: #0f172a;
+        border-color: var(--border-color);
+        color: var(--text-dark);
+    }
+
+        html.dark-mode .form-control-modern:focus,
+        html.dark-mode .form-select-modern:focus {
+            background-color: var(--sidebar-bg);
+        }
+
+    html.dark-mode .form-control-custom:disabled,
+    html.dark-mode .form-select-custom:disabled {
+        background-color: #0f172a;
+        border-color: var(--border-color);
+        color: #64748b;
+    }
+
+    /* --- 6.7 Botões ------------------------------------------- */
+    html.dark-mode .btn-cancel,
+    html.dark-mode .btn-cancel-modern {
+        background-color: #334155;
+        color: #cbd5e1;
+    }
+
+        html.dark-mode .btn-cancel:hover,
+        html.dark-mode .btn-cancel-modern:hover {
+            background-color: #475569;
+            color: #ffffff;
+        }
+
+    html.dark-mode .btn-action-modern {
+        background-color: var(--sidebar-bg);
+    }
+
+    html.dark-mode .btn-edit-salmon {
+        border-color: var(--border-color);
+        color: #94a3b8;
+        background-color: var(--sidebar-bg);
+    }
+
+    html.dark-mode .btn-delete-salmon {
+        border-color: var(--border-color);
+        color: #94a3b8;
+        background-color: var(--sidebar-bg);
+    }
+
+    html.dark-mode .btn-action-block {
+        background-color: #0f172a;
+        color: #94a3b8;
+        border-color: var(--border-color);
+    }
+
+        html.dark-mode .btn-action-block:hover {
+            color: var(--text-dark);
+        }
+
+    /* --- 6.8 Modais Bootstrap --------------------------------- */
+    html.dark-mode .modal-content {
+        background-color: var(--sidebar-bg);
+        border-color: var(--border-color);
+        color: var(--text-dark);
+    }
+
+    html.dark-mode .modal-header,
+    html.dark-mode .modal-footer {
+        border-color: var(--border-color);
+    }
+
+    html.dark-mode .modal-list-item {
+        border-bottom-color: var(--border-color);
+    }
+
+        html.dark-mode .modal-list-item:hover {
+            background-color: rgba(255, 255, 255, 0.04);
+        }
+
+    /* --- 6.9 Ícones & Badges ---------------------------------- */
+    html.dark-mode .icon-shape-salmon,
+    html.dark-mode .icon-shape-salmon-sm {
+        background-color: rgba(255, 140, 105, 0.15);
+    }
+
+    html.dark-mode .badge-salmon-soft {
+        background-color: rgba(255, 140, 105, 0.15);
+    }
+
+    html.dark-mode .badge.bg-light,
+    html.dark-mode .badge.text-dark {
+        background-color: #334155 !important;
+        color: #e2e8f0 !important;
+    }
+
+/* --- 6.10 Navbar Sticky (≤ 992px) no Modo Escuro --------- */
+@media (max-width: 992px) {
+    html.dark-mode .top-navbar {
+        background-color: var(--sidebar-bg);
     }
 }
