@@ -11,7 +11,8 @@ namespace K_Gest.BancoDados
         //-------------------------------------------------------------
         public int? idReceita;
         public string nomePrato;
-
+        public decimal preco;
+        
         SqlConnection con;
 
         //-------------------------------------------------------------
@@ -44,9 +45,10 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                string cmdSQL = "INSERT INTO Receitas(nomePrato) VALUES(@NomePrato)";
+                string cmdSQL = "INSERT INTO Receitas(nomePrato, preco) VALUES(@NomePrato @Preco)";
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
                 cmd.Parameters.AddWithValue("@NomePrato", nomePrato);
+                cmd.Parameters.AddWithValue("@Preco", preco);
                 con.Open();
                 cmd.ExecuteNonQuery();
                 con.Close();
@@ -58,13 +60,14 @@ namespace K_Gest.BancoDados
             try
             {
                 // Prepara o comando SQL
-                string cmdSQL = "UPDATE Receitas SET nomePrato = @NomePrato WHERE idReceita = @IdReceita";
+                string cmdSQL = "UPDATE Receitas SET nomePrato = @NomePrato, preco = @Preco WHERE idReceita = @IdReceita";
 
                 //Prepara SqlCommand
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
 
                 cmd.Parameters.AddWithValue("@IdReceita", idReceita);
                 cmd.Parameters.AddWithValue("@NomePrato", nomePrato);
+                cmd.Parameters.AddWithValue("@Preco", preco);
 
                 //Abre conexão com BD
                 con.Open();
@@ -105,7 +108,7 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                string cmdSQL = "SELECT idReceita, nomePrato FROM receitas ORDER BY idReceita";
+                string cmdSQL = "SELECT idReceita, nomePrato, preco FROM receitas ORDER BY idReceita";
                 SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);
                 con.Open();
                 DataTable dtPesquisa = new DataTable();
@@ -125,7 +128,7 @@ namespace K_Gest.BancoDados
             try
             {
                 // Prepara o comando SQL
-                string cmdSQL = "SELECT idReceita, nomePrato FROM receitas WHERE idReceita = @IdReceita";
+                string cmdSQL = "SELECT idReceita, nomePrato, preco FROM receitas WHERE idReceita = @IdReceita";
 
                 // Prepara SQL Adapter
                 SqlDataAdapter o_DataAdapter = new SqlDataAdapter(cmdSQL, con);

@@ -53,6 +53,7 @@ namespace K_Gest.Controllers
 
                     //Passando os valores que estão na model para a classe que insere no Banco de Dados
                     o_Receitas.nomePrato = o_ReceitasVM.NomePrato;
+                    o_Receitas.preco = o_ReceitasVM.Preco;
 
                     o_Receitas.Inserir();
 
@@ -93,6 +94,7 @@ namespace K_Gest.Controllers
                 o_ReceitasVM.IdReceita = idReceita;
                 
                 o_ReceitasVM.NomePrato = pesqReceitas.Rows[0]["nomePrato"].ToString();
+                o_ReceitasVM.Preco = Convert.ToDecimal(pesqReceitas.Rows[0]["nomePrato"].ToString());
 
                 return View("AlterarExibirView", o_ReceitasVM);
             }
@@ -119,7 +121,8 @@ namespace K_Gest.Controllers
                     //Passando os valores que estão na model para a classe que insere no Banco de Dados
                     o_Receitas.idReceita = o_ReceitasVM.IdReceita;
                     o_Receitas.nomePrato = o_ReceitasVM.NomePrato;
-                 
+                    o_Receitas.preco = o_ReceitasVM.Preco;
+
                     o_Receitas.Alterar();
 
                     TempData["MsgSucesso"] = "Receita alterada com sucesso!";
@@ -155,6 +158,8 @@ namespace K_Gest.Controllers
                 ReceitasViewModel o_ReceitasVM = new ReceitasViewModel();
                 o_ReceitasVM.IdReceita = idReceita;
                 o_ReceitasVM.NomePrato = pesqReceitas.Rows[0]["nomePrato"].ToString();
+                o_ReceitasVM.Preco = Convert.ToDecimal(pesqReceitas.Rows[0]["nomePrato"].ToString());
+
 
                 return View("ExcluirExibirView", o_ReceitasVM);
             }

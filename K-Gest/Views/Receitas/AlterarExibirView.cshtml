@@ -20,7 +20,7 @@
         </div>
         <div>
             <h2 class="fw-bold text-dark m-0" style="font-size: 24px; letter-spacing: -0.5px;">Alterar Receita</h2>
-            <p class="text-muted small m-0 mt-1">Atualize o nome e as especificações do prato selecionado.</p>
+            <p class="text-muted small m-0 mt-1">Atualize o nome, preço e as especificações do prato selecionado.</p>
         </div>
     </div>
 
@@ -40,6 +40,16 @@
                             <input asp-for="NomePrato" class="form-control-modern" placeholder="Ex: Estrogonofe de Frango" required />
                         </div>
                         <span asp-validation-for="NomePrato" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    @* Preço do Prato *@
+                    <div class="col-12">
+                        <label class="form-label text-secondary fw-bold small text-uppercase">Preço</label>
+                        <div class="modern-input-group">
+                            <i class="bi bi-currency-dollar text-salmon"></i>
+                            <input asp-for="Preco" type="text" class="form-control-modern" placeholder="Ex: 35,90" required />
+                        </div>
+                        <span asp-validation-for="Preco" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     @* Rodapé de Ações *@

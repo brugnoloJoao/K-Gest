@@ -70,7 +70,7 @@
 
                         <tr>
                             <td class="ps-4 py-3">
-                                <span class="badge bg-light text-secondary border px-2 py-1.5 font-monospace" style="border-radius: 6px; font-size: 12px;">#@idEstoque</span>
+                                <span class="badge text-secondary border px-2 py-1.5 font-monospace" style="border-radius: 6px; font-size: 12px;">#@idEstoque</span>
                             </td>
 
                             @* Nova Coluna de Data alinhada com o padrão das Saídas *@
@@ -87,7 +87,7 @@
                                 + @(row["unidadeMed"] == "UN" ? qtdMoviment.ToString("N0") : qtdMoviment.ToString("N2"))
                             </td>
                             <td class="text-end py-3 fw-bold text-success">
-                                <span class="badge bg-light text-secondary border px-2 py-1.5 font-monospace" style="border-radius: 6px; font-size: 12px;">@row["unidadeMed"]</span>
+                                <span class="badge text-secondary border px-2 py-1.5 font-monospace" style="border-radius: 6px; font-size: 12px;">@row["unidadeMed"]</span>
                             </td>
                             <td class="py-3 text-secondary small" style="padding-left: 40px;">
                                 @(string.IsNullOrEmpty(motivo) ? "Não informado" : motivo)

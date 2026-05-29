@@ -8,11 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Força o formato de ponto flutuante americano para o sistema interno
-var cultureInfo = new CultureInfo("en-US");
-CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-
 // Ativa o serviço de gerenciamento de autenticação por Cookies
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -26,11 +21,13 @@ builder.Services.AddHostedService<VerificadorValidadeService>();
 
 var app = builder.Build();
 
-// Configura a cultura para exibição visual em Português do Brasil
-var supportedCultures = new[] { new CultureInfo("pt-BR") };
+// Configura a cultura de forma global e correta para Português do Brasil (pt-BR)
+var ptBR = new CultureInfo("pt-BR");
+var supportedCultures = new[] { ptBR };
+
 app.UseRequestLocalization(new RequestLocalizationOptions
 {
-    DefaultRequestCulture = new RequestCulture("pt-BR"),
+    DefaultRequestCulture = new RequestCulture(ptBR),
     SupportedCultures = supportedCultures,
     SupportedUICultures = supportedCultures
 });
@@ -42,7 +39,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
-
 app.UseRouting();
 
 // Ordem estrita e obrigatória de segurança do ASP.NET Core

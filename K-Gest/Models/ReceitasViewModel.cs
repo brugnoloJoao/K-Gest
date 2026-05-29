@@ -12,6 +12,11 @@ namespace K_Gest.Models
         [Display(Name = "Nome do Prato")]
         public string NomePrato { get; set; }
 
-
+        [Required(ErrorMessage = "O preço é obrigatório.")]
+        [Display(Name = "Preço")]
+        [DataType(DataType.Currency)]
+        [Range(0.01, 1000000, ErrorMessage = "O preço deve ser maior que zero.")] 
+        [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
+        public decimal Preco { get; set; }
     }
 }

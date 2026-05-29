@@ -44,6 +44,7 @@
                     <tr>
                         <th class="ps-4 py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px; width: 100px;">ID</th>
                         <th class="py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Nome do Prato</th>
+                        <th class="py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Preço</th>
                         <th class="pe-4 py-3 text-secondary text-uppercase fw-bold text-center" style="font-size: 11px; letter-spacing: 0.5px; width: 150px;">Ações</th>
                     </tr>
                 </thead>
@@ -59,6 +60,10 @@
 
                             <td class="py-3">
                                 <span class="fw-semibold text-dark fs-6 d-block">@row["nomePrato"]</span>
+                            </td>
+
+                            <td class="py-3">
+                                <span class="fw-semibold text-dark fs-6 d-block">@(Convert.ToDecimal(row["preco"].ToString()).ToString("C"))</span>
                             </td>
 
                             <td class="pe-4 text-center py-3">

@@ -33,7 +33,8 @@
             </h5>
 
             <div class="row g-4">
-                <div class="col-12">
+                @* Nome do Prato *@
+                <div class="col-md-8 col-12">
                     <label class="form-label text-secondary fw-semibold small mb-2 text-uppercase">Nome do Prato / Ficha Técnica</label>
                     <div class="input-group-custom">
                         <i class="bi bi-blockquote-left text-salmon input-icon"></i>
@@ -41,9 +42,17 @@
                     </div>
                     <span asp-validation-for="NomePrato" class="text-danger small mt-1 d-block fw-medium"></span>
                 </div>
-            </div>
 
-            @* Seções futuras podem ser acopladas aqui (Ex: Categoria, Preço, Tempo de Preparo) *@
+                @* Preço *@
+                <div class="col-md-4 col-12">
+                    <label class="form-label text-secondary fw-semibold small mb-2 text-uppercase">Preço de Venda</label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-currency-dollar text-salmon input-icon"></i>
+                        <input asp-for="Preco" type="text" class="form-control-custom" placeholder="Ex: 45,90" />
+                    </div>
+                    <span asp-validation-for="Preco" class="text-danger small mt-1 d-block fw-medium"></span>
+                </div>
+            </div>
 
             @* Ações de Envio *@
             <div class="d-flex justify-content-end align-items-center gap-2 mt-5 pt-3" style="border-top: 1px solid #f1f5f9;">
