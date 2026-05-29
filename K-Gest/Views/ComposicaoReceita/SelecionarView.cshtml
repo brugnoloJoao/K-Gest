@@ -21,6 +21,22 @@
         </a>
     </div>
 
+    @if (TempData["MsgSucesso"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm d-flex align-items-center mb-4" role="alert" style="background-color: #ecfdf5; color: #065f46; border-radius: 12px;">
+            <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+            <div class="fw-medium small">@TempData["MsgSucesso"]</div>
+        </div>
+    }
+
+    @if (TempData["MsgErro"] != null)
+    {
+        <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center mb-4" role="alert" style="background-color: #fef2f2; color: #991b1b; border-radius: 12px;">
+            <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+            <div class="fw-medium small">@TempData["MsgErro"]</div>
+        </div>
+    }
+
     <div class="card border-0 shadow-premium" style="border-radius: 20px; overflow: hidden; background: #ffffff;">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0" style="min-width: 700px;">

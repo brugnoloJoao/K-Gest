@@ -2,42 +2,186 @@
 
 @{
     ViewData["Title"] = "Excluir Insumo";
+
+    // Regra do banco Kantine: se for KG ou L, exibe dividido por 1000 na tela
+    var unidade = Model.UnidadeMed?.ToUpper();
+    bool precisaDividir = (unidade == "KG" || unidade == "L");
+    decimal estoqueExibicao = Model.EstoqueAtual;
+
+    if (precisaDividir)
+    {
+        estoqueExibicao /= 1000m;
+    }
+
+    string formato = (unidade == "UN") ? "N0" : "N2";
 }
 
-<div class="container mt-4">
-    <div class="alert alert-danger">
-        <h4><i class="bi bi-exclamation-triangle"></i> Atenção!</h4>
-        <p>Você tem certeza que deseja excluir permanentemente este insumo? Esta ação não pode ser desfeita.</p>
+<div class="container-fluid px-4 py-4" style="max-width: 700px; margin: 0 auto;">
+
+    @* Topo de Navegação *@
+    <div class="mb-3">
+        <a asp-action="Selecionar" class="text-decoration-none small fw-semibold d-inline-flex align-items-center gap-1 back-link">
+            <i class="bi bi-chevron-left"></i> Voltar para a Listagem
+        </a>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-dark text-white">
-            <h5 class="mb-0">Detalhes do Insumo</h5>
+    @* Alerta de Atenção Premium Customizado *@
+    <div class="alert alert-danger-custom border-0 shadow-sm d-flex align-items-start gap-3 mb-4 p-4">
+        <div class="icon-shape-danger-alert flex-shrink-0">
+            <i class="bi bi-exclamation-triangle-fill fs-4"></i>
         </div>
-        <div class="card-body">
-            <dl class="row">
-                <dt class="col-sm-3">ID:</dt>
-                <dd class="col-sm-9">@Model.IdInsumo</dd>
+        <div>
+            <h4 class="fw-bold m-0" style="font-size: 18px; letter-spacing: -0.3px;">Atenção! Ação Irreversível</h4>
+            <p class="small m-0 mt-1 opacity-90">Você tem certeza que deseja excluir permanentemente este insumo do sistema? Esta ação removerá o item e pode afetar o histórico ou composições de receitas vinculadas.</p>
+        </div>
+    </div>
 
-                <dt class="col-sm-3">Nome:</dt>
-                <dd class="col-sm-9">@Model.NomeInsumo</dd>
+    @* Card de Detalhes do Registro *@
+    <div class="card border-0 shadow-premium card-toggle" style="border-radius: 20px; overflow: hidden; background: #ffffff;">
+        <div class="card-header border-0 bg-transparent pt-4 px-4 pb-2">
+            <div class="d-flex align-items-center gap-2">
+                <span class="p-2 bg-light rounded-3 text-dark d-inline-flex border icon-table-toggle">
+                    <i class="bi bi-box-seam fs-5"></i>
+                </span>
+                <div>
+                    <h5 class="fw-bold text-dark m-0 var-text-color">Confirmar Dados do Insumo</h5>
+                    <p class="text-muted small m-0 sub-text-toggle">Verifique as informações antes de prosseguir</p>
+                </div>
+            </div>
+        </div>
 
-                <dt class="col-sm-3">Unidade:</dt>
-                <dd class="col-sm-9">@Model.UnidadeMed</dd>
+        <div class="card-body px-4 pb-4 pt-3">
+            <div class="bg-light p-3 rounded-3 mb-4 border" style="background-color: #f8fafc !important;">
+                <dl class="row mb-0 gy-3">
+                    <dt class="col-sm-4 text-secondary small text-uppercase fw-bold sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px;">ID do Registro</dt>
+                    <dd class="col-sm-8 fw-mono text-dark var-text-color mb-0">#@Model.IdInsumo</dd>
 
-                <dt class="col-sm-3">Estoque Atual:</dt>
-                <dd class="col-sm-9">@Model.EstoqueAtual.ToString("N2")</dd>
-            </dl>
+                    <dt class="col-sm-4 text-secondary small text-uppercase fw-bold sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px;">Nome do Insumo</dt>
+                    <dd class="col-sm-8 fw-bold text-dark var-text-color mb-0 fs-6">@Model.NomeInsumo</dd>
 
+                    <dt class="col-sm-4 text-secondary small text-uppercase fw-bold sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px;">Estoque Atual Real</dt>
+                    <dd class="col-sm-8 fw-bold text-dark var-text-color mb-0 font-monospace">
+                        @estoqueExibicao.ToString(formato)
+                        <span class="badge bg-white text-secondary border px-1.5 py-0.5 font-monospace un-badge-toggle" style="border-radius: 4px; font-size: 10px; vertical-align: middle;">@unidade</span>
+                    </dd>
+                </dl>
+            </div>
+
+            @* Formulário de Envio seguro *@
             <form asp-action="ExcluirProcessar" method="post">
                 @* Campo oculto para garantir que o ID correto seja enviado ao banco Kantine *@
                 <input type="hidden" asp-for="IdInsumo" />
 
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
-                    <a asp-action="Selecionar" class="btn btn-secondary">Cancelar e Voltar</a>
+                <div class="d-flex align-items-center justify-content-end gap-3 flex-wrap">
+                    <a asp-action="Selecionar" class="btn-cancel-action d-inline-flex align-items-center gap-2">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn-danger-premium d-inline-flex align-items-center gap-2 shadow-sm">
+                        <i class="bi bi-trash3-fill"></i> Excluir Permanentemente
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<style>
+    :root {
+        --salmon-primary: #FF8C69;
+        --salmon-soft: #fff1ed;
+        --danger-premium: #ef4444;
+        --danger-hover: #dc2626;
+        --danger-soft: #fef2f2;
+    }
+
+    .back-link {
+        color: var(--salmon-primary);
+        transition: opacity 0.2s;
+    }
+
+        .back-link:hover {
+            opacity: 0.8;
+        }
+
+    /* Alerta Customizado do K_Gest */
+    .alert-danger-custom {
+        background-color: var(--danger-soft);
+        color: #991b1b;
+        border-radius: 16px;
+    }
+
+    html.dark-mode .alert-danger-custom {
+        background-color: #2d1919;
+        color: #fca5a5;
+    }
+
+    .icon-shape-danger-alert {
+        width: 42px;
+        height: 42px;
+        background-color: #fca5a5;
+        color: #b91c1c;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+    }
+
+    html.dark-mode .icon-shape-danger-alert {
+        background-color: #7f1d1d;
+        color: #fca5a5;
+    }
+
+    /* Botões estilizados no padrão do sistema */
+    .btn-danger-premium {
+        background-color: var(--danger-premium);
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+        .btn-danger-premium:hover {
+            background-color: var(--danger-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(239, 68, 68, 0.25) !important;
+        }
+
+    .btn-cancel-action {
+        background-color: #f1f5f9;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+        padding: 10px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+        .btn-cancel-action:hover {
+            background-color: #e2e8f0;
+            color: #334155;
+        }
+
+    html.dark-mode .btn-cancel-action {
+        background-color: #334155;
+        border-color: #475569;
+        color: #cbd5e1;
+    }
+
+        html.dark-mode .btn-cancel-action:hover {
+            background-color: #475569;
+            color: #ffffff;
+        }
+
+    .shadow-premium {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02) !important;
+    }
+
+    html.dark-mode .shadow-premium {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2) !important;
+    }
+</style>

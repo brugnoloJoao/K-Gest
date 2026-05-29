@@ -51,5 +51,6 @@ namespace K_Gest.BancoDados
                 throw new Exception("Erro ao autenticar no banco: " + ex.Message);
             }
         }
+
     }
 }

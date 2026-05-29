@@ -18,6 +18,22 @@
         </div>
     </div>
 
+    @if (TempData["MsgSucesso"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm d-flex align-items-center mb-4" role="alert" style="background-color: #ecfdf5; color: #065f46; border-radius: 12px;">
+            <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+            <div class="fw-medium small">@TempData["MsgSucesso"]</div>
+        </div>
+    }
+
+    @if (TempData["MsgErro"] != null)
+    {
+        <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center mb-4" role="alert" style="background-color: #fef2f2; color: #991b1b; border-radius: 12px;">
+            <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+            <div class="fw-medium small">@TempData["MsgErro"]</div>
+        </div>
+    }
+
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-4">
         @if (Model != null && Model.Rows.Count > 0)
         {

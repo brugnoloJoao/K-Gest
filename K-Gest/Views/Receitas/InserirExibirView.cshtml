@@ -4,18 +4,168 @@
     ViewData["Title"] = "Nova Receita";
 }
 
-<div class="container mt-4">
-    <h2>Cadastrar Nova Receita</h2>
-    <hr />
+<div class="container-fluid px-4 py-4" style="max-width: 1000px; margin: 0 auto;">
 
-    <form asp-action="InserirProcessar" method="post">
-        <div class="form-group mb-3">
-            <label class="form-label">Nome do Prato</label>
-            <input asp-for="NomePrato" class="form-control" placeholder="Ex: Lasanha de Carne" />
-            <span asp-validation-for="NomePrato" class="text-danger"></span>
+    @* Topo de Navegação *@
+    <div class="mb-3">
+        <a asp-action="Selecionar" class="text-decoration-none small fw-semibold d-inline-flex align-items-center gap-1 back-link">
+            <i class="bi bi-arrow-left"></i> Voltar para a listagem
+        </a>
+    </div>
+
+    @* Cabeçalho Premium *@
+    <div class="mb-4 d-flex align-items-center gap-3">
+        <div class="icon-shape-salmon">
+            <i class="bi bi-journal-plus"></i>
         </div>
+        <div>
+            <h2 class="fw-bold text-dark m-0 var-text-color" style="font-size: 24px; letter-spacing: -0.5px;">Cadastrar Nova Receita</h2>
+            <p class="text-muted small m-0 mt-1 sub-text-toggle">Monte o cabeçalho do prato para posteriormente associar a sua composição de insumos</p>
+        </div>
+    </div>
 
-        <button type="submit" class="btn btn-primary">Salvar Receita</button>
-        <a asp-action="Selecionar" class="btn btn-secondary">Cancelar</a>
-    </form>
+    @* Card Formulário Principal *@
+    <div class="card border-0 shadow-premium card-toggle" style="border-radius: 20px; background: #ffffff; padding: 24px;">
+        <form asp-action="InserirProcessar" method="post">
+
+            <h5 class="text-dark fw-bold mb-4 pb-2" style="font-size: 15px; border-bottom: 2px solid #f1f5f9;">
+                <i class="bi bi-egg-fried me-1 text-salmon"></i> Identificação do Prato
+            </h5>
+
+            <div class="row g-4">
+                <div class="col-12">
+                    <label class="form-label text-secondary fw-semibold small mb-2 text-uppercase">Nome do Prato / Ficha Técnica</label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-blockquote-left text-salmon input-icon"></i>
+                        <input asp-for="NomePrato" class="form-control-custom" placeholder="Ex: Lasanha Bolonhesa Especial, Suco de Laranja 300ml" />
+                    </div>
+                    <span asp-validation-for="NomePrato" class="text-danger small mt-1 d-block fw-medium"></span>
+                </div>
+            </div>
+
+            @* Seções futuras podem ser acopladas aqui (Ex: Categoria, Preço, Tempo de Preparo) *@
+
+            @* Ações de Envio *@
+            <div class="d-flex justify-content-end align-items-center gap-2 mt-5 pt-3" style="border-top: 1px solid #f1f5f9;">
+                <a asp-action="Selecionar" class="btn-cancel">Cancelar</a>
+                <button type="submit" class="btn-submit shadow-sm">
+                    <i class="bi bi-check-lg me-1"></i> Salvar Receita
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
+
+<style>
+    :root {
+        --salmon-primary: #FF8C69;
+        --salmon-hover: #fa7a52;
+        --salmon-soft: #fff1ed;
+        --text-dark: #334155;
+    }
+
+    .icon-shape-salmon {
+        width: 46px;
+        height: 46px;
+        background-color: var(--salmon-soft);
+        color: var(--salmon-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 18px;
+    }
+
+    .input-group-custom {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 16px;
+        font-size: 16px;
+        pointer-events: none;
+        z-index: 5;
+    }
+
+    .text-salmon {
+        color: var(--salmon-primary);
+    }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 12px 16px 12px 48px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-dark);
+        background-color: #f8fafc;
+        border: 2px solid #f1f5f9;
+        border-radius: 12px;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .form-control-custom:focus {
+            background-color: #ffffff;
+            border-color: var(--salmon-primary);
+            box-shadow: 0 0 0 4px rgba(255, 140, 105, 0.15);
+            outline: none;
+        }
+
+    .btn-submit {
+        background-color: var(--salmon-primary);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 12px 26px;
+        border: none;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.2s ease;
+    }
+
+        .btn-submit:hover {
+            background-color: var(--salmon-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(255, 140, 105, 0.25) !important;
+        }
+
+    .btn-cancel {
+        background-color: #f1f5f9;
+        color: #64748b;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 12px;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+
+        .btn-cancel:hover {
+            background-color: #e2e8f0;
+            color: var(--text-dark);
+        }
+
+    .back-link {
+        color: var(--salmon-primary);
+        transition: opacity 0.2s ease;
+    }
+
+        .back-link:hover {
+            opacity: 0.8;
+        }
+
+    .shadow-premium {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02) !important;
+    }
+
+    /* Suporte a Modo Escuro nativo do K_Gest */
+    html.dark-mode .shadow-premium {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2) !important;
+    }
+</style>
