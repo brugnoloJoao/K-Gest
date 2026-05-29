@@ -33,7 +33,7 @@
     </div>
 
     @* Card Principal da Tabela *@
-    <div class="card border-0 shadow-premium card-toggle" style="border-radius: 20px; overflow: hidden; background: #ffffff;">
+    <div class="card border-0 shadow-premium card-toggle" style="border-radius: 20px; overflow: hidden; ">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0 table-toggle">
                 <thead class="thead-toggle" style="border-bottom: 2px solid #f1f5f9;">
@@ -42,7 +42,7 @@
                         <th class="py-3 text-secondary text-uppercase fw-bold text-end sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px; width: 140px;">Estoque Atual</th>
                         <th class="py-3 text-secondary text-uppercase fw-bold text-end sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px; width: 140px;">Ponto Pedido</th>
                         <th class="py-3 text-secondary text-uppercase fw-bold text-end sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px; width: 140px;">Consumo Previsto</th>
-                        <th class="pe-4 py-3 text-salmon text-uppercase fw-bold text-end" style="font-size: 11px; letter-spacing: 0.5px; width: 200px; background-color: #fff1ed;">Qtd. Sugerida comprar</th>
+                        <th class="pe-4 py-3 text-salmon text-uppercase fw-bold text-end col-highlight-salmon" style="font-size: 11px; letter-spacing: 0.5px; width: 200px; background-color: #fff1ed;">Qtd. Sugerida comprar</th>
                     </tr>
                 </thead>
                 <tbody class="border-0">
@@ -99,9 +99,9 @@
                                     @demanda.ToString(formato)
                                 </td>
                                 @* Coluna de Destaque: Valor numérico alinhado com o Badge da unidade ao lado *@
-                                <td class="pe-4 text-end py-3 fw-bold text-dark font-monospace" style="background-color: #fff1ed; font-size: 15px;">
+                                <td class="pe-4 text-end py-3 fw-bold text-dark font-monospace col-highlight-salmon" style="font-size: 15px; background-color: #fff1ed;">
                                     <span class="me-1">@sugerido.ToString(formato)</span>
-                                    <span class="badge bg-light text-secondary border px-1.5 py-1 font-monospace un-badge-toggle" style="border-radius: 4px; font-size: 10px; vertical-align: middle;">@unidade</span>
+                                    <span class="badge bg-light text-secondary border px-1.5 py-1 font-monospace un-badge-toggle" style="border-radius: 4px; font-size: 10px; vertical-align: middle; ">@unidade</span>
                                 </td>
                             </tr>
                         }

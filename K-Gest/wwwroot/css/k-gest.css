@@ -1410,3 +1410,13 @@ html.dark-mode {
         background-color: var(--sidebar-bg);
     }
 }
+
+/* Modo claro — mantém o salmão original */
+.col-highlight-salmon {
+    background-color: #fff1ed;
+}
+
+/* Modo escuro — salmão sutil e discreto */
+html.dark-mode .col-highlight-salmon {
+    background-color: rgba(255, 140, 105, 0.10) !important;
+}
