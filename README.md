@@ -121,7 +121,7 @@ Orientador: Prof. MSc. Gustavo Martins Nunes Avellar ⚖️
     </td>
     <td align="center">
       <a href="https://github.com/lucasbrocha">
-        <img src="https://github.com/Luca4sROcha.png" width="100px;" alt="Foto do Lucas Bernardes da Rocha" style="border-radius:50%;"/><br>
+        <img src="https://github.com/Luca4sR0cha.png" width="100px;" alt="Foto do Lucas Bernardes da Rocha" style="border-radius:50%;"/><br>
         <sub><b>Lucas Bernardes da Rocha</b></sub>
       </a>
     </td>
