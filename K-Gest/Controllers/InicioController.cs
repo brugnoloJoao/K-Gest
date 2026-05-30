@@ -30,7 +30,6 @@ namespace K_Gest.Controllers
             }
         }
 
-        // --- A NOVA ACTION DO SEU BOTÃO ---
         [HttpGet]
         public IActionResult GerarListaCompras()
         {

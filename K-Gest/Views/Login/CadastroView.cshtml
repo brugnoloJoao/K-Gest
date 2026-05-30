@@ -26,72 +26,71 @@
 
             body {
                 background-color: var(--bg-light);
-                background-image: radial-gradient(circle at 80% 20%, rgba(255, 87, 66, 0.15) 0%, transparent 50%), radial-gradient(circle at 15% 80%, rgba(77, 77, 77, 0.08) 0%, transparent 50%);
-                min-height: 100vh;
                 font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-                position: relative;
                 color: var(--text-main);
+                margin: 0;
+                overflow-x: hidden; /* Corta qualquer coisa que tente criar scroll horizontal */
             }
 
-            
+            /* Container isolado para os efeitos de fundo para NUNCA gerar scroll */
+            .background-effects {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background-image: radial-gradient(circle at 80% 20%, rgba(255, 87, 66, 0.15) 0%, transparent 50%), radial-gradient(circle at 15% 80%, rgba(77, 77, 77, 0.08) 0%, transparent 50%);
+                z-index: -1;
+                pointer-events: none;
+                overflow: hidden;
+            }
 
             /* Luzes Flutuantes de Fundo */
             .bg-glow-1, .bg-glow-2 {
                 position: absolute;
                 border-radius: 50%;
                 filter: blur(120px);
-                z-index: 0;
-                pointer-events: none;
             }
 
             .bg-glow-1 {
-                width: 450px;
-                height: 450px;
+                width: 300px;
+                height: 300px;
                 background: rgba(255, 87, 66, 0.14);
-                top: 20%;
-                left: -10%;
+                top: 10%;
+                left: -50px;
                 animation: floatGlow 15s ease-in-out infinite alternate;
             }
 
             .bg-glow-2 {
-                width: 550px;
-                height: 550px;
+                width: 350px;
+                height: 350px;
                 background: rgba(255, 51, 85, 0.09);
-                bottom: 10%;
-                right: -5%;
+                bottom: 5%;
+                right: -50px;
                 animation: floatGlow 20s ease-in-out infinite alternate-reverse;
-            }
-
-            .login-container {
-                position: relative;
-                z-index: 1;
-                perspective: 1000px;
-                padding-top: 2rem;
-                padding-bottom: 2rem;
             }
 
             /* Card Light Glassmorphism Premium */
             .login-card {
                 background: var(--glass-bg);
-                backdrop-filter: blur(30px);
-                -webkit-backdrop-filter: blur(30px);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
                 border: 1px solid var(--glass-border);
-                border-radius: 28px;
+                border-radius: 24px;
                 box-shadow: 0 25px 55px rgba(45, 41, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
                 opacity: 0;
-                transform: translateY(40px) scale(0.98);
+                transform: translateY(30px) scale(0.98);
                 animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
                 animation-delay: 0.1s;
             }
 
             /* Logo e Cabeçalho */
             .logo-wrapper {
-                padding: 12px 24px;
+                padding: 6px 14px;
                 background: rgba(255, 255, 255, 0.5);
                 border: 1px solid rgba(255, 255, 255, 0.8);
-                border-radius: 20px;
+                border-radius: 14px;
                 display: inline-block;
-                max-width: 100%;
                 box-shadow: 0 8px 25px rgba(0, 0, 0, 0.04);
                 opacity: 0;
                 transform: scale(0.9);
@@ -100,9 +99,7 @@
             }
 
             .logo-img {
-                max-width: 100%;
-                height: auto;
-                max-height: 70px;
+                height: 40px;
                 object-fit: contain;
                 transition: transform 0.5s ease;
             }
@@ -112,9 +109,9 @@
             }
 
             .system-subtitle {
-                letter-spacing: 2px;
+                letter-spacing: 1.5px;
                 text-transform: uppercase;
-                font-size: 0.68rem;
+                font-size: 0.65rem;
                 color: var(--text-muted);
                 font-weight: 600;
                 opacity: 0;
@@ -124,19 +121,19 @@
 
             /* Labels e Inputs */
             .form-label {
-                font-size: 0.75rem;
+                font-size: 0.70rem;
                 letter-spacing: 0.8px;
                 text-transform: uppercase;
                 color: var(--text-muted) !important;
                 font-weight: 600;
-                margin-bottom: 0.4rem;
+                margin-bottom: 0.15rem;
                 transition: color 0.3s ease;
             }
 
             .input-group {
                 background: rgba(255, 255, 255, 0.6);
                 border: 1px solid rgba(0, 0, 0, 0.08);
-                border-radius: 16px !important;
+                border-radius: 12px !important;
                 transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
                 overflow: hidden;
             }
@@ -145,7 +142,7 @@
                 background: transparent;
                 border: none;
                 color: var(--text-muted);
-                padding-left: 1.2rem;
+                padding-left: 0.85rem;
                 transition: color 0.3s ease;
             }
 
@@ -153,8 +150,8 @@
                 background: transparent;
                 border: none;
                 color: var(--text-main);
-                padding: 0.8rem 1.2rem 0.8rem 0.5rem;
-                font-size: 0.95rem;
+                padding: 0.55rem 0.8rem 0.55rem 0.3rem;
+                font-size: 0.85rem;
                 font-weight: 500;
             }
 
@@ -173,7 +170,7 @@
             .input-group:focus-within {
                 border-color: var(--accent-salmon-strong);
                 background: #ffffff;
-                box-shadow: 0 0 20px rgba(255, 87, 66, 0.15);
+                box-shadow: 0 0 15px rgba(255, 87, 66, 0.12);
                 transform: translateY(-1px);
             }
 
@@ -185,21 +182,21 @@
                 color: var(--accent-salmon-strong) !important;
             }
 
-            /* Botão Shimmer Principal */
+            /* Botões */
             .btn-kantine {
                 background: linear-gradient(135deg, var(--accent-salmon-strong) 0%, var(--accent-coral-vibrant) 100%);
                 color: #ffffff;
                 border: none;
-                border-radius: 16px;
-                padding: 0.95rem;
+                border-radius: 12px;
+                padding: 0.65rem;
                 font-weight: 700;
                 letter-spacing: 0.8px;
                 text-transform: uppercase;
-                font-size: 0.85rem;
+                font-size: 0.75rem;
                 transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
                 position: relative;
                 overflow: hidden;
-                box-shadow: 0 6px 24px rgba(255, 87, 66, 0.35);
+                box-shadow: 0 4px 15px rgba(255, 87, 66, 0.2);
             }
 
                 .btn-kantine::after {
@@ -215,34 +212,21 @@
                 }
 
                 .btn-kantine:hover {
-                    transform: translateY(-3px) scale(1.01);
-                    box-shadow: 0 12px 30px rgba(255, 87, 66, 0.5);
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(255, 87, 66, 0.3);
                     color: #ffffff;
                 }
 
-                .btn-kantine:active {
-                    transform: translateY(-1px) scale(0.99);
-                }
-
-                .btn-kantine i {
-                    transition: transform 0.3s ease;
-                }
-
-                .btn-kantine:hover i {
-                    transform: translateX(4px);
-                }
-
-            /* Botão Voltar para o Login (Vazado / Outline) */
             .btn-kantine-outline {
                 background: transparent;
                 color: var(--text-muted);
-                border: 2px solid rgba(0, 0, 0, 0.1);
-                border-radius: 16px;
-                padding: 0.85rem;
+                border: 2px solid rgba(0, 0, 0, 0.08);
+                border-radius: 12px;
+                padding: 0.6rem;
                 font-weight: 700;
                 letter-spacing: 0.8px;
                 text-transform: uppercase;
-                font-size: 0.85rem;
+                font-size: 0.75rem;
                 transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
                 display: flex;
                 align-items: center;
@@ -250,44 +234,62 @@
                 text-decoration: none;
             }
 
-            .btn-kantine-outline:hover {
-                background: rgba(0, 0, 0, 0.04);
-                color: var(--text-main);
-                border-color: rgba(0, 0, 0, 0.2);
-                transform: translateY(-2px);
-            }
+                .btn-kantine-outline:hover {
+                    background: rgba(0, 0, 0, 0.03);
+                    color: var(--text-main);
+                    border-color: rgba(0, 0, 0, 0.15);
+                    transform: translateY(-1px);
+                }
 
-            /* Divisória "ou" */
             .or-divider {
                 display: flex;
                 align-items: center;
                 text-align: center;
                 color: var(--text-muted);
-                font-size: 0.75rem;
+                font-size: 0.65rem;
                 text-transform: uppercase;
                 font-weight: 600;
                 letter-spacing: 1px;
             }
 
-            .or-divider::before, .or-divider::after {
-                content: '';
-                flex: 1;
-                border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
-            }
+                .or-divider::before, .or-divider::after {
+                    content: '';
+                    flex: 1;
+                    border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+                }
 
-            .or-divider:not(:empty)::before { margin-right: .75em; }
-            .or-divider:not(:empty)::after { margin-left: .75em; }
+                .or-divider:not(:empty)::before {
+                    margin-right: .75em;
+                }
+
+                .or-divider:not(:empty)::after {
+                    margin-left: .75em;
+                }
 
             .custom-alert {
                 background: rgba(239, 68, 68, 0.08);
                 border: 1px solid rgba(239, 68, 68, 0.2);
                 color: #dc2626;
                 font-weight: 500;
-                border-radius: 16px;
+                border-radius: 12px;
+                padding: 0.5rem 1rem !important;
                 animation: shakeAlert 0.4s ease-in-out;
             }
 
-            /* Bloqueia a compilação do Razor duplicando o caractere comercial em formato de texto */
+            /* --- RESPONSIVIDADE --- */
+            @@media (max-width: 576px) {
+                .bg-glow-1, .bg-glow-2 {
+                    width: 200px;
+                    height: 200px;
+                    filter: blur(80px);
+                }
+
+                .login-card {
+                    border-radius: 16px;
+                }
+            }
+
+            /* Animações */
             @@keyframes cardEntrance {
                 to {
                     opacity: 1;
@@ -314,11 +316,11 @@
                 }
 
                 50% {
-                    transform: translate(30px, -20px) scale(1.05);
+                    transform: translate(20px, -15px) scale(1.02);
                 }
 
                 100% {
-                    transform: translate(-15px, 15px) scale(0.98);
+                    transform: translate(-10px, 10px) scale(0.99);
                 }
             }
 
@@ -342,29 +344,31 @@
                 }
 
                 20%, 60% {
-                    transform: translateX(-6px);
+                    transform: translateX(-4px);
                 }
 
                 40%, 80% {
-                    transform: translateX(6px);
+                    transform: translateX(4px);
                 }
             }
     </style>
 </head>
-<body class="d-flex align-items-center justify-content-center">
+<body class="d-flex align-items-center min-vh-100">
 
-    <div class="bg-glow-1"></div>
-    <div class="bg-glow-2"></div>
+    <div class="background-effects">
+        <div class="bg-glow-1"></div>
+        <div class="bg-glow-2"></div>
+    </div>
 
-    <div class="container login-container">
+    <div class="container py-3">
         <div class="row justify-content-center">
-            <div class="col-sm-10 col-md-9 col-lg-7 col-xl-5">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-4">
 
-                <div class="card login-card p-4 p-sm-5 border-0">
+                <div class="card login-card p-3 p-sm-4 border-0">
                     <div class="card-body p-0">
 
-                        <div class="text-center mb-4">
-                            <div class="logo-wrapper mb-3">
+                        <div class="text-center mb-3">
+                            <div class="logo-wrapper mb-2">
                                 <img src="~/imagens/logoKant.webp" alt="Kantine Gastronomia" class="logo-img" />
                             </div>
                             <div class="system-subtitle mt-1">
@@ -374,55 +378,53 @@
 
                         @if (ViewBag.Erro != null)
                         {
-                            <div class="alert custom-alert py-3 small d-flex align-items-center mb-4" role="alert">
-                                <i class="bi bi-exclamation-circle-fill me-2 fs-5"></i>
+                            <div class="alert custom-alert small d-flex align-items-center mb-2" role="alert">
+                                <i class="bi bi-exclamation-circle-fill me-2 fs-6"></i>
                                 <div>@ViewBag.Erro</div>
                             </div>
                         }
 
                         <form asp-controller="Login" asp-action="SalvarCadastro" method="post">
 
-                            <div class="mb-3 form-group-container">
+                            <div class="mb-2 form-group-container">
                                 <label class="form-label fw-bold">Nome Completo</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-card-text"></i></span>
                                     <input type="text" asp-for="NomeExibicao" class="form-control" placeholder="Ex: João da Silva" autocomplete="off" />
                                 </div>
-                                <span asp-validation-for="NomeExibicao" class="text-danger small d-block mt-1" style="font-size: 0.73rem; padding-left: 4px;"></span>
+                                <span asp-validation-for="NomeExibicao" class="text-danger small d-block" style="font-size: 0.70rem; padding-left: 4px; margin-top: 2px;"></span>
                             </div>
 
-                            <div class="mb-3 form-group-container">
+                            <div class="mb-2 form-group-container">
                                 <label class="form-label fw-bold">Usuário (Login)</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                    <input type="text" asp-for="Usuario" class="form-control" placeholder="Escolha um nome de usuário" autocomplete="off" />
+                                    <input type="text" asp-for="Usuario" class="form-control" placeholder="Escolha um usuário" autocomplete="off" />
                                 </div>
-                                <span asp-validation-for="Usuario" class="text-danger small d-block mt-1" style="font-size: 0.73rem; padding-left: 4px;"></span>
+                                <span asp-validation-for="Usuario" class="text-danger small d-block" style="font-size: 0.70rem; padding-left: 4px; margin-top: 2px;"></span>
                             </div>
 
-                            <div class="mb-3 form-group-container">
+                            <div class="mb-2 form-group-container">
                                 <label class="form-label fw-bold">Senha</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
                                     <input type="password" asp-for="Senha" class="form-control" placeholder="Crie uma senha segura" />
                                 </div>
-                                <span asp-validation-for="Senha" class="text-danger small d-block mt-1" style="font-size: 0.73rem; padding-left: 4px;"></span>
+                                <span asp-validation-for="Senha" class="text-danger small d-block" style="font-size: 0.70rem; padding-left: 4px; margin-top: 2px;"></span>
                             </div>
 
-                            <div class="mb-4 form-group-container">
+                            <div class="mb-3 form-group-container">
                                 <label class="form-label fw-bold">Confirmar Senha</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-shield-check"></i></span>
                                     <input type="password" asp-for="ConfirmaSenha" class="form-control" placeholder="Digite a senha novamente" />
                                 </div>
-                                <span asp-validation-for="ConfirmaSenha" class="text-danger small d-block mt-1" style="font-size: 0.73rem; padding-left: 4px;"></span>
+                                <span asp-validation-for="ConfirmaSenha" class="text-danger small d-block" style="font-size: 0.70rem; padding-left: 4px; margin-top: 2px;"></span>
                             </div>
 
                             <button type="submit" class="btn btn-kantine w-100 mb-3">
                                 Concluir Cadastro <i class="bi bi-check-circle ms-1 fs-6 align-middle"></i>
                             </button>
-
-                            <div class="or-divider mb-3">ou</div>
 
                             <a asp-controller="Login" asp-action="Index" class="btn-kantine-outline w-100">
                                 <i class="bi bi-arrow-left me-2 fs-6"></i> Já tenho conta (Login)

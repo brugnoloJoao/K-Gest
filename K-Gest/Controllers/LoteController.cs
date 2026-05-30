@@ -298,11 +298,48 @@ namespace K_Gest.Controllers
         // ==========================================
         // 4. EXCLUSÃO
         // ==========================================
-        public IActionResult Excluir(int id)
+        public IActionResult ExcluirExibir(int id)
         {
             try
             {
                 Lote o_Lote = new Lote { idLote = id };
+                DataTable dt = o_Lote.SelecionarPorID();
+
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    DataRow row = dt.Rows[0];
+                    int idInsumo = Convert.ToInt32(row["IdInsumo"]);
+
+                    // Busca a unidade de medida para converter o valor guardado para o formato da tela
+                    Insumos o_Insumo = new Insumos { idInsumo = idInsumo };
+                    string unidadeMed = o_Insumo.ObterUnidadeMedida();
+                    decimal qtdTela = o_Lote.ConverterParaTela(Convert.ToDecimal(row["Quantidade"]), unidadeMed);
+
+                    var vm = new LoteViewModel
+                    {
+                        IdLote = Convert.ToInt32(row["IdLote"]),
+                        DtFabricacao = Convert.ToDateTime(row["DtFabricacao"]),
+                        DtValidade = Convert.ToDateTime(row["DtValidade"]),
+                        NumLote = Convert.ToInt32(row["NumLote"]),
+                        IdInsumo = idInsumo,
+                        Quantidade = qtdTela, // Carrega o valor ajustado (ex: KG ou UN)
+                        ListaInsumos = ObterInsumos()
+                    };
+                    return View("ExcluirExibirView", vm);
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["MsgErro"] = "Erro ao carregar dados do lote: " + ex.Message;
+            }
+
+            return RedirectToAction("Selecionar");
+        }
+        public IActionResult ExcluirProcessar(int idLote)
+        {
+            try
+            {
+                Lote o_Lote = new Lote { idLote = idLote };
 
                 // Pega o idInsumo ANTES de excluir o lote
                 int idInsumo = o_Lote.ObterIDInsumoPorIDLote();

@@ -94,7 +94,7 @@ namespace K_Gest.Controllers
                 o_ReceitasVM.IdReceita = idReceita;
                 
                 o_ReceitasVM.NomePrato = pesqReceitas.Rows[0]["nomePrato"].ToString();
-                o_ReceitasVM.Preco = Convert.ToDecimal(pesqReceitas.Rows[0]["nomePrato"].ToString());
+                o_ReceitasVM.Preco = Convert.ToDecimal(pesqReceitas.Rows[0]["preco"].ToString());
 
                 return View("AlterarExibirView", o_ReceitasVM);
             }
@@ -158,7 +158,7 @@ namespace K_Gest.Controllers
                 ReceitasViewModel o_ReceitasVM = new ReceitasViewModel();
                 o_ReceitasVM.IdReceita = idReceita;
                 o_ReceitasVM.NomePrato = pesqReceitas.Rows[0]["nomePrato"].ToString();
-                o_ReceitasVM.Preco = Convert.ToDecimal(pesqReceitas.Rows[0]["nomePrato"].ToString());
+                o_ReceitasVM.Preco = Convert.ToDecimal(pesqReceitas.Rows[0]["preco"].ToString());
 
 
                 return View("ExcluirExibirView", o_ReceitasVM);

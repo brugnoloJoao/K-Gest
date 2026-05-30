@@ -60,17 +60,26 @@ namespace K_Gest.BancoDados
                     }
                 }
 
-                // 2. Histórico de Vendas (Últimos 10 dias)
+                // 2. Histórico de Vendas (Últimos 10 dias) - Agora com cálculo dinâmico de preço
                 string sqlVendas = @"
-                    SELECT ISNULL(SUM(qtdVendida), 0) as Qtd 
-                    FROM Historico_Vendas 
-                    WHERE dataVend >= DATEADD(day, -10, CAST(GETDATE() AS DATE))";
+                SELECT 
+                    ISNULL(SUM(hv.qtdVendida), 0) as QtdTotal, 
+                    ISNULL(SUM(hv.qtdVendida * r.preco), 0) as FaturamentoTotal
+                FROM Historico_Vendas hv
+                INNER JOIN Receitas r ON hv.idReceita = r.idReceita
+                WHERE hv.dataVend >= DATEADD(day, -10, CAST(GETDATE() AS DATE))";
 
                 using (SqlCommand cmd = new SqlCommand(sqlVendas, con))
+                using (SqlDataReader dr = cmd.ExecuteReader())
                 {
-                    object resultadoVendas = cmd.ExecuteScalar();
-                    model.QtdPratosVendidos = resultadoVendas != DBNull.Value ? Convert.ToInt32(resultadoVendas) : 0;
-                    model.TotalVendidoDezDias = model.QtdPratosVendidos * 25.00m;
+                    if (dr.Read())
+                    {
+                        // Lê a quantidade total de pratos
+                        model.QtdPratosVendidos = dr["QtdTotal"] != DBNull.Value ? Convert.ToInt32(dr["QtdTotal"]) : 0;
+
+                        // Lê o faturamento real baseado na coluna 'preco'
+                        model.TotalVendidoDezDias = dr["FaturamentoTotal"] != DBNull.Value ? Convert.ToDecimal(dr["FaturamentoTotal"]) : 0m;
+                    }
                 }
 
                 // 3. Gráfico de Barras - Entradas por Motivo

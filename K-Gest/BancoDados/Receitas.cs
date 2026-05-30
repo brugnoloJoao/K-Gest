@@ -45,7 +45,7 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                string cmdSQL = "INSERT INTO Receitas(nomePrato, preco) VALUES(@NomePrato @Preco)";
+                string cmdSQL = "INSERT INTO Receitas(nomePrato, preco) VALUES(@NomePrato, @Preco)";
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
                 cmd.Parameters.AddWithValue("@NomePrato", nomePrato);
                 cmd.Parameters.AddWithValue("@Preco", preco);

@@ -29,12 +29,13 @@
                 background-image: radial-gradient(circle at 80% 20%, rgba(255, 87, 66, 0.15) 0%, transparent 50%), radial-gradient(circle at 15% 80%, rgba(77, 77, 77, 0.08) 0%, transparent 50%);
                 min-height: 100vh;
                 font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-                overflow: hidden;
+                overflow-x: hidden; /* Evita quebra de rolagem horizontal pelas luzes */
                 position: relative;
                 color: var(--text-main);
+                padding: 1.5rem 0; /* Garante respiro nas bordas superior/inferior em telas pequenas */
             }
 
-            /* Luzes Flutuantes de Fundo */
+            /* Luzes Flutuantes de Fundo - Ajustadas e suavizadas para Mobile */
             .bg-glow-1, .bg-glow-2 {
                 position: absolute;
                 border-radius: 50%;
@@ -44,17 +45,17 @@
             }
 
             .bg-glow-1 {
-                width: 450px;
-                height: 450px;
+                width: 300px;
+                height: 300px;
                 background: rgba(255, 87, 66, 0.14);
-                top: 20%;
+                top: 10%;
                 left: -10%;
                 animation: floatGlow 15s ease-in-out infinite alternate;
             }
 
             .bg-glow-2 {
-                width: 550px;
-                height: 550px;
+                width: 350px;
+                height: 350px;
                 background: rgba(255, 51, 85, 0.09);
                 bottom: 10%;
                 right: -5%;
@@ -73,7 +74,7 @@
                 backdrop-filter: blur(30px);
                 -webkit-backdrop-filter: blur(30px);
                 border: 1px solid var(--glass-border);
-                border-radius: 28px;
+                border-radius: 24px; /* Levemente reduzido para casar melhor em telas menores */
                 box-shadow: 0 25px 55px rgba(45, 41, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
                 opacity: 0;
                 transform: translateY(40px) scale(0.98);
@@ -83,10 +84,10 @@
 
             /* Logo e Cabeçalho */
             .logo-wrapper {
-                padding: 12px 24px;
+                padding: 10px 20px;
                 background: rgba(255, 255, 255, 0.5);
                 border: 1px solid rgba(255, 255, 255, 0.8);
-                border-radius: 20px;
+                border-radius: 16px;
                 display: inline-block;
                 max-width: 100%;
                 box-shadow: 0 8px 25px rgba(0, 0, 0, 0.04);
@@ -99,7 +100,7 @@
             .logo-img {
                 max-width: 100%;
                 height: auto;
-                max-height: 70px;
+                max-height: 55px; /* Ajuste para não sufocar o topo em telas menores */
                 object-fit: contain;
                 transition: transform 0.5s ease;
             }
@@ -109,9 +110,9 @@
             }
 
             .system-subtitle {
-                letter-spacing: 2px;
+                letter-spacing: 1.5px;
                 text-transform: uppercase;
-                font-size: 0.68rem;
+                font-size: 0.65rem;
                 color: var(--text-muted);
                 font-weight: 600;
                 opacity: 0;
@@ -121,19 +122,19 @@
 
             /* Labels e Inputs */
             .form-label {
-                font-size: 0.75rem;
+                font-size: 0.72rem;
                 letter-spacing: 0.8px;
                 text-transform: uppercase;
                 color: var(--text-muted) !important;
                 font-weight: 600;
-                margin-bottom: 0.5rem;
+                margin-bottom: 0.4rem;
                 transition: color 0.3s ease;
             }
 
             .input-group {
                 background: rgba(255, 255, 255, 0.6);
                 border: 1px solid rgba(0, 0, 0, 0.08);
-                border-radius: 16px !important;
+                border-radius: 14px !important;
                 transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
                 overflow: hidden;
             }
@@ -142,7 +143,7 @@
                 background: transparent;
                 border: none;
                 color: var(--text-muted);
-                padding-left: 1.2rem;
+                padding-left: 1rem;
                 transition: color 0.3s ease;
             }
 
@@ -150,8 +151,8 @@
                 background: transparent;
                 border: none;
                 color: var(--text-main);
-                padding: 0.85rem 1.2rem 0.85rem 0.5rem;
-                font-size: 0.95rem;
+                padding: 0.75rem 1rem 0.75rem 0.4rem;
+                font-size: 0.92rem;
                 font-weight: 500;
             }
 
@@ -187,16 +188,16 @@
                 background: linear-gradient(135deg, var(--accent-salmon-strong) 0%, var(--accent-coral-vibrant) 100%);
                 color: #ffffff;
                 border: none;
-                border-radius: 16px;
-                padding: 0.95rem;
+                border-radius: 14px;
+                padding: 0.85rem;
                 font-weight: 700;
                 letter-spacing: 0.8px;
                 text-transform: uppercase;
-                font-size: 0.85rem;
+                font-size: 0.82rem;
                 transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
                 position: relative;
                 overflow: hidden;
-                box-shadow: 0 6px 24px rgba(255, 87, 66, 0.35);
+                box-shadow: 0 6px 24px rgba(255, 87, 66, 0.25);
             }
 
                 .btn-kantine::after {
@@ -212,8 +213,8 @@
                 }
 
                 .btn-kantine:hover {
-                    transform: translateY(-3px) scale(1.01);
-                    box-shadow: 0 12px 30px rgba(255, 87, 66, 0.5);
+                    transform: translateY(-2px);
+                    box-shadow: 0 10px 25px rgba(255, 87, 66, 0.4);
                     color: #ffffff;
                 }
 
@@ -234,12 +235,12 @@
                 background: transparent;
                 color: var(--accent-salmon-strong);
                 border: 2px solid var(--accent-salmon-strong);
-                border-radius: 16px;
-                padding: 0.85rem;
+                border-radius: 14px;
+                padding: 0.8rem;
                 font-weight: 700;
                 letter-spacing: 0.8px;
                 text-transform: uppercase;
-                font-size: 0.85rem;
+                font-size: 0.82rem;
                 transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
                 display: flex;
                 align-items: center;
@@ -247,13 +248,13 @@
                 text-decoration: none;
             }
 
-            .btn-kantine-outline:hover {
-                background: linear-gradient(135deg, var(--accent-salmon-strong) 0%, var(--accent-coral-vibrant) 100%);
-                color: #ffffff;
-                border-color: transparent;
-                box-shadow: 0 6px 20px rgba(255, 87, 66, 0.2);
-                transform: translateY(-2px);
-            }
+                .btn-kantine-outline:hover {
+                    background: linear-gradient(135deg, var(--accent-salmon-strong) 0%, var(--accent-coral-vibrant) 100%);
+                    color: #ffffff;
+                    border-color: transparent;
+                    box-shadow: 0 6px 20px rgba(255, 87, 66, 0.2);
+                    transform: translateY(-1px);
+                }
 
             /* Divisória "ou" */
             .or-divider {
@@ -261,31 +262,51 @@
                 align-items: center;
                 text-align: center;
                 color: var(--text-muted);
-                font-size: 0.75rem;
+                font-size: 0.7rem;
                 text-transform: uppercase;
                 font-weight: 600;
                 letter-spacing: 1px;
             }
 
-            .or-divider::before, .or-divider::after {
-                content: '';
-                flex: 1;
-                border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
-            }
+                .or-divider::before, .or-divider::after {
+                    content: '';
+                    flex: 1;
+                    border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+                }
 
-            .or-divider:not(:empty)::before { margin-right: .75em; }
-            .or-divider:not(:empty)::after { margin-left: .75em; }
+                .or-divider:not(:empty)::before {
+                    margin-right: .75em;
+                }
+
+                .or-divider:not(:empty)::after {
+                    margin-left: .75em;
+                }
 
             .custom-alert {
                 background: rgba(239, 68, 68, 0.08);
                 border: 1px solid rgba(239, 68, 68, 0.2);
                 color: #dc2626;
                 font-weight: 500;
-                border-radius: 16px;
+                border-radius: 14px;
                 animation: shakeAlert 0.4s ease-in-out;
             }
 
-            /* Bloqueia a compilação do Razor duplicando o caractere comercial em formato de texto */
+            /* Media Query para Otimização de Performance e Espaço em Celulares */
+            @@media (max-width: 576px) {
+                .bg-glow-1, .bg-glow-2 {
+                    display: none; /* Remove elementos com blur pesado para economizar GPU/Bateria no mobile */
+                }
+
+                body {
+                    padding: 10px;
+                }
+
+                .login-card {
+                    border-radius: 20px;
+                }
+            }
+
+            /* Animações Keyframes */
             @@keyframes cardEntrance {
                 to {
                     opacity: 1;
@@ -312,11 +333,11 @@
                 }
 
                 50% {
-                    transform: translate(30px, -20px) scale(1.05);
+                    transform: translate(20px, -15px) scale(1.02);
                 }
 
                 100% {
-                    transform: translate(-15px, 15px) scale(0.98);
+                    transform: translate(-10px, 10px) scale(0.98);
                 }
             }
 
@@ -340,11 +361,11 @@
                 }
 
                 20%, 60% {
-                    transform: translateX(-6px);
+                    transform: translateX(-4px);
                 }
 
                 40%, 80% {
-                    transform: translateX(6px);
+                    transform: translateX(4px);
                 }
             }
     </style>
@@ -356,12 +377,14 @@
 
     <div class="container login-container">
         <div class="row justify-content-center">
-            <div class="col-sm-10 col-md-8 col-lg-6 col-xl-4">
+            @* Adicionado 'col-12' para ocupar toda a largura em telas minúsculas *@
+            <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-4">
 
-                <div class="card login-card p-4 p-sm-5 border-0">
+                @* Modificado para usar padding responsivo (p-3 no mobile e p-sm-5 no desktop) *@
+                <div class="card login-card p-3 p-sm-4 border-0">
                     <div class="card-body p-0">
 
-                        <div class="text-center mb-5">
+                        <div class="text-center mb-4">
                             <div class="logo-wrapper mb-3">
                                 <img src="~/imagens/logoKant.webp" alt="Kantine Gastronomia" class="logo-img" />
                             </div>
@@ -380,7 +403,7 @@
 
                         <form asp-controller="Login" asp-action="Autenticar" method="post">
 
-                            <div class="mb-4 form-group-container">
+                            <div class="mb-3 form-group-container">
                                 <label class="form-label fw-bold">Usuário</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person"></i></span>
