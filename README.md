@@ -121,19 +121,19 @@ Orientador: Prof. MSc. Gustavo Martins Nunes Avellar ⚖️
     </td>
     <td align="center">
       <a href="https://github.com/lucasbrocha">
-        <img src="https://github.com/lucasbrocha.png" width="100px;" alt="Foto do Lucas Bernardes da Rocha" style="border-radius:50%;"/><br>
+        <img src="https://github.com/Luca4sROcha.png" width="100px;" alt="Foto do Lucas Bernardes da Rocha" style="border-radius:50%;"/><br>
         <sub><b>Lucas Bernardes da Rocha</b></sub>
       </a>
     </td>
     <td align="center">
       <a href="https://github.com/raquelcpg">
-        <img src="https://github.com/raquelcpg.png" width="100px;" alt="Foto da Raquel Castilheiro Palma Gonçalves" style="border-radius:50%;"/><br>
+        <img src="https://github.com/RaquelCastilheiro.png" width="100px;" alt="Foto da Raquel Castilheiro Palma Gonçalves" style="border-radius:50%;"/><br>
         <sub><b>Raquel C. P. Gonçalves</b></sub>
       </a>
     </td>
     <td align="center">
       <a href="https://github.com/SamaraVitoria">
-        <img src="https://github.com/SamaraVitoria.png" width="100px;" alt="Foto da Samara Vitória Santos Oliveira" style="border-radius:50%;"/><br>
+        <img src="https://github.com/vtoriaoliv.png" width="100px;" alt="Foto da Samara Vitória Santos Oliveira" style="border-radius:50%;"/><br>
         <sub><b>Samara V. S. Oliveira</b></sub>
       </a>
     </td>
