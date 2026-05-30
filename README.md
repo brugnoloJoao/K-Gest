@@ -62,6 +62,66 @@ Configurado sob o ecossistema estável da Microsoft, o projeto foi arquitetado c
 * **Modelagem de Dados:** Desenhado inicialmente com a ferramenta **brModelo**.
 * **IDE de Desenvolvimento:** Visual Studio 2026.
 
+## 🗄️ Modelagem do Banco de Dados <a name="banco-de-dados"></a>
+
+O sistema utiliza o banco de dados relacional **Microsoft SQL Server**. Abaixo estão mapeadas as principais entidades estruturadas no dicionário de dados do projeto.
+
+<details>
+<summary><b>📐 Clique aqui para visualizar o Dicionário de Tabelas</b></summary>
+<br>
+
+### 1. Tabela: `Usuarios`
+Armazena as credenciais e informações de acesso ao sistema (RF-01).
+
+| Campo | Tipo | Restrições | Descrição |
+| :--- | :--- | :--- | :--- |
+| `id_usuario` | INT | PK, Identity | Identificador único do usuário. |
+| `nome` | VARCHAR(100) | NOT NULL | Nome completo do colaborador. |
+| `email` | VARCHAR(100) | NOT NULL, UNIQUE | E-mail utilizado para login. |
+| `senha` | VARCHAR(255) | NOT NULL | Hash seguro da senha de acesso. |
+
+### 2. Tabela: `Insumos`
+Registra os ingredientes e materiais cadastrados no inventário (RF-09).
+
+| Campo | Tipo | Restrições | Descrição |
+| :--- | :--- | :--- | :--- |
+| `id_insumo` | INT | PK, Identity | Identificador único do insumo. |
+| `nome` | VARCHAR(100) | NOT NULL | Nome do ingrediente (ex: Farinha de Trigo). |
+| `unidade_medida` | VARCHAR(10) | NOT NULL | Unidade de consumo (KG, G, L, ML, UN). |
+| `estoque_minimo` | DECIMAL(10,2)| NOT NULL | Limite mínimo para alerta de reposição. |
+
+### 3. Tabela: `Lotes`
+Controla a rastreabilidade, quantidades físicas atuais e validades (PEPS/FIFO) (RF-13).
+
+| Campo | Tipo | Restrições | Descrição |
+| :--- | :--- | :--- | :--- |
+| `id_lote` | INT | PK, Identity | Identificador único do lote. |
+| `id_insumo` | INT | FK (`Insumos`) | Associação ao insumo correspondente. |
+| `codigo_lote` | VARCHAR(50)  | NOT NULL | Código de identificação do fabricante/registro. |
+| `quantidade` | DECIMAL(10,2)| NOT NULL | Quantidade atual disponível neste lote. |
+| `data_entrada` | DATETIME | NOT NULL | Data em que o insumo deu entrada na cozinha. |
+| `data_validade` | DATETIME | NOT NULL | Data de vencimento do lote. |
+
+### 4. Tabela: `Receitas` (Fichas Técnicas)
+Estrutura as preparações da confeitaria/cozinha (RF-10).
+
+| Campo | Tipo | Restrições | Descrição |
+| :--- | :--- | :--- | :--- |
+| `id_receita` | INT | PK, Identity | Identificador único da receita/prato. |
+| `nome_prato` | VARCHAR(100) | NOT NULL | Nome do produto final (ex: Bolo de Cenoura). |
+| `rendimento` | INT | NOT NULL | Quantidade de porções padronizadas geradas. |
+
+### 5. Tabela: `Itens_Receita`
+Tabela associativa que compõe os ingredientes de cada ficha técnica (RF-11).
+
+| Campo | Tipo | Restrições | Descrição |
+| :--- | :--- | :--- | :--- |
+| `id_receita` | INT | PK, FK (`Receitas`) | Associação à receita pai. |
+| `id_insumo` | INT | PK, FK (`Insumos`) | Associação ao ingrediente necessário. |
+| `quantidade_necessaria`| DECIMAL(10,2)| NOT NULL| Proporção exata utilizada na preparação. |
+
+</details>
+
 ## 🚀 Como Executar <a name="como-executar"></a>
 
 ### Pré-requisitos
