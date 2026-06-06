@@ -6,7 +6,7 @@
     // Regra do banco Kantine: se for KG ou L, exibe dividido por 1000 na tela
     var unidade = Model.UnidadeMed?.ToUpper();
     bool precisaDividir = (unidade == "KG" || unidade == "L");
-    decimal estoqueExibicao = Model.EstoqueAtual;
+    decimal? estoqueExibicao = Model.EstoqueAtual;
 
     if (precisaDividir)
     {
@@ -61,7 +61,7 @@
 
                     <dt class="col-sm-4 text-secondary small text-uppercase fw-bold sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px;">Estoque Atual Real</dt>
                     <dd class="col-sm-8 fw-bold text-dark var-text-color mb-0 font-monospace">
-                        @estoqueExibicao.ToString(formato)
+                        @estoqueExibicao.Value.ToString(formato)
                         <span class="badge bg-white text-secondary border px-1.5 py-0.5 font-monospace un-badge-toggle" style="border-radius: 4px; font-size: 10px; vertical-align: middle;">@unidade</span>
                     </dd>
                 </dl>

@@ -9,8 +9,8 @@ namespace K_Gest.BancoDados
         public int? idInsumo;
         public string nomeInsumo;
         public string unidadeMed;
-        public decimal estoqueAtual;
-        public decimal pontoPedido;
+        public decimal? estoqueAtual;
+        public decimal? pontoPedido;
 
         SqlConnection con;
 
@@ -35,7 +35,7 @@ namespace K_Gest.BancoDados
 
         // --- MÉTODOS DE CONVERSÃO ---
 
-        public decimal ConverterParaBanco(decimal valor, string unidade)
+        public decimal? ConverterParaBanco(decimal? valor, string unidade)
         {
             if (string.IsNullOrEmpty(unidade)) return valor;
             switch (unidade.ToUpper())
@@ -48,7 +48,7 @@ namespace K_Gest.BancoDados
             }
         }
 
-        public decimal ConverterParaTela(decimal valor, string unidade)
+        public decimal? ConverterParaTela(decimal valor, string unidade)
         {
             if (string.IsNullOrEmpty(unidade)) return valor;
             switch (unidade.ToUpper())
@@ -67,8 +67,8 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                decimal estoqueCvt = ConverterParaBanco(this.estoqueAtual, this.unidadeMed);
-                decimal pontoCvt = ConverterParaBanco(this.pontoPedido, this.unidadeMed);
+                decimal? estoqueCvt = ConverterParaBanco(this.estoqueAtual, this.unidadeMed);
+                decimal? pontoCvt = ConverterParaBanco(this.pontoPedido, this.unidadeMed);
 
                 string cmdSQL = "INSERT INTO Insumos(NomeInsumo, UnidadeMed, EstoqueAtual, PontoPedido) VALUES(@NomeInsumo, @UnidadeMed, @EstoqueAtual, @PontoPedido)";
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
@@ -89,8 +89,8 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                decimal estoqueCvt = ConverterParaBanco(this.estoqueAtual, this.unidadeMed);
-                decimal pontoCvt = ConverterParaBanco(this.pontoPedido, this.unidadeMed);
+                decimal? estoqueCvt = ConverterParaBanco(this.estoqueAtual, this.unidadeMed);
+                decimal? pontoCvt = ConverterParaBanco(this.pontoPedido, this.unidadeMed);
 
                 string cmdSQL = "UPDATE Insumos SET NomeInsumo = @NomeInsumo, UnidadeMed = @UnidadeMed, EstoqueAtual = @EstoqueAtual, PontoPedido = @PontoPedido WHERE IdInsumo = @IdInsumo";
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);

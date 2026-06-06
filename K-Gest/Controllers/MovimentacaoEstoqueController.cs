@@ -17,6 +17,8 @@ namespace K_Gest.Controllers
         {
             try
             {
+                PossuiInsumosCadastrados();
+
                 MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque();
 
                 DataTable dtMoviment = o_MovimentacaoEstoque.SelecionarTodos();
@@ -39,6 +41,8 @@ namespace K_Gest.Controllers
         {
             try
             {
+                PossuiInsumosCadastrados();
+
                 MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque();
 
                 DataTable dtMoviment = o_MovimentacaoEstoque.SelecionarEntradas();
@@ -47,6 +51,7 @@ namespace K_Gest.Controllers
                 {
                     row["qtdMoviment"] = o_MovimentacaoEstoque.ConverterParaTela(Convert.ToDecimal(row["qtdMoviment"]), row["unidadeMed"].ToString());
                 }
+
 
                 return View("EntradasView", dtMoviment);
             }
@@ -61,6 +66,8 @@ namespace K_Gest.Controllers
         {
             try
             {
+                PossuiInsumosCadastrados();
+
                 MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque();
 
                 DataTable dtMoviment = o_MovimentacaoEstoque.SelecionarSaidas();
@@ -113,7 +120,7 @@ namespace K_Gest.Controllers
             catch (Exception ex)
             {
                 TempData["MsgErro"] = $"Erro ao carregar insumos: {ex.Message}";
-                return RedirectToAction("Saida");
+                return RedirectToAction("Saidas");
             }
         }
         public IActionResult InserirEntrada()
@@ -130,7 +137,7 @@ namespace K_Gest.Controllers
             catch (Exception ex)
             {
                 TempData["MsgErro"] = $"Erro ao carregar insumos: {ex.Message}";
-                return RedirectToAction("Saida");
+                return RedirectToAction("Entradas");
             }
         }
         //-----------------------------------------------------------
@@ -188,15 +195,14 @@ namespace K_Gest.Controllers
                     }
                 }
 
-                // Se o ModelState falhar, recarrega a lista e devolve para a tela de origem
                 o_MovimentacaoEstoqueVM.ListaInsumos = ObterInsumos();
-                return View("InserirSaida", o_MovimentacaoEstoqueVM);
+                return View("InserirExibirView", o_MovimentacaoEstoqueVM);
             }
             catch (Exception ex)
             {
                 TempData["MsgErro"] = "Erro ao processar movimentação: " + ex.Message;
                 o_MovimentacaoEstoqueVM.ListaInsumos = ObterInsumos();
-                return View("InserirSaida", o_MovimentacaoEstoqueVM);
+                return View("SelecionarView", o_MovimentacaoEstoqueVM);
             }
         }
 
@@ -294,6 +300,15 @@ namespace K_Gest.Controllers
                 return Convert.ToDecimal(dt.Rows[0]["estoqueAtual"].ToString());
             }
             return 0;
+        }
+        private void PossuiInsumosCadastrados()
+        {
+            var insumos = new Insumos().SelecionarTodos();
+
+            if (insumos.Rows.Count == 0 || insumos == null)
+            {
+                ViewBag.SemInsumos = true; // Indica que não há insumos cadastradas
+            }
         }
     }
 }

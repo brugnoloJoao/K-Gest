@@ -17,6 +17,6 @@ namespace K_Gest.Models
         [DataType(DataType.Currency)]
         [Range(0.01, 1000000, ErrorMessage = "O preço deve ser maior que zero.")] 
         [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
-        public decimal Preco { get; set; }
+        public decimal? Preco { get; set; }
     }
 }

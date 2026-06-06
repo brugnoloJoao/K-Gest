@@ -17,16 +17,16 @@ namespace K_Gest.Models
         [Display(Name = "Quantidade")]
         public decimal QtdMoviment { get; set; }
 
+
+        [Required(ErrorMessage = "O Motivo da movimentação é obrigatório.")]
         [StringLength(500, ErrorMessage = "O motivo deve ter no máximo 500 caracteres.")]
         [Display(Name = "Motivo")]
-        public string? Motivo { get; set; }
+        public string Motivo { get; set; }
 
         [Required(ErrorMessage = "Insumo é obrigatório.")]
         [Range(1, int.MaxValue, ErrorMessage = "IdInsumo inválido.")]
         [Display(Name = "Insumo")]
         public int IdInsumo { get; set; }
-
-        // PROPRIEDADE NOVA: Necessária para a conversão de unidades (KG, L, G, ML)
         public string UnidadeMed { get; set; } = string.Empty;
        public DateTime? DataMoviment { get; set; }
         public List<SelectListItem> ListaInsumos { get; set; }

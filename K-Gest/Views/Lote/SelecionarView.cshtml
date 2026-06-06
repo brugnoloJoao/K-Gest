@@ -34,10 +34,28 @@
         </div>
     }
 
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-4">
-        @if (Model != null && Model.Rows.Count > 0)
-        {
-            foreach (DataRow dr in Model.Rows)
+    @if (Model == null || Model.Rows.Count == 0)
+    {
+        <div class="card border-0 shadow-premium py-5 text-center" style="border-radius: 20px;">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center p-5">
+                <div class="rounded-circle d-flex align-items-center justify-content-center mb-4"
+                     style="background-color: #fff1ed; width: 80px; height: 80px; color: #ff5742;">
+                    <i class="bi bi-box-seam" style="font-size: 36px;"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-2">Nenhum insumo cadastrado</h4>
+                <p class="text-muted mx-auto mb-4" style="max-width: 440px; font-size: 15px;">
+                    Para gerenciar ou criar lotes, você precisa ter pelo menos um insumo cadastrado no sistema.
+                </p>
+                <a href="/Insumos/InserirExibir" class="btn-salmon-action d-inline-flex align-items-center gap-2 px-4 py-2.5 shadow-sm">
+                    <i class="bi bi-plus-circle"></i> Cadastrar meu Primeiro Insumo
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-4">
+            @foreach (DataRow dr in Model.Rows)
             {
                 // Identificação dinâmica de colunas para evitar quebras por CapsLock
                 string colId = dr.Table.Columns.Contains("idInsumo") ? "idInsumo" : (dr.Table.Columns.Contains("IdInsumo") ? "IdInsumo" : dr.Table.Columns[0].ColumnName);
@@ -46,10 +64,10 @@
 
                 var idInsumo = dr[colId];
                 var nomeInsumo = dr[colNome];
-                var unidadeMed = dr[colUnidade];
+                var unidadeMed = dr[dr.Table.Columns.Contains(colUnidade) ? colUnidade : dr.Table.Columns[2].ColumnName]; // Fallback seguro para unidade
 
                 <div class="col">
-                    <div class="card h-100 border-0 shadow-premium lote-card" style="border-radius: 20px;  transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                    <div class="card h-100 border-0 shadow-premium lote-card" style="border-radius: 20px; transition: transform 0.2s ease, box-shadow 0.2s ease;">
                         <div class="card-body d-flex flex-column justify-content-between p-4">
                             <div>
                                 <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
@@ -71,16 +89,6 @@
                     </div>
                 </div>
             }
-        }
-        else
-        {
-            <div class="col-12 text-center py-5">
-                <div class="text-muted bg-light d-inline-flex p-4 rounded-circle mb-3">
-                    <i class="bi bi-box-seam text-secondary fs-2"></i>
-                </div>
-                <p class="text-secondary fw-medium">Nenhum insumo cadastrado no sistema para controle de lotes.</p>
-            </div>
-        }
-    </div>
+        </div>
+    }
 </div>
-

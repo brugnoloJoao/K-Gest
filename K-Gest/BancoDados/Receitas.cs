@@ -11,7 +11,7 @@ namespace K_Gest.BancoDados
         //-------------------------------------------------------------
         public int? idReceita;
         public string nomePrato;
-        public decimal preco;
+        public decimal? preco;
         
         SqlConnection con;
 

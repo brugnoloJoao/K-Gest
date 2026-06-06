@@ -189,7 +189,7 @@ namespace K_Gest.BancoDados
                 o_DataAdapter.Fill(dtPesquisa);
                 con.Close();
 
-                return dtPesquisa.Rows.Count > 0 ? dtPesquisa : null;
+                return dtPesquisa;
             }
             catch (Exception ex)
             {

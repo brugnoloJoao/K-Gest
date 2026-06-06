@@ -16,6 +16,12 @@ namespace K_Gest.Controllers
         {
             try
             {
+                var receitas = new Receitas().SelecionarTodos();
+
+                if (receitas.Rows.Count == 0 || receitas == null)
+                {
+                    ViewBag.SemReceitas = true; // Indica que não há receitas cadastradas
+                }
                 DataTable dtVendas = new HistoricoVendas().SelecionarTodos();
 
                 return View("SelecionarView", dtVendas);

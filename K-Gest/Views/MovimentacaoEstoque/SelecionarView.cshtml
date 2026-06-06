@@ -16,9 +16,12 @@
                 <p class="text-muted small m-0 mt-1">Gerencie as entradas, saídas e históricos dos insumos</p>
             </div>
         </div>
-        <a asp-action="InserirExibir" class="btn-salmon-action d-flex align-items-center gap-2 shadow-sm">
-            <i class="bi bi-plus-lg"></i> Nova Movimentação
-        </a>
+        @if (ViewBag.SemInsumos != true)
+        {
+            <a asp-action="InserirExibir" class="btn-salmon-action d-flex align-items-center gap-2 shadow-sm">
+                <i class="bi bi-plus-lg"></i> Nova Movimentação
+            </a>
+        }
     </div>
 
     @if (TempData["MsgSucesso"] != null)
@@ -37,85 +40,110 @@
         </div>
     }
 
-    <div class="card border-0 shadow-premium" style="border-radius: 20px; overflow: hidden; ">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" style="min-width: 950px;">
-                <thead style="background-color: #f8fafc; border-bottom: 2px solid #f1f5f9;">
-                    <tr>
-                        <th class="ps-4 py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px; width: 100px;">Cód. Mov.</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px; width: 140px;">Data Mov.</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Nome Insumo</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold text-center" style="font-size: 11px; letter-spacing: 0.5px; width: 140px;">Tipo</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold text-end" style="font-size: 11px; letter-spacing: 0.5px;">Quantidade</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold text-end" style="font-size: 11px; letter-spacing: 0.5px; width: 150px;">Unidade de Medida</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px; padding-left: 30px;">Motivo / Justificativa</th>
-                        <th class="pe-4 py-3 text-secondary text-uppercase fw-bold text-center" style="font-size: 11px; letter-spacing: 0.5px; width: 120px;">Ações</th>
-                    </tr>
-                </thead>
-                <tbody class="border-0">
-                    @foreach (DataRow row in Model.Rows)
-                    {
-                        var tipo = row["tipoEs"].ToString();
-                        var qtdMoviment = Convert.ToDecimal(row["qtdMoviment"]);
-                        
-                        // Conversão e tratamento seguro do campo dataMoviment
-                        var dataMov = row["dataMoviment"] != DBNull.Value ? Convert.ToDateTime(row["dataMoviment"]).ToString("dd/MM/yyyy HH:mm") : "-";
-
-                        <tr>
-                            <td class="ps-4 py-3">
-                                <span class="text-secondary font-monospace" style="font-size: 13px;">#@row["idEstoque"]</span>
-                            </td>
-
-                            @* Nova Coluna de Data *@
-                            <td class="py-3 text-secondary font-monospace small">
-                                @dataMov
-                            </td>
-
-                            <td class="py-3">
-                                <span class="fw-semibold text-dark fs-6">@row["nomeInsumo"]</span>
-                            </td>
-
-                            <td class="text-center py-3">
-                                @if (tipo.ToUpper() == "E" || tipo.ToUpper() == "ENTRADA")
-                                {
-                                    <span class="badge bg-success-subtle text-success px-2.5 py-1.5 d-inline-flex align-items-center gap-1" style="border-radius: 30px; font-size: 11px; font-weight: 600; color: #166534 !important; background-color: #dcfce7 !important;">
-                                        <i class="bi bi-arrow-down-left-circle-fill"></i> Entrada
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger-subtle text-danger px-2.5 py-1.5 d-inline-flex align-items-center gap-1" style="border-radius: 30px; font-size: 11px; font-weight: 600; color: #991b1b !important; background-color: #fee2e2 !important;">
-                                        <i class="bi bi-arrow-up-right-circle-fill"></i> Saída
-                                    </span>
-                                }
-                            </td>
-
-                            <td class="text-end py-3 fw-bold text-dark">
-                                @if (tipo.ToUpper() == "S") { <text>-</text> } @(row["unidadeMed"] == "UN" ? qtdMoviment.ToString("N0") : qtdMoviment.ToString("N2"))
-                            </td>
-
-                            <td class="text-end py-3 fw-bold text-success">
-                                <span class="badge bg-light text-secondary border px-2 py-1.5 font-monospace" style="border-radius: 6px; font-size: 12px;">@row["unidadeMed"]</span>
-                            </td>
-
-                            <td class="py-3 text-secondary style="padding-left: 30px;" style="font-size: 14px;">
-                                @(string.IsNullOrEmpty(row["motivo"].ToString()) ? "Não informado" : row["motivo"])
-                            </td>
-
-                            <td class="pe-4 text-center py-3">
-                                <div class="d-flex justify-content-center gap-2">
-                                    <a asp-action="ExcluirExibir"
-                                       asp-route-idEstoque="@row["idEstoque"]"
-                                       class="btn-action-modern btn-delete-salmon"
-                                       title="Excluir Movimentação">
-                                        <i class="bi bi-trash3"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+    @if (ViewBag.SemInsumos == true)
+    {
+        <div class="card border-0 shadow-premium py-5 text-center" style="border-radius: 20px;">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center p-5">
+                <div class="rounded-circle d-flex align-items-center justify-content-center mb-4"
+                     style="background-color: #fff1ed; width: 80px; height: 80px; color: #ff5742;">
+                    <i class="bi bi-box-seam" style="font-size: 36px;"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-2">Nenhum insumo cadastrado</h4>
+                <p class="text-muted mx-auto mb-4" style="max-width: 440px; font-size: 15px;">
+                    Para gerenciar ou criar lotes, você precisa ter pelo menos um insumo cadastrado no sistema.
+                </p>
+                <a href="/Insumos/InserirExibir" class="btn-salmon-action d-inline-flex align-items-center gap-2 px-4 py-2.5 shadow-sm">
+                    <i class="bi bi-plus-circle"></i> Cadastrar meu Primeiro Insumo
+                </a>
+            </div>
         </div>
-    </div>
+    }
+    else
+    {        
+        <div class="card border-0 shadow-premium" style="border-radius: 20px; overflow: hidden; ">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" style="min-width: 950px;">
+                    <thead style="background-color: #f8fafc; border-bottom: 2px solid #f1f5f9;">
+                        <tr>
+                            <th class="ps-4 py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px; width: 100px;">Cód. Mov.</th>
+                            <th class="py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px; width: 140px;">Data Mov.</th>
+                            <th class="py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Nome Insumo</th>
+                            <th class="py-3 text-secondary text-uppercase fw-bold text-center" style="font-size: 11px; letter-spacing: 0.5px; width: 140px;">Tipo</th>
+                            <th class="py-3 text-secondary text-uppercase fw-bold text-end" style="font-size: 11px; letter-spacing: 0.5px;">Quantidade</th>
+                            <th class="py-3 text-secondary text-uppercase fw-bold text-end" style="font-size: 11px; letter-spacing: 0.5px; width: 150px;">Unidade de Medida</th>
+                            <th class="py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px; padding-left: 30px;">Motivo / Justificativa</th>
+                            <th class="pe-4 py-3 text-secondary text-uppercase fw-bold text-center" style="font-size: 11px; letter-spacing: 0.5px; width: 120px;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody class="border-0">
+                        @foreach (DataRow row in Model.Rows)
+                        {
+                            var tipo = row["tipoEs"].ToString();
+                            var qtdMoviment = Convert.ToDecimal(row["qtdMoviment"]);
+
+                            // Conversão e tratamento seguro do campo dataMoviment
+                            var dataMov = row["dataMoviment"] != DBNull.Value ? Convert.ToDateTime(row["dataMoviment"]).ToString("dd/MM/yyyy HH:mm") : "-";
+
+                            <tr>
+                                <td class="ps-4 py-3">
+                                    <span class="text-secondary font-monospace" style="font-size: 13px;">#@row["idEstoque"]</span>
+                                </td>
+
+                                @* Nova Coluna de Data *@
+                                <td class="py-3 text-secondary font-monospace small">
+                                    @dataMov
+                                </td>
+
+                                <td class="py-3">
+                                    <span class="fw-semibold text-dark fs-6">@row["nomeInsumo"]</span>
+                                </td>
+
+                                <td class="text-center py-3">
+                                    @if (tipo.ToUpper() == "E" || tipo.ToUpper() == "ENTRADA")
+                                    {
+                                        <span class="badge bg-success-subtle text-success px-2.5 py-1.5 d-inline-flex align-items-center gap-1" style="border-radius: 30px; font-size: 11px; font-weight: 600; color: #166534 !important; background-color: #dcfce7 !important;">
+                                            <i class="bi bi-arrow-down-left-circle-fill"></i> Entrada
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger-subtle text-danger px-2.5 py-1.5 d-inline-flex align-items-center gap-1" style="border-radius: 30px; font-size: 11px; font-weight: 600; color: #991b1b !important; background-color: #fee2e2 !important;">
+                                            <i class="bi bi-arrow-up-right-circle-fill"></i> Saída
+                                        </span>
+                                    }
+                                </td>
+
+                                <td class="text-end py-3 fw-bold text-dark">
+                                    @if (tipo.ToUpper() == "S")
+                                    {
+                                        <text>-</text>
+                                    }
+                                    @(row["unidadeMed"] == "UN" ? qtdMoviment.ToString("N0") : qtdMoviment.ToString("N2"))
+                                </td>
+
+                                <td class="text-end py-3 fw-bold text-success">
+                                    <span class="badge bg-light text-secondary border px-2 py-1.5 font-monospace" style="border-radius: 6px; font-size: 12px;">@row["unidadeMed"]</span>
+                                </td>
+
+                                <td class="py-3 text-secondary style="padding-left: 30px;" style="font-size: 14px;">
+                                    @(string.IsNullOrEmpty(row["motivo"].ToString()) ? "Não informado" : row["motivo"])
+                                </td>
+
+                                <td class="pe-4 text-center py-3">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a asp-action="ExcluirExibir"
+                                           asp-route-idEstoque="@row["idEstoque"]"
+                                           class="btn-action-modern btn-delete-salmon"
+                                           title="Excluir Movimentação">
+                                            <i class="bi bi-trash3"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 </div>

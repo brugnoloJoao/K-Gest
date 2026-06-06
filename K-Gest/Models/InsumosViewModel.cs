@@ -16,12 +16,13 @@ namespace K_Gest.Models
         [StringLength(10, ErrorMessage = "A unidade deve ser curta (máx. 10 caracteres).")]
         [Display(Name = "Unidade de Medida")]
         public string UnidadeMed { get; set; }
-        [Required(ErrorMessage = "Informe o estoque atual.")]
-        [Display(Name = "Estoque Atual")]
-        public decimal EstoqueAtual { get; set; }
 
-        [Required(ErrorMessage = "Informe o ponto de pedido.")]
-        [Display(Name = "Ponto de Pedido")]
-        public decimal PontoPedido { get; set; }
+        [Required(ErrorMessage = "O campo Estoque é obrigatório.")]
+        [Range(0, double.MaxValue, ErrorMessage = "O estoque não pode ser negativo.")]
+        public decimal? EstoqueAtual { get; set; } 
+
+        [Required(ErrorMessage = "O campo Ponto de Pedido (Estoque mínimo) é obrigatório.")]
+        [Range(0, double.MaxValue, ErrorMessage = "O Ponto de Pedido não pode ser negativo.")]
+        public decimal? PontoPedido { get; set; } 
     }
 }
