@@ -4,7 +4,7 @@
     ViewData["Title"] = "Editar Receita";
 }
 
-<div class="container-fluid px-4 py-4" style="max-width: 900px; margin: 0 auto;">
+<div class="container-fluid px-4 py-4 container-max-900">
 
     @* Navegação de Retorno *@
     <div class="mb-3">
@@ -19,13 +19,13 @@
             <i class="bi bi-pencil-fill"></i>
         </div>
         <div>
-            <h2 class="fw-bold text-dark m-0" style="font-size: 24px; letter-spacing: -0.5px;">Alterar Receita</h2>
+            <h2 class="fw-bold text-dark m-0 page-title">Alterar Receita</h2>
             <p class="text-muted small m-0 mt-1">Atualize o nome, preço e as especificações do prato selecionado.</p>
         </div>
     </div>
 
     @* Card do Formulário *@
-    <div class="card border-0 shadow-premium" style="border-radius: 20px;  overflow: hidden;">
+    <div class="card border-0 shadow-premium card-section">
         <div class="card-body p-4 p-md-5">
             <form asp-action="AlterarProcessar" method="post">
                 @* CAMPO OBRIGATÓRIO PARA O UPDATE *@

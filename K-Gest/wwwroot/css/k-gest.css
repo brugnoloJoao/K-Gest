@@ -1411,8 +1411,6 @@ html.dark-mode {
     }
 }
 
-
-/* ---------OUTROS -------------------------------------------------------------*/
 /* Modo claro — mantém o salmão original */
 .col-highlight-salmon {
     background-color: #fff1ed;
@@ -1421,3 +1419,297 @@ html.dark-mode {
 /* Modo escuro — salmão sutil e discreto */
 html.dark-mode .col-highlight-salmon {
     background-color: rgba(255, 140, 105, 0.10) !important;
+}
+
+/* =============================================================
+   7. CLASSES EXTRAÍDAS DAS VIEWS (antes inline)
+   Removidas dos atributos style="..." das views e centralizadas.
+   ============================================================= */
+
+/* --- 7.1 Containers Centralizados ------------------------- */
+.container-max-700 {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.container-max-900 {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.container-max-1000 {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.container-max-1100 {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* --- 7.2 Título Principal de Página (h2) ------------------- */
+.page-title {
+    font-size: 24px;
+    letter-spacing: -0.5px;
+}
+
+/* --- 7.3 Card com Border-Radius Padrão -------------------- */
+/* Variante com overflow hidden (listas/tabelas) */
+.card-section {
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+/* Variante com padding interno (formulários) */
+.card-section-padded {
+    border-radius: 20px;
+    padding: 24px;
+}
+
+/* --- 7.4 Alertas de Feedback (TempData) ------------------- */
+.alert-success-feedback {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border-radius: 12px;
+}
+
+.alert-danger-feedback {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border-radius: 12px;
+}
+
+.alert-warning-feedback {
+    background-color: #fffbeb;
+    color: #b45309;
+    border-radius: 12px;
+}
+
+/* --- 7.5 Cabeçalho de Tabela Padrão ----------------------- */
+.table-head-default {
+    background-color: #f8fafc;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+html.dark-mode .table-head-default {
+    background-color: #0f172a;
+    border-bottom-color: var(--border-color);
+}
+
+/* --- 7.6 Rótulo de Coluna de Tabela (th) ------------------ */
+.th-col-label {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+
+/* --- 7.7 Título de Seção em Formulários (h5) -------------- */
+.form-section-title {
+    font-size: 15px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+html.dark-mode .form-section-title {
+    border-bottom-color: var(--border-color);
+}
+
+/* --- 7.8 Rodapé de Ações (separador superior) ------------- */
+.form-footer-border {
+    border-top: 1px solid #f1f5f9;
+}
+
+html.dark-mode .form-footer-border {
+    border-top-color: var(--border-color);
+}
+
+/* --- 7.9 Estado Vazio (Empty State) ----------------------- */
+.empty-icon-circle {
+    background-color: #fff1ed;
+    width: 80px;
+    height: 80px;
+    color: #ff5742;
+}
+
+.empty-desc {
+    max-width: 440px;
+    font-size: 15px;
+}
+
+.empty-desc-sm {
+    max-width: 400px;
+    font-size: 15px;
+}
+
+/* Ícone grande dentro do círculo vazio */
+.icon-size-xl {
+    font-size: 36px;
+}
+
+/* --- 7.10 Ícone de Forma — Variantes de Cor --------------- */
+/* Usado quando icon-shape-salmon precisa de cor diferente */
+.icon-shape-red {
+    width: 48px;
+    height: 48px;
+    background-color: #fee2e2;
+    color: #dc2626;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    font-size: 20px;
+}
+
+.icon-shape-green {
+    width: 48px;
+    height: 48px;
+    background-color: #dcfce7;
+    color: #15803d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    font-size: 20px;
+}
+
+html.dark-mode .icon-shape-red {
+    background-color: #2d1919;
+    color: #fca5a5;
+}
+
+html.dark-mode .icon-shape-green {
+    background-color: #13281f;
+    color: #6ee7b7;
+}
+
+/* --- 7.11 Badges de Status (Pastilha) --------------------- */
+.badge-pill {
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-pill-entrada {
+    color: #166534 !important;
+    background-color: #dcfce7 !important;
+}
+
+.badge-pill-saida {
+    color: #991b1b !important;
+    background-color: #fef2f2 !important;
+}
+
+.badge-pill-zerado {
+    color: #ef4444;
+    background-color: #fef2f2;
+    padding: 5px 10px;
+}
+
+.badge-pill-critico {
+    color: #854d0e;
+    background-color: #fef9c3;
+    padding: 5px 10px;
+}
+
+.badge-pill-regular {
+    color: #166534;
+    background-color: #dcfce7;
+    padding: 5px 10px;
+}
+
+.badge-pill-alerta {
+    color: #854d0e !important;
+    background-color: #fef9c3 !important;
+}
+
+.badge-pill-proximo {
+    color: #0b5ed7 !important;
+    background-color: #e0f2fe !important;
+}
+
+.badge-pill-proprio {
+    color: #166534 !important;
+    background-color: #dcfce7 !important;
+}
+
+/* --- 7.12 Badge de ID / Código ---------------------------- */
+.badge-id {
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+/* --- 7.13 Container de Gráficos (Chart.js) ---------------- */
+.chart-wrapper {
+    position: relative;
+    height: 280px;
+    width: 100%;
+}
+
+/* --- 7.14 Modal — Body com Scroll ------------------------- */
+.modal-body-scrollable {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* --- 7.15 Select Travado (condicional Razor) --------------- */
+.select-locked {
+    pointer-events: none;
+    background-color: #f1f5f9;
+    color: #94a3b8;
+}
+
+.select-locked-soft {
+    pointer-events: none;
+    background-color: #f8fafc;
+    opacity: 0.8;
+}
+
+/* --- 7.16 Botão Voltar (Outline — GerenciarLotes) ---------- */
+.btn-back-outline {
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 10px 20px;
+}
+
+/* --- 7.17 Campos de Exibição Somente Leitura -------------- */
+/* Usados em MovimentacaoEstoque/ExcluirExibir              */
+.display-field-row {
+    border-radius: 12px;
+    border: 2px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    height: 56px;
+}
+
+.display-field {
+    border-radius: 12px;
+    border: 2px solid #f1f5f9;
+    height: 56px;
+}
+
+.display-field-text {
+    border-radius: 12px;
+    border: 2px solid #f1f5f9;
+    min-height: 56px;
+    font-size: 14px;
+}
+
+html.dark-mode .display-field-row,
+html.dark-mode .display-field,
+html.dark-mode .display-field-text {
+    border-color: var(--border-color);
+}
+
+/* --- 7.18 Caixa de Detalhe (ExcluirExibir) ---------------- */
+.detail-box {
+    background-color: #f8fafc !important;
+}
+
+html.dark-mode .detail-box {
+    background-color: #0f172a !important;
+    border-color: var(--border-color) !important;
+}
+
+/* --- 7.19 Tabela Responsiva com Borda Sutil --------------- */
+.border-light-custom {
+    border-color: #e2e8f0 !important;
+}

@@ -9,7 +9,7 @@
                 <i class="bi bi-speedometer2"></i>
             </div>
             <div>
-                <h2 class="fw-bold text-dark m-0 var-text-color" style="font-size: 24px; letter-spacing: -0.5px;">Painel de Controle</h2>
+                <h2 class="fw-bold text-dark m-0 var-text-color page-title">Painel de Controle</h2>
                 <p class="text-muted small m-0 mt-1 sub-text-toggle">Visão Geral da Kantine Gestão (K_Gest)</p>
             </div>
         </div>
@@ -29,7 +29,7 @@
 
     @if (ViewBag.ErroDashboard != null)
     {
-        <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center mb-4" role="alert" style="background-color: #fef2f2; color: #991b1b; border-radius: 12px;">
+        <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center mb-4 alert-danger-feedback" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
             <div class="fw-medium small"><strong>Erro de conexão:</strong> @ViewBag.ErroDashboard</div>
         </div>
@@ -42,7 +42,7 @@
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="text-uppercase fw-bold text-secondary small mb-1 sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px;">Insumos Cadastrados</h6>
+                            <h6 class= th-col-label"text-uppercase fw-bold text-secondary small mb-1 sub-text-toggle">Insumos Cadastrados</h6>
                             <h2 class="display-6 fw-bold mb-0 text-dark var-text-color">@Model.TotalInsumos</h2>
                         </div>
                         <div class="icon-shape-salmon">
@@ -59,7 +59,7 @@
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="text-uppercase fw-bold text-secondary small mb-1 sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px;">Abaixo do Mínimo</h6>
+                            <h6 class= th-col-label"text-uppercase fw-bold text-secondary small mb-1 sub-text-toggle">Abaixo do Mínimo</h6>
                             <h2 class="display-6 fw-bold mb-0 text-danger">@Model.InsumosAbaixoPontoPedido</h2>
                         </div>
                         <div class="icon-shape-danger-soft">
@@ -76,7 +76,7 @@
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="text-uppercase fw-bold text-secondary small mb-1 sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px;">Validades Críticas</h6>
+                            <h6 class= th-col-label"text-uppercase fw-bold text-secondary small mb-1 sub-text-toggle">Validades Críticas</h6>
                             <h2 class="display-6 fw-bold mb-0 text-warning" style="color: #ca8a04 !important;">@Model.LotesEmAlerta</h2>
                         </div>
                         <div class="icon-shape-warning-soft">
@@ -93,7 +93,7 @@
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="text-uppercase fw-bold text-secondary small mb-1 sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px;">Faturamento (10d)</h6>
+                            <h6 class= th-col-label"text-uppercase fw-bold text-secondary small mb-1 sub-text-toggle">Faturamento (10d)</h6>
                             <h2 class="fs-3 fw-bold mb-0 text-dark mt-1 var-text-color">@Model.TotalVendidoDezDias.ToString("C2")</h2>
                         </div>
                         <div class="icon-shape-success-soft">
@@ -109,7 +109,7 @@
     @* --- SEÇÃO 2: GRÁFICOS --- *@
     <div class="row g-4 mb-4">
         <div class="col-xl-6">
-            <div class="card border-0 shadow-premium card-toggle" style="border-radius: 20px;">
+            <div class="card border-0 shadow-premium card-toggle card-section">
                 <div class="card-header border-0 bg-transparent pt-4 px-4 pb-0">
                     <div class="d-flex align-items-center gap-2">
                         <span class="p-2 bg-success-subtle rounded-3 text-success d-inline-flex">
@@ -122,7 +122,7 @@
                     </div>
                 </div>
                 <div class="card-body p-4">
-                    <div style="position: relative; height: 280px; width: 100%;">
+                    <div class="chart-wrapper">
                         <canvas id="chartMotivosEntrada"></canvas>
                     </div>
                 </div>
@@ -130,7 +130,7 @@
         </div>
 
         <div class="col-xl-6">
-            <div class="card border-0 shadow-premium card-toggle" style="border-radius: 20px;">
+            <div class="card border-0 shadow-premium card-toggle card-section">
                 <div class="card-header border-0 bg-transparent pt-4 px-4 pb-0">
                     <div class="d-flex align-items-center gap-2">
                         <span class="p-2 rounded-3 d-inline-flex" style="background-color: var(--salmon-soft); color: var(--salmon-primary);">
@@ -143,7 +143,7 @@
                     </div>
                 </div>
                 <div class="card-body p-4">
-                    <div style="position: relative; height: 280px; width: 100%;">
+                    <div class="chart-wrapper">
                         <canvas id="chartMotivosSaida"></canvas>
                     </div>
                 </div>
@@ -152,7 +152,7 @@
     </div>
 
     @* --- SEÇÃO 3: TABELA DE ATIVIDADES RECENTES --- *@
-    <div class="card border-0 shadow-premium mb-4 card-toggle" style="border-radius: 20px; overflow: hidden;">
+    <div class="card border-0 shadow-premium mb-4 card-toggle card-section">
         <div class="card-header border-0 bg-transparent pt-4 px-4 pb-2">
             <div class="d-flex align-items-center gap-2">
                 <span class="p-2 bg-light rounded-3 text-dark d-inline-flex border icon-table-toggle">
@@ -166,13 +166,13 @@
         </div>
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0 table-toggle">
-                <thead class="thead-toggle" style="border-bottom: 2px solid #f1f5f9;">
+                <thead class="thead-toggle table-head-default">
                     <tr>
-                        <th class="ps-4 py-3 text-secondary text-uppercase fw-bold sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px; width: 120px;">Tipo</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px;">Insumo</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold text-end sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px;">Quantidade</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px;">Data/Hora</th>
-                        <th class="pe-4 py-3 text-secondary text-uppercase fw-bold sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px;">Motivo / Justificativa</th>
+                        <th class= th-col-label"ps-4 py-3 text-secondary text-uppercase fw-bold sub-text-toggle" style="width: 120px;">Tipo</th>
+                        <th class= th-col-label"py-3 text-secondary text-uppercase fw-bold sub-text-toggle">Insumo</th>
+                        <th class= th-col-label"py-3 text-secondary text-uppercase fw-bold text-end sub-text-toggle">Quantidade</th>
+                        <th class= th-col-label"py-3 text-secondary text-uppercase fw-bold sub-text-toggle">Data/Hora</th>
+                        <th class= th-col-label"pe-4 py-3 text-secondary text-uppercase fw-bold sub-text-toggle">Motivo / Justificativa</th>
                     </tr>
                 </thead>
                 <tbody class="border-0">
@@ -184,13 +184,13 @@
                                 <td class="ps-4 py-3">
                                     @if (mov.tipoEs == "E" || mov.tipoEs == "Entrada")
                                     {
-                                        <span class="badge px-2.5 py-1.5 d-inline-flex align-items-center gap-1" style="border-radius: 30px; font-size: 11px; font-weight: 600; color: #166534 !important; background-color: #dcfce7 !important;">
+                                        <span class="badge px-2.5 py-1.5 d-inline-flex align-items-center gap-1 badge-pill badge-pill-entrada">
                                             <i class="bi bi-arrow-down-left-circle-fill"></i> Entrada
                                         </span>
                                     }
                                     else
                                     {
-                                        <span class="badge px-2.5 py-1.5 d-inline-flex align-items-center gap-1" style="border-radius: 30px; font-size: 11px; font-weight: 600; color: #991b1b !important; background-color: #fef2f2 !important;">
+                                        <span class="badge px-2.5 py-1.5 d-inline-flex align-items-center gap-1 badge-pill badge-pill-saida">
                                             <i class="bi bi-arrow-up-right-circle-fill"></i> Saída
                                         </span>
                                     }
@@ -354,4 +354,3 @@
     }, 50);
     });
 </script>
-

@@ -5,7 +5,7 @@
     ViewData["Title"] = "Previsão de Compras";
 }
 
-<div class="container-fluid px-4 py-4" style="max-width: 1100px; margin: 0 auto;">
+<div class="container-fluid px-4 py-4 container-max-1100">
 
     @* Topo de Navegação *@
     <div class="mb-3">
@@ -21,7 +21,7 @@
                 <i class="bi bi-cart-check-fill"></i>
             </div>
             <div>
-                <h2 class="fw-bold text-dark m-0 var-text-color" style="font-size: 24px; letter-spacing: -0.5px;">Sugestão de Compras Semanal</h2>
+                <h2 class="fw-bold text-dark m-0 var-text-color page-title">Sugestão de Compras Semanal</h2>
                 <p class="text-muted small m-0 mt-1 sub-text-toggle">Cálculo preditivo inteligente: cruzando histórico de vendas (7 dias) + margem de segurança e validades</p>
             </div>
         </div>
@@ -33,15 +33,15 @@
     </div>
 
     @* Card Principal da Tabela *@
-    <div class="card border-0 shadow-premium card-toggle" style="border-radius: 20px; overflow: hidden; ">
+    <div class="card border-0 shadow-premium card-toggle card-section">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0 table-toggle">
-                <thead class="thead-toggle" style="border-bottom: 2px solid #f1f5f9;">
+                <thead class="thead-toggle table-head-default">
                     <tr>
-                        <th class="ps-4 py-3 text-secondary text-uppercase fw-bold sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px;">Insumo</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold text-end sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px; width: 140px;">Estoque Atual</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold text-end sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px; width: 140px;">Ponto Pedido</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold text-end sub-text-toggle" style="font-size: 11px; letter-spacing: 0.5px; width: 140px;">Consumo Previsto</th>
+                        <th class= th-col-label"ps-4 py-3 text-secondary text-uppercase fw-bold sub-text-toggle">Insumo</th>
+                        <th class= th-col-label"py-3 text-secondary text-uppercase fw-bold text-end sub-text-toggle" style="width: 140px;">Estoque Atual</th>
+                        <th class= th-col-label"py-3 text-secondary text-uppercase fw-bold text-end sub-text-toggle" style="width: 140px;">Ponto Pedido</th>
+                        <th class= th-col-label"py-3 text-secondary text-uppercase fw-bold text-end sub-text-toggle" style="width: 140px;">Consumo Previsto</th>
                         <th class="pe-4 py-3 text-salmon text-uppercase fw-bold text-end col-highlight-salmon" style="font-size: 11px; letter-spacing: 0.5px; width: 200px; background-color: #fff1ed;">Qtd. Sugerida comprar</th>
                     </tr>
                 </thead>
@@ -111,4 +111,3 @@
         </div>
     </div>
 </div>
-

@@ -13,8 +13,8 @@
                 <i class="bi bi-layers-fill"></i>
             </div>
             <div>
-                <span class="text-secondary text-uppercase fw-bold small tracking-wider" style="font-size: 11px; letter-spacing: 0.5px;">Lotes Cadastrados do Insumo</span>
-                <h2 class="fw-bold text-dark m-0" style="font-size: 24px; letter-spacing: -0.5px;">
+                <span class= th-col-label"text-secondary text-uppercase fw-bold small tracking-wider">Lotes Cadastrados do Insumo</span>
+                <h2 class="fw-bold text-dark m-0 page-title">
                     @ViewBag.NomeInsumo <span class="fs-5 text-muted fw-normal">(@unidadeMed)</span>
                 </h2>
             </div>
@@ -23,7 +23,7 @@
             <a href="/Lote/InserirExibir?idInsumo=@ViewBag.IdInsumo" class="btn-salmon-action d-flex align-items-center gap-2 shadow-sm">
                 <i class="bi bi-plus-lg"></i> Cadastrar Novo Lote
             </a>
-            <a href="/Lote/Selecionar" class="btn btn-outline-secondary d-flex align-items-center gap-2" style="border-radius: 12px; font-weight: 600; font-size: 14px; padding: 10px 20px;">
+            <a href="/Lote/Selecionar" class="btn btn-outline-secondary d-flex align-items-center gap-2 btn-back-outline">
                 <i class="bi bi-arrow-left"></i> Voltar
             </a>
         </div>
@@ -31,23 +31,23 @@
 
     @if (TempData["MsgSucesso"] != null)
     {
-        <div class="alert alert-success border-0 shadow-sm d-flex align-items-center mb-4" role="alert" style="background-color: #ecfdf5; color: #065f46; border-radius: 12px;">
+        <div class="alert alert-success border-0 shadow-sm d-flex align-items-center mb-4 alert-success-feedback" role="alert">
             <i class="bi bi-check-circle-fill me-2 fs-5"></i>
             <div class="fw-medium small">@TempData["MsgSucesso"]</div>
         </div>
     }
 
-    <div class="card border-0 shadow-premium" style="border-radius: 20px; overflow: hidden; ">
+    <div class="card border-0 shadow-premium card-section">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0" style="min-width: 800px;">
-                <thead style="background-color: #f8fafc; border-bottom: 2px solid #f1f5f9;">
+                <thead class="table-head-default">
                     <tr>
-                        <th class="ps-4 py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px; width: 120px;">Nº do Lote</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Data de Fabricação</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Data de Validade</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold text-end" style="font-size: 11px; letter-spacing: 0.5px;">Quantidade</th>
-                        <th class="py-3 text-secondary text-uppercase fw-bold text-center" style="font-size: 11px; letter-spacing: 0.5px; width: 220px;">Status Validade</th>
-                        <th class="pe-4 py-3 text-secondary text-uppercase fw-bold text-center" style="font-size: 11px; letter-spacing: 0.5px; width: 150px;">Ações</th>
+                        <th class= th-col-label"ps-4 py-3 text-secondary text-uppercase fw-bold" style="width: 120px;">Nº do Lote</th>
+                        <th class= th-col-label"py-3 text-secondary text-uppercase fw-bold">Data de Fabricação</th>
+                        <th class= th-col-label"py-3 text-secondary text-uppercase fw-bold">Data de Validade</th>
+                        <th class= th-col-label"py-3 text-secondary text-uppercase fw-bold text-end">Quantidade</th>
+                        <th class= th-col-label"py-3 text-secondary text-uppercase fw-bold text-center" style="width: 220px;">Status Validade</th>
+                        <th class= th-col-label"pe-4 py-3 text-secondary text-uppercase fw-bold text-center" style="width: 150px;">Ações</th>
                     </tr>
                 </thead>
                 <tbody class="border-0">
@@ -91,19 +91,19 @@
                                     else if (situacao == "Alerta")
                                     {
 
-                                        <span class="badge bg-warning-subtle text-warning px-2.5 py-1.5 d-inline-flex align-items-center gap-1" style="border-radius: 30px; font-size: 11px; font-weight: 600; color: #854d0e !important; background-color: #fef9c3 !important;">
+                                        <span class="badge bg-warning-subtle text-warning px-2.5 py-1.5 d-inline-flex align-items-center gap-1 badge-pill badge-pill-alerta">
                                             <i class="bi bi-exclamation-triangle-fill"></i> Alerta (Vence @mensagemDias)
                                         </span>
                                     }
                                     else if (situacao == "Próximo da data de vencimento")
                                     {
-                                        <span class="badge bg-info-subtle text-info px-2.5 py-1.5 d-inline-flex align-items-center gap-1" style="border-radius: 30px; font-size: 11px; font-weight: 600; color: #0b5ed7 !important; background-color: #e0f2fe !important;">
+                                        <span class="badge bg-info-subtle text-info px-2.5 py-1.5 d-inline-flex align-items-center gap-1 badge-pill badge-pill-proximo">
                                             <i class="bi bi-clock-history"></i> Próximo do Vencimento
                                         </span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-success-subtle text-success px-2.5 py-1.5 d-inline-flex align-items-center gap-1" style="border-radius: 30px; font-size: 11px; font-weight: 600; color: #166534 !important; background-color: #dcfce7 !important;">
+                                        <span class="badge bg-success-subtle text-success px-2.5 py-1.5 d-inline-flex align-items-center gap-1 badge-pill badge-pill-entrada">
                                             <i class="bi bi-check-circle-fill"></i> Próprio para Consumo
                                         </span>
                                     }

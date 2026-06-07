@@ -4,7 +4,7 @@
     ViewData["Title"] = "Cadastrar Novo Lote no Estoque";
 }
 
-<div class="container-fluid px-4 py-4" style="max-width: 1000px; margin: 0 auto;">
+<div class="container-fluid px-4 py-4 container-max-1000">
 
     <div class="mb-3">
         <a href="@(Model.IdInsumo > 0 ? $"/Lote/GerenciarLotes?id={Model.IdInsumo}" : "/Lote/Selecionar")"
@@ -18,17 +18,17 @@
             <i class="bi bi-box-seam-fill"></i>
         </div>
         <div>
-            <h2 class="fw-bold text-dark m-0" style="font-size: 24px; letter-spacing: -0.5px;">Cadastrar Novo Lote</h2>
+            <h2 class="fw-bold text-dark m-0 page-title">Cadastrar Novo Lote</h2>
             <p class="text-muted small m-0 mt-1">Insira os dados abaixo para fracionar e gerenciar a validade do estoque deste insumo</p>
         </div>
     </div>
 
-    <div class="card border-0 shadow-premium" style="border-radius: 20px; padding: 24px;">
+    <div class="card border-0 shadow-premium card-section-padded">
         <form asp-controller="Lote" asp-action="InserirProcessar" method="post" id="formLote">
 
             <input type="hidden" asp-for="IdInsumo" id="hdnIdInsumo" />
 
-            <h5 class="text-dark fw-bold mb-4 pb-2" style="font-size: 15px; border-bottom: 2px solid #f1f5f9;">
+            <h5 class="text-dark fw-bold mb-4 pb-2 form-section-title">
                 <i class="bi bi-info-circle me-1 text-salmon"></i> Origem do Lote
             </h5>
 
@@ -51,7 +51,7 @@
                 </div>
             </div>
 
-            <h5 class="text-dark fw-bold mt-5 mb-4 pb-2" style="font-size: 15px; border-bottom: 2px solid #f1f5f9;">
+            <h5 class="text-dark fw-bold mt-5 mb-4 pb-2 form-section-title">
                 <i class="bi bi-boxes me-1 text-salmon"></i> Dados do Lote e Quantidade
             </h5>
 
@@ -75,7 +75,7 @@
                 </div>
             </div>
 
-            <h5 class="text-dark fw-bold mt-5 mb-4 pb-2" style="font-size: 15px; border-bottom: 2px solid #f1f5f9;">
+            <h5 class="text-dark fw-bold mt-5 mb-4 pb-2 form-section-title">
                 <i class="bi bi-calendar-range me-1 text-salmon"></i> Prazos e Validade
             </h5>
 
@@ -99,7 +99,7 @@
                 </div>
             </div>
 
-            <div class="d-flex justify-content-end align-items-center gap-2 mt-5 pt-3" style="border-top: 1px solid #f1f5f9;">
+            <div class="d-flex justify-content-end align-items-center gap-2 mt-5 pt-3 form-footer-border">
                 <a href="@(Model.IdInsumo > 0 ? $"/Lote/GerenciarLotes?id={Model.IdInsumo}" : "/Lote/Selecionar")" class="btn-cancel">Cancelar</a>
                 <button type="submit" class="btn-submit shadow-sm"><i class="bi bi-check-lg me-1"></i> Salvar Lote</button>
             </div>
