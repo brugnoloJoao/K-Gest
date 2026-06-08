@@ -187,7 +187,7 @@ namespace K_Gest.Controllers
             }
             catch (Exception ex)
             {
-                TempData["MsgErro"] = $"Erro: {ex.Message}";
+                TempData["MsgErro"] = $"{ex.Message}";
                 return RedirectToAction("Selecionar");
             }
         }

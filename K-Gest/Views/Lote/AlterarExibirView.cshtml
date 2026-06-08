@@ -40,6 +40,7 @@
                             <i class="bi bi-hash text-salmon"></i>
                             <input asp-for="NumLote" type="number" class="form-control-modern font-monospace" placeholder="Ex: 20240101" required />
                         </div>
+                        <span asp-validation-for="NumLote" class="text-danger small mt-1 d-block fw-medium"></span>
                     </div>
 
                     @* Quantidade do Lote *@
@@ -54,6 +55,7 @@
                                    class="form-control-modern font-monospace" 
                                    required />
                         </div>
+                        <span asp-validation-for="Quantidade" class="text-danger small mt-1 d-block fw-medium"></span>
                     </div>
 
                     @* Data de Fabricação *@
@@ -63,6 +65,7 @@
                             <i class="bi bi-calendar-check text-salmon"></i>
                             <input asp-for="DtFabricacao" type="date" class="form-control-modern" required />
                         </div>
+                        <span asp-validation-for="DtFabricacao" class="text-danger small mt-1 d-block fw-medium"></span>
                     </div>
 
                     @* Data de Validade *@
@@ -72,6 +75,7 @@
                             <i class="bi bi-calendar-x text-salmon"></i>
                             <input asp-for="DtValidade" type="date" class="form-control-modern" required />
                         </div>
+                        <span asp-validation-for="DtValidade" class="text-danger small mt-1 d-block fw-medium"></span>
                     </div>
 
                     @* Rodapé de Ações *@

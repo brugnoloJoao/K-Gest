@@ -54,9 +54,12 @@ namespace K_Gest.Controllers
                     TempData["MsgSucesso"] = "Venda registada e estoque atualizado!";
                     return RedirectToAction("Selecionar");
                 }
-                catch (Exception ex) { TempData["MsgErro"] = ex.Message; }
+                catch (Exception ex) { 
+                    TempData["MsgErro"] = ex.Message;
+                    return RedirectToAction("Selecionar");
+                }
             }
-            ViewBag.ListaReceitas = ObterReceitas();
+            o_HistoricoVendasVM.ListaReceitas = ObterReceitas();
             return View("InserirExibirView", o_HistoricoVendasVM);
         }
 
@@ -118,6 +121,8 @@ namespace K_Gest.Controllers
             {
                 HistoricoVendas o_HistoricoVendas = new HistoricoVendas();
                 o_HistoricoVendas.idVendas = o_HistoricoVendasVM.IdVendas;
+                o_HistoricoVendas.qtdVendida = o_HistoricoVendasVM.QtdVendida;
+                o_HistoricoVendas.idReceita = o_HistoricoVendasVM.IdReceita;
 
                 o_HistoricoVendas.Excluir();
 

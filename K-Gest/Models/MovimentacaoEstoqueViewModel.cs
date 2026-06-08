@@ -26,7 +26,7 @@ namespace K_Gest.Models
         [Required(ErrorMessage = "Insumo é obrigatório.")]
         [Range(1, int.MaxValue, ErrorMessage = "IdInsumo inválido.")]
         [Display(Name = "Insumo")]
-        public int IdInsumo { get; set; }
+        public int? IdInsumo { get; set; }
         public string UnidadeMed { get; set; } = string.Empty;
        public DateTime? DataMoviment { get; set; }
         public List<SelectListItem> ListaInsumos { get; set; }

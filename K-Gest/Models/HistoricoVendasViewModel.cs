@@ -17,10 +17,11 @@ namespace K_Gest.Models
         [Display(Name = "Quantidade Vendida")]
         public int QtdVendida { get; set; }
 
+        // Altere de int para int?
         [Required(ErrorMessage = "Receita é obrigatória.")]
         [Range(1, int.MaxValue, ErrorMessage = "IdReceita inválido.")]
         [Display(Name = "Receita")]
-        public int IdReceita { get; set; }
+        public int? IdReceita { get; set; }
         public List<SelectListItem>? ListaReceitas { get; set; }
     }
 }

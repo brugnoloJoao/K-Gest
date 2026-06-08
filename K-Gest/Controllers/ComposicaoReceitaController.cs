@@ -111,6 +111,7 @@ namespace K_Gest.Controllers
             else
             {
                 TempData["MsgErro"] = "Por favor, selecione a receita e adicione os ingredientes.";
+                return RedirectToAction("Selecionar");
             }
 
             vm.ListaReceitas = ObterReceitas();

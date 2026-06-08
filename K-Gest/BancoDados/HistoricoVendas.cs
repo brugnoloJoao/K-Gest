@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using NuGet.Protocol;
 using System.Data;
 
 namespace K_Gest.BancoDados
@@ -11,7 +12,7 @@ namespace K_Gest.BancoDados
         public int? idVendas;
         public DateTime dataVend;
         public int qtdVendida;
-        public int idReceita;
+        public int? idReceita;
 
         SqlConnection con;
 
@@ -74,7 +75,8 @@ namespace K_Gest.BancoDados
                 // Mas uma validação simples: se for 0, com certeza deu erro de estoque.
                 if (linhasAfetadas == 0)
                 {
-                    throw new InvalidOperationException("Estoque insuficiente para um ou mais insumos desta receita.");
+                    string nomePrato = new Receitas().ObterNomePorId(idReceita);
+                    throw new InvalidOperationException($"Não foi possível registrar venda da receita: '{nomePrato}'. Verifique a composição ou o saldo dos ingredientes no estoque.");
                 }
 
                 // 3. Gerar Histórico na Movimentação de Estoque
@@ -98,26 +100,6 @@ namespace K_Gest.BancoDados
             finally { con.Close(); }
         }
 
-        //public void Excluir()
-        //{
-        //    try
-        //    {
-        //        string cmdSQL = "DELETE FROM Historico_Vendas WHERE IdVendas = @IdVendas";
-
-        //        SqlCommand cmd = new SqlCommand(cmdSQL, con);
-        //        cmd.Parameters.AddWithValue("@IdVendas", idVendas);
-
-        //        con.Open();
-        //        cmd.ExecuteNonQuery();
-        //        con.Close();
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception(ex.Message);
-        //    }
-        //}
-
 
         public void Excluir()
         {
@@ -137,7 +119,7 @@ namespace K_Gest.BancoDados
                 SqlCommand cmd1 = new SqlCommand(cmdBaixaEstoque, con, transacao);
                 cmd1.Parameters.AddWithValue("@QtdVendida", qtdVendida);
                 cmd1.Parameters.AddWithValue("@IdReceita", idReceita);
-
+                cmd1.ExecuteNonQuery();
 
                 //Gerar Histórico na Movimentação de Estoque
                 string cmdMovimentacao = @"
@@ -153,9 +135,7 @@ namespace K_Gest.BancoDados
                 //Gravar a Venda
                 string cmdVenda = "DELETE FROM Historico_Vendas WHERE IdVendas = @IdVendas";
                 SqlCommand cmd3 = new SqlCommand(cmdVenda, con, transacao);
-                cmd3.Parameters.AddWithValue("@DataVend", dataVend);
-                cmd3.Parameters.AddWithValue("@QtdVendida", qtdVendida);
-                cmd3.Parameters.AddWithValue("@IdReceita", idReceita);
+                cmd3.Parameters.AddWithValue("@IdVendas", idVendas);
                 cmd3.ExecuteNonQuery();
 
 

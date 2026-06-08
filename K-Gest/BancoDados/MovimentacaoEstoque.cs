@@ -9,7 +9,7 @@ namespace K_Gest.BancoDados
         public string tipoEs; // "E" para Entrada, "S" para Saída
         public decimal qtdMoviment;
         public string motivo;
-        public int idInsumo;
+        public int? idInsumo;
         public DateTime? dataMoviment;
 
         SqlConnection con;

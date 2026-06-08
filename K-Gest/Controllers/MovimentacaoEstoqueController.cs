@@ -194,7 +194,20 @@ namespace K_Gest.Controllers
                         return RedirectToAction("Entradas");
                     }
                 }
+                else if (o_MovimentacaoEstoqueVM.TipoEs != null)
+                {
 
+                    if (o_MovimentacaoEstoqueVM.TipoEs == "S")
+                    {
+                        o_MovimentacaoEstoqueVM.ListaInsumos = ObterInsumos();
+                        return View("InserirSaidaView", o_MovimentacaoEstoqueVM);
+                    }
+                    else
+                    {
+                        o_MovimentacaoEstoqueVM.ListaInsumos = ObterInsumos();
+                        return View("InserirEntradaView", o_MovimentacaoEstoqueVM);
+                    }
+                }
                 o_MovimentacaoEstoqueVM.ListaInsumos = ObterInsumos();
                 return View("InserirExibirView", o_MovimentacaoEstoqueVM);
             }
@@ -283,7 +296,7 @@ namespace K_Gest.Controllers
                         Text = $"{dr["nomeInsumo"]} ({dr["unidadeMed"]})"
                     }).ToList();
         }
-        private string ObterUnidadeMedPorIDInsumo(int idInsumo)
+        private string ObterUnidadeMedPorIDInsumo(int? idInsumo)
         {
             DataTable dt = new Insumos { idInsumo = idInsumo }.SelecionarPorID();
             if (dt != null && dt.Rows.Count > 0)
@@ -292,7 +305,7 @@ namespace K_Gest.Controllers
             }
             return string.Empty; // Retorna vazio se não encontrar o insumo
         }
-        private decimal ObterEstoqueAtualDeInsumo(int idInsumo)
+        private decimal ObterEstoqueAtualDeInsumo(int? idInsumo)
         {
             DataTable dt = new Insumos { idInsumo = idInsumo }.SelecionarPorID();
             if (dt != null && dt.Rows.Count > 0)

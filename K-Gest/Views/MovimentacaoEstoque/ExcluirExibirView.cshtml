@@ -42,7 +42,7 @@
                 @* Insumo / Produto *@
                 <div class="col-md-6">
                     <label class="form-label text-secondary fw-semibold small mb-1 text-uppercase">Insumo / Produto</label>
-                    <div class="p-2" class="display-field-row">
+                    <div class="p-2 display-field-row">
                         <i class="bi bi-box-seam text-salmon ms-2 me-1" style="font-size: 16px;"></i>
                         <select asp-for="IdInsumo" class="form-select-custom border-0 bg-transparent py-1 shadow-none fw-bold text-dark fs-6" asp-items="@Model.ListaInsumos" disabled style="-webkit-appearance: none; -moz-appearance: none; appearance: none; cursor: not-allowed; opacity: 1;">
                             <option value="">-- Selecione o Insumo para movimentar --</option>
@@ -53,7 +53,7 @@
                 @* Tipo de Fluxo *@
                 <div class="col-md-3">
                     <label class="form-label text-secondary fw-semibold small mb-1 text-uppercase">Tipo de Fluxo</label>
-                    <div class="p-3 d-flex align-items-center justify-content-center" class="display-field">
+                    <div class="p-3 d-flex align-items-center justify-content-center display-field">
                         @if (Model.TipoEs?.ToUpper() == "E" || Model.TipoEs?.ToUpper() == "ENTRADA")
                         {
                             <span class="badge bg-success-subtle text-success px-2.5 py-1.5 d-inline-flex align-items-center gap-1 badge-pill badge-pill-entrada">
@@ -72,7 +72,7 @@
                 @* Quantidade Trata Dinâmica via Operador Ternário *@
                 <div class="col-md-3">
                     <label class="form-label text-secondary fw-semibold small mb-1 text-uppercase">Quantidade</label>
-                    <div class="p-3 text-end font-monospace fw-bold text-dark fs-6" class="display-field">
+                    <div class="p-3 text-end font-monospace fw-bold text-dark fs-6 display-field">
                         @{
                             var textoInsumo = Model.ListaInsumos?.FirstOrDefault(x => x.Value == Model.IdInsumo.ToString())?.Text ?? "";
                             bool isUn = textoInsumo.Contains("(UN)", StringComparison.OrdinalIgnoreCase);
@@ -90,7 +90,7 @@
                 @* NOVA COLUNA: Data da Movimentação *@
                 <div class="col-md-12">
                     <label class="form-label text-secondary fw-semibold small mb-1 text-uppercase">Data da Movimentação</label>
-                    <div class="p-3 text-dark font-monospace fw-medium" class="display-field-text">
+                    <div class="p-3 text-dark font-monospace fw-medium display-field-text">
                         <i class="bi bi-calendar3 text-salmon me-2"></i>
                         @(Model.DataMoviment != null && Model.DataMoviment != DateTime.MinValue 
                             ? Model.DataMoviment.Value.ToString("HH:mm dd/MM/yyyy ") 
@@ -101,7 +101,7 @@
                 @* Motivo / Justificativa *@
                 <div class="col-md-12">
                     <label class="form-label text-secondary fw-semibold small mb-1 text-uppercase">Motivo / Justificativa informada</label>
-                    <div class="p-3 text-secondary" class="display-field-text">
+                    <div class="p-3 text-secondary display-field-text">
                         @(string.IsNullOrEmpty(Model.Motivo) ? "Não informado" : Model.Motivo)
                     </div>
                 </div>

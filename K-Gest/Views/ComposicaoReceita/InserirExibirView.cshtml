@@ -33,7 +33,7 @@
 
                 @* Seção: Seleção da Receita *@
                 <div class="mb-5">
-                    <label class="form-label text-secondary fw-bold small text-uppercase">Receita / Prato</label>
+                    <label class="form-select-custom border-0 bg-transparent py-1 shadow-none fw-bold text-dark fs-6">Receita / Prato</label>
                     <div class="modern-input-group">
                         <i class="bi bi-journal-bookmark-fill text-salmon"></i>
                         <select id="selReceita" asp-items="Model.ListaReceitas" class="form-select-modern" style="@(Model.IdReceita > 0 ? "pointer-events: none; background-color: #f1f5f9; color: #94a3b8;" : "")">
@@ -48,7 +48,7 @@
                     }
                 </div>
                 @* Seção Adicionar Ingrediente (Sub-Card Interno) *@
-                <div class="p-4 border rounded-4 mb-5" >
+                <div class="p-4 border rounded-4 mb-5">
                     <h5 class="fw-bold text-dark mb-4" style="font-size: 16px;"><i class="bi bi-plus-circle-fill text-salmon me-2"></i>Adicionar Ingrediente à Ficha</h5>
 
                     <div class="row g-4 align-items-end">
@@ -84,6 +84,7 @@
                                     <option value="UN">Unidade (UN)</option>
                                     <option value="L">Litro (L)</option>
                                     <option value="G">Grama (G)</option>
+                                    <option value="ML">Mililitro (ML)</option>
                                 </select>
                             </div>
                         </div>
@@ -184,7 +185,7 @@
 
         selInsumo.addEventListener('change', function () {
             const opcaoSelecionada = this.options[this.selectedIndex].text;
-            
+
             // Restaura o select de unidades antes de filtrar
             Array.from(selUni.options).forEach(opt => {
                 opt.disabled = false;
@@ -227,10 +228,10 @@
             if (!selIns.value || !qtd.value || !selUni.value) return;
 
             const idInsumo = selIns.value;
-            
+
             // Remove a unidade do texto para salvar um nome limpo na tabela se preferir
             let nomeInsumo = selIns.options[selIns.selectedIndex].text;
-            nomeInsumo = nomeInsumo.replace(/\s*\([^)]+\)\s*$/, ''); 
+            nomeInsumo = nomeInsumo.replace(/\s*\([^)]+\)\s*$/, '');
 
             const unidade = selUni.options[selUni.selectedIndex].value; // Pega direto o Value (KG, G, L...)
 
@@ -265,7 +266,7 @@
             selIns.value = "";
             selUni.value = "";
             qtd.value = "";
-            
+
             // Reseta o estado do select de unidades
             Array.from(selUni.options).forEach(opt => {
                 opt.disabled = false;

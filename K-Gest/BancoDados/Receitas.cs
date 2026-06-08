@@ -12,7 +12,7 @@ namespace K_Gest.BancoDados
         public int? idReceita;
         public string nomePrato;
         public decimal? preco;
-        
+
         SqlConnection con;
 
         //-------------------------------------------------------------
@@ -88,7 +88,7 @@ namespace K_Gest.BancoDados
         {
             try
             {
-                
+
                 string cmdSQL = "DELETE FROM Receitas WHERE idReceita = @IdReceita";
 
                 SqlCommand cmd = new SqlCommand(cmdSQL, con);
@@ -98,10 +98,10 @@ namespace K_Gest.BancoDados
                 cmd.ExecuteNonQuery();
                 con.Close();
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
-                
-                throw new Exception("Erro ao excluir: Verifique se existem itens vinculados a esta receita. " + ex.Message);
+                if (ex.Number == 547) throw new Exception("Não é possível excluir: esta receita está sendo usada em uma composição ou histórico de venda.");
+                throw new Exception("Erro ao excluir: " + ex.Message);
             }
         }
         public DataTable SelecionarTodos()
@@ -153,6 +153,31 @@ namespace K_Gest.BancoDados
                 else
                 {
                     return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public string ObterNomePorId(int? idReceita)
+        {
+            try
+            {
+                string cmdSQL = "SELECT nomePrato FROM receitas WHERE idReceita = @IdReceita";
+                SqlCommand cmd = new SqlCommand(cmdSQL, con);
+                cmd.Parameters.AddWithValue("@IdReceita", idReceita);
+                con.Open();
+                object result = cmd.ExecuteScalar();
+                con.Close();
+                if (result != null)
+                {
+                    return result.ToString();
+                }
+                else
+                {
+                    return "Receita Desconecida";
                 }
             }
             catch (Exception ex)

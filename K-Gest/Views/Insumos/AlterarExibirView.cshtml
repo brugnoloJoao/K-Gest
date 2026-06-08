@@ -39,6 +39,7 @@
                             <i class="bi bi-tag-fill text-salmon"></i>
                             <input asp-for="NomeInsumo" class="form-control-modern" placeholder="Ex: Batata Inglesa" required />
                         </div>
+                        <span asp-validation-for="NomeInsumo" class="text-danger small mt-1 d-block fw-medium"></span>
                     </div>
 
                     @* Unidade de Medida *@
@@ -53,6 +54,7 @@
                                 <option value="G">Grama (G)</option>
                             </select>
                         </div>
+                        <span asp-validation-for="UnidadeMed" class="text-danger small mt-1 d-block fw-medium"></span>
                     </div>
 
                     @* Estoque Atual *@
@@ -60,9 +62,10 @@
                         <label class="form-label text-secondary fw-bold small text-uppercase">Estoque Atual</label>
                         <div class="modern-input-group">
                             <i class="bi bi-stack text-salmon"></i>
-                            <input name="EstoqueAtual" type="text" class="form-control-modern font-monospace"
+                            <input asp-for="EstoqueAtual"  name="EstoqueAtual" type="text" class="form-control-modern font-monospace"
                                    value="@Model.EstoqueAtual.Value.ToString("F2")" />
                         </div>
+                        <span asp-validation-for="EstoqueAtual" class="text-danger small mt-1 d-block fw-medium"></span>
                     </div>
 
                     @* Ponto de Pedido *@
@@ -70,9 +73,10 @@
                         <label class="form-label text-secondary fw-bold small text-uppercase">Ponto de Pedido (Mínimo)</label>
                         <div class="modern-input-group">
                             <i class="bi bi-exclamation-circle-fill text-salmon"></i>
-                            <input name="PontoPedido" type="text" class="form-control-modern font-monospace"
+                            <input asp-for="PontoPedido" "name="PontoPedido" type="text" class="form-control-modern font-monospace"
                                    value="@Model.PontoPedido.Value.ToString("F2")" />
                         </div>
+                        <span asp-validation-for="PontoPedido" class="text-danger small mt-1 d-block fw-medium"></span>
                     </div>
 
                     @* Rodapé de Ações *@

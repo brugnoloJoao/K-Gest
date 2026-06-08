@@ -37,8 +37,7 @@
                     <label class="form-label text-secondary fw-semibold small mb-2 text-uppercase">Insumo / Ingrediente</label>
                     <div class="input-group-custom">
                         <i class="bi bi-tag-fill text-salmon input-icon"></i>
-                        <select id="selInsumo" asp-items="Model.ListaInsumos" class="form-select-custom"
-                                style="@(Model.IdInsumo > 0 ? "pointer-events: none; background-color: #f8fafc; opacity: 0.8;" : "")">
+                        <select id="selInsumo" asp-items="Model.ListaInsumos" class="form-control-custom font-monospace">
                             <option value="">-- Escolha o Insumo para este Lote --</option>
                         </select>
                     </div>
@@ -60,7 +59,7 @@
                     <label class="form-label text-secondary fw-semibold small mb-2 text-uppercase">Número do Lote</label>
                     <div class="input-group-custom">
                         <i class="bi bi-hash text-salmon input-icon" style="font-size: 16px;"></i>
-                        <input type="number" asp-for="NumLote" id="txtNumLote" class="form-control-custom font-monospace" placeholder="Ex: 202605" required min="1" />
+                        <input type="number" asp-for="NumLote" id="txtNumLote" class="form-control-custom font-monospace" placeholder="Ex: 202605"  min="1" />
                     </div>
                     <span asp-validation-for="NumLote" class="text-danger small mt-1 d-block fw-medium"></span>
                 </div>
@@ -69,7 +68,7 @@
                     <label class="form-label text-secondary fw-semibold small mb-2 text-uppercase">Quantidade de Entrada</label>
                     <div class="input-group-custom">
                         <i class="bi bi-stack text-salmon input-icon"></i>
-                        <input type="number" asp-for="Quantidade" id="txtQuantidade" step="0.01" class="form-control-custom font-monospace" placeholder="Ex: 50.00" required min="0.01" />
+                        <input type="number" asp-for="Quantidade" id="txtQuantidade" step="0.01" class="form-control-custom font-monospace" placeholder="Ex: 50.00"  min="0.01" />
                     </div>
                     <span asp-validation-for="Quantidade" class="text-danger small mt-1 d-block fw-medium"></span>
                 </div>
@@ -84,7 +83,7 @@
                     <label class="form-label text-secondary fw-semibold small mb-2 text-uppercase">Data de Fabricação</label>
                     <div class="input-group-custom">
                         <i class="bi bi-calendar-check text-salmon input-icon"></i>
-                        <input type="date" asp-for="DtFabricacao" id="txtDtFabricacao" class="form-control-custom text-secondary" asp-format="{0:yyyy-MM-dd}" required />
+                        <input type="date" asp-for="DtFabricacao" id="txtDtFabricacao" class="form-control-custom text-secondary" asp-format="{0:yyyy-MM-dd}"  />
                     </div>
                     <span asp-validation-for="DtFabricacao" class="text-danger small mt-1 d-block fw-medium"></span>
                 </div>
@@ -93,7 +92,7 @@
                     <label class="form-label text-secondary fw-semibold small mb-2 text-uppercase">Data de Validade</label>
                     <div class="input-group-custom">
                         <i class="bi bi-calendar-x text-salmon input-icon"></i>
-                        <input type="date" asp-for="DtValidade" id="txtDtValidade" class="form-control-custom text-secondary" asp-format="{0:yyyy-MM-dd}" required />
+                        <input type="date" asp-for="DtValidade" id="txtDtValidade" class="form-control-custom text-secondary" asp-format="{0:yyyy-MM-dd}" />
                     </div>
                     <span asp-validation-for="DtValidade" class="text-danger small mt-1 d-block fw-medium"></span>
                 </div>

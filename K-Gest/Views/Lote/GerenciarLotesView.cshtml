@@ -13,7 +13,7 @@
                 <i class="bi bi-layers-fill"></i>
             </div>
             <div>
-                <span class= th-col-label"text-secondary text-uppercase fw-bold small tracking-wider">Lotes Cadastrados do Insumo</span>
+                <span class= "th-col-label text-secondary text-uppercase fw-bold small tracking-wider">Lotes Cadastrados do Insumo</span>
                 <h2 class="fw-bold text-dark m-0 page-title">
                     @ViewBag.NomeInsumo <span class="fs-5 text-muted fw-normal">(@unidadeMed)</span>
                 </h2>
@@ -42,12 +42,12 @@
             <table class="table table-hover align-middle mb-0" style="min-width: 800px;">
                 <thead class="table-head-default">
                     <tr>
-                        <th class= th-col-label"ps-4 py-3 text-secondary text-uppercase fw-bold" style="width: 120px;">Nº do Lote</th>
-                        <th class= th-col-label"py-3 text-secondary text-uppercase fw-bold">Data de Fabricação</th>
-                        <th class= th-col-label"py-3 text-secondary text-uppercase fw-bold">Data de Validade</th>
-                        <th class= th-col-label"py-3 text-secondary text-uppercase fw-bold text-end">Quantidade</th>
-                        <th class= th-col-label"py-3 text-secondary text-uppercase fw-bold text-center" style="width: 220px;">Status Validade</th>
-                        <th class= th-col-label"pe-4 py-3 text-secondary text-uppercase fw-bold text-center" style="width: 150px;">Ações</th>
+                        <th class= "th-col-label ps-4 py-3 text-secondary text-uppercase fw-bold" style="width: 120px;">Nº do Lote</th>
+                        <th class= "th-col-label py-3 text-secondary text-uppercase fw-bold">Data de Fabricação</th>
+                        <th class= "th-col-label py-3 text-secondary text-uppercase fw-bold">Data de Validade</th>
+                        <th class= "th-col-label py-3 text-secondary text-uppercase fw-bold text-end">Quantidade</th>
+                        <th class= "th-col-label py-3 text-secondary text-uppercase fw-bold text-center" style="width: 220px;">Status Validade</th>
+                        <th class= "th-col-label pe-4 py-3 text-secondary text-uppercase fw-bold text-center" style="width: 150px;">Ações</th>
                     </tr>
                 </thead>
                 <tbody class="border-0">
@@ -66,7 +66,7 @@
                                     <span class="fw-bold text-dark font-monospace fs-6">#@dr["numLote"]</span>
                                 </td>
 
-                                <td class="py-3 text-secondary">
+                                <td class="py-3 text-dark fw-medium">
                                     @Convert.ToDateTime(dr["dtFabricacao"]).ToString("dd/MM/yyyy")
                                 </td>
 

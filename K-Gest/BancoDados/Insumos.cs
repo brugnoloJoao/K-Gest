@@ -121,7 +121,7 @@ namespace K_Gest.BancoDados
             }
             catch (SqlException ex)
             {
-                if (ex.Number == 547) throw new Exception("Não é possível excluir: este insumo está sendo usado em uma receita.");
+                if (ex.Number == 547) throw new Exception("Não é possível excluir: este insumo está sendo usado em uma composição de receita, movimentação ou lote.");
                 throw new Exception("Erro ao excluir: " + ex.Message);
             }
             finally { if (con.State == ConnectionState.Open) con.Close(); }

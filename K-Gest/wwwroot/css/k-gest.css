@@ -1177,10 +1177,14 @@ html.dark-mode {
         color: #94a3b8;
     }
 
-        html.dark-mode #sidebar ul li a:hover {
+    html.dark-mode #sidebar ul li.active > a {
+        color: var(--sidebar-bg);
+    }
+
+    html.dark-mode #sidebar ul li a:hover {
             color: var(--salmon-primary);
             background-color: var(--sidebar-hover);
-        }
+    }
 
     html.dark-mode .top-navbar {
         background-color: var(--sidebar-bg);
