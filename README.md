@@ -71,57 +71,95 @@ O sistema utiliza o banco de dados relacional **Microsoft SQL Server**. Abaixo e
 <br>
 
 ### 1. Tabela: `Usuarios`
-Armazena as credenciais e informações de acesso ao sistema (RF-01).
+Armazena as credenciais e informações de acesso ao sistema.
 
 | Campo | Tipo | Restrições | Descrição |
 | :--- | :--- | :--- | :--- |
-| `id_usuario` | INT | PK, Identity | Identificador único do usuário. |
-| `nome` | VARCHAR(100) | NOT NULL | Nome completo do colaborador. |
-| `email` | VARCHAR(100) | NOT NULL, UNIQUE | E-mail utilizado para login. |
-| `senha` | VARCHAR(255) | NOT NULL | Hash seguro da senha de acesso. |
+| `idUsuario` | INT | PK | Identificador único do usuário. |
+| `perfil` | VARCHAR(50) | NOT NULL | Perfil de acesso do usuário no sistema. |
+| `login` | VARCHAR(50) | NOT NULL | Login utilizado para autenticação. |
+| `senha` | VARBINARY(64) | NOT NULL | Senha armazenada de forma segura. |
+| `nome` | NCHAR(100) | NOT NULL | Nome completo do usuário. |
+| `ativo` | BIT | NOT NULL | Indica se o usuário está ativo (1) ou inativo (0). |
+
+---
 
 ### 2. Tabela: `Insumos`
-Registra os ingredientes e materiais cadastrados no inventário (RF-09).
+Registra os ingredientes e materiais cadastrados no inventário.
 
 | Campo | Tipo | Restrições | Descrição |
 | :--- | :--- | :--- | :--- |
-| `id_insumo` | INT | PK, Identity | Identificador único do insumo. |
-| `nome` | VARCHAR(100) | NOT NULL | Nome do ingrediente (ex: Farinha de Trigo). |
-| `unidade_medida` | VARCHAR(10) | NOT NULL | Unidade de consumo (KG, G, L, ML, UN). |
-| `estoque_minimo` | DECIMAL(10,2)| NOT NULL | Limite mínimo para alerta de reposição. |
+| `idInsumo` | INT | PK | Identificador único do insumo. |
+| `nomeInsumo` | VARCHAR(30) | NOT NULL | Nome do ingrediente ou material. |
+| `unidadeMed` | VARCHAR(20) | NOT NULL | Unidade de medida (KG, L, UN, etc.). |
+| `estoqueAtual` | DECIMAL(10,3) | NOT NULL | Quantidade atual em estoque. |
+| `pontoPedido` | DECIMAL(10,3) | NOT NULL | Quantidade mínima para disparar reposição. |
 
-### 3. Tabela: `Lotes`
-Controla a rastreabilidade, quantidades físicas atuais e validades (PEPS/FIFO) (RF-13).
+---
 
-| Campo | Tipo | Restrições | Descrição |
-| :--- | :--- | :--- | :--- |
-| `id_lote` | INT | PK, Identity | Identificador único do lote. |
-| `id_insumo` | INT | FK (`Insumos`) | Associação ao insumo correspondente. |
-| `codigo_lote` | VARCHAR(50)  | NOT NULL | Código de identificação do fabricante/registro. |
-| `quantidade` | DECIMAL(10,2)| NOT NULL | Quantidade atual disponível neste lote. |
-| `data_entrada` | DATETIME | NOT NULL | Data em que o insumo deu entrada na cozinha. |
-| `data_validade` | DATETIME | NOT NULL | Data de vencimento do lote. |
-
-### 4. Tabela: `Receitas` (Fichas Técnicas)
-Estrutura as preparações da confeitaria/cozinha (RF-10).
+### 3. Tabela: `Lote`
+Controla a rastreabilidade, quantidades físicas e validades dos insumos.
 
 | Campo | Tipo | Restrições | Descrição |
 | :--- | :--- | :--- | :--- |
-| `id_receita` | INT | PK, Identity | Identificador único da receita/prato. |
-| `nome_prato` | VARCHAR(100) | NOT NULL | Nome do produto final (ex: Bolo de Cenoura). |
-| `rendimento` | INT | NOT NULL | Quantidade de porções padronizadas geradas. |
+| `idLote` | INT | PK | Identificador único do lote. |
+| `dtFabricacao` | DATE | NOT NULL | Data de fabricação do lote. |
+| `dtValidade` | DATE | NOT NULL | Data de validade do lote. |
+| `numLote` | INT | NOT NULL | Número identificador do lote do fabricante. |
+| `idInsumo` | INT | FK (`Insumos`) | Associação ao insumo correspondente. |
+| `quantidade` | DECIMAL(10,3) | NOT NULL | Quantidade disponível neste lote. |
 
-### 5. Tabela: `Itens_Receita`
-Tabela associativa que compõe os ingredientes de cada ficha técnica (RF-11).
+---
+
+### 4. Tabela: `Receitas`
+Estrutura as fichas técnicas das preparações da confeitaria/cozinha.
 
 | Campo | Tipo | Restrições | Descrição |
 | :--- | :--- | :--- | :--- |
-| `id_receita` | INT | PK, FK (`Receitas`) | Associação à receita pai. |
-| `id_insumo` | INT | PK, FK (`Insumos`) | Associação ao ingrediente necessário. |
-| `quantidade_necessaria`| DECIMAL(10,2)| NOT NULL| Proporção exata utilizada na preparação. |
+| `idReceita` | INT | PK | Identificador único da receita. |
+| `nomePrato` | VARCHAR(100) | NOT NULL | Nome do produto final (ex: Bolo de Cenoura). |
+| `preco` | DECIMAL(18,2) | NOT NULL | Preço de venda do prato. |
+
+---
+
+### 5. Tabela: `Composicao_Receita`
+Tabela associativa que define os ingredientes de cada ficha técnica.
+
+| Campo | Tipo | Restrições | Descrição |
+| :--- | :--- | :--- | :--- |
+| `idComposicao` | INT | PK | Identificador único da composição. |
+| `qtdNecessaria` | DECIMAL(10,3) | NOT NULL | Quantidade do insumo utilizada na receita. |
+| `idReceita` | INT | FK (`Receitas`) | Associação à receita correspondente. |
+| `idInsumo` | INT | FK (`Insumos`) | Associação ao insumo utilizado. |
+| `unidadeExibicao` | VARCHAR(20) | NOT NULL | Unidade de exibição na ficha técnica. |
+
+---
+
+### 6. Tabela: `Historico_Vendas`
+Registra o histórico de vendas dos pratos realizadas no sistema.
+
+| Campo | Tipo | Restrições | Descrição |
+| :--- | :--- | :--- | :--- |
+| `idVendas` | INT | PK | Identificador único da venda. |
+| `dataVend` | DATETIME | NOT NULL | Data e hora em que a venda foi realizada. |
+| `qtdVendida` | INT | NOT NULL | Quantidade de porções vendidas. |
+| `idReceita` | INT | FK (`Receitas`) | Associação à receita/prato vendido. |
+
+---
+
+### 7. Tabela: `Movimentacao_Estoque`
+Registra todas as entradas e saídas de insumos do estoque.
+
+| Campo | Tipo | Restrições | Descrição |
+| :--- | :--- | :--- | :--- |
+| `idEstoque` | INT | PK | Identificador único da movimentação. |
+| `tipoEs` | CHAR(1) | NOT NULL | Tipo da movimentação: E (Entrada) ou S (Saída). |
+| `qtdMoviment` | DECIMAL(10,3) | NOT NULL | Quantidade movimentada. |
+| `motivo` | VARCHAR(50) | NOT NULL | Motivo da movimentação (ex: Venda, Perda, Compra). |
+| `idInsumo` | INT | FK (`Insumos`) | Insumo relacionado à movimentação. |
+| `dataMoviment` | DATETIME | NOT NULL | Data e hora da movimentação. |
 
 </details>
-
 ## 🚀 Como Executar <a name="como-executar"></a>
 
 ### Pré-requisitos
