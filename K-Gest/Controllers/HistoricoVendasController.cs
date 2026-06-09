@@ -14,6 +14,10 @@ namespace K_Gest.Controllers
         //-----------------------------------------------------------
         public IActionResult Selecionar()
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 var receitas = new Receitas().SelecionarTodos();
@@ -31,6 +35,10 @@ namespace K_Gest.Controllers
 
         public IActionResult InserirExibir()
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             HistoricoVendasViewModel o_HistoricoVendasVM = new HistoricoVendasViewModel();
             o_HistoricoVendasVM.ListaReceitas = ObterReceitas();
             return View("InserirExibirView", o_HistoricoVendasVM);
@@ -80,6 +88,10 @@ namespace K_Gest.Controllers
         //----------------------------------------------------------- 
         public IActionResult ExcluirExibir(int idVendas)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 //--------------------------------------------------
@@ -117,6 +129,10 @@ namespace K_Gest.Controllers
         //-----------------------------------------------------------
         public IActionResult ExcluirProcessar(HistoricoVendasViewModel o_HistoricoVendasVM)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 HistoricoVendas o_HistoricoVendas = new HistoricoVendas();

@@ -10,6 +10,10 @@ namespace K_Gest.Controllers
     {// 1. Tela Principal: Mostra os Cards de Insumos
         public IActionResult Selecionar()
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 // Busca todos os insumos cadastrados no sistema
@@ -30,6 +34,10 @@ namespace K_Gest.Controllers
         [HttpGet]
         public IActionResult GerenciarLotes(int? id)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 // Se o ID veio nulo ou zerado, tenta pegar da QueryString ou redireciona
@@ -92,6 +100,10 @@ namespace K_Gest.Controllers
         // 3. Ajuste no InserirExibir para já receber o ID do Insumo selecionado automaticamente
         public IActionResult InserirExibir(int idInsumo)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             var vm = new LoteViewModel
             {
                 IdInsumo = idInsumo, // Já deixa o insumo correto pré-selecionado
@@ -103,6 +115,10 @@ namespace K_Gest.Controllers
         [HttpPost]
         public IActionResult InserirProcessar(LoteViewModel vm)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             // Limpa validações automáticas de listas auxiliares que travam o ModelState.IsValid
             ModelState.Remove("ListaInsumos");
             ModelState.Remove("idLote");
@@ -173,6 +189,10 @@ namespace K_Gest.Controllers
         // ==========================================
         public IActionResult AlterarExibir(int id)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 Lote o_Lote = new Lote { idLote = id };
@@ -212,6 +232,10 @@ namespace K_Gest.Controllers
         [HttpPost]
         public IActionResult AlterarProcessar(LoteViewModel vm)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             ModelState.Remove("ListaInsumos");
             ModelState.Remove("Quantidade");
             ModelState.Remove("DtFabricacao");
@@ -300,6 +324,10 @@ namespace K_Gest.Controllers
         // ==========================================
         public IActionResult ExcluirExibir(int id)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 Lote o_Lote = new Lote { idLote = id };
@@ -337,6 +365,10 @@ namespace K_Gest.Controllers
         }
         public IActionResult ExcluirProcessar(int idLote)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 Lote o_Lote = new Lote { idLote = idLote };

@@ -14,6 +14,10 @@ namespace K_Gest.Controllers
         //-----------------------------------------------------------
         public IActionResult Selecionar()
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 Receitas o_Receitas = new Receitas();
@@ -35,6 +39,10 @@ namespace K_Gest.Controllers
         //----------------------------------------------------------- 
         public IActionResult InserirExibir()
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             return View("InserirExibirView");
         }
 
@@ -44,6 +52,10 @@ namespace K_Gest.Controllers
         //-----------------------------------------------------------
         public IActionResult InserirProcessar(ReceitasViewModel o_ReceitasVM)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 // Se os campos forem validados entra aqui
@@ -77,6 +89,10 @@ namespace K_Gest.Controllers
         //-----------------------------------------------------------
         public IActionResult AlterarExibir(int idReceita)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 Receitas o_Receitas = new Receitas();
@@ -111,6 +127,10 @@ namespace K_Gest.Controllers
         //-----------------------------------------------------------
         public IActionResult AlterarProcessar(ReceitasViewModel o_ReceitasVM)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 // Se os campos forem validados entra aqui
@@ -145,6 +165,10 @@ namespace K_Gest.Controllers
         //----------------------------------------------------------- 
         public IActionResult ExcluirExibir(int idReceita)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 Receitas o_Receitas = new Receitas();
@@ -175,6 +199,10 @@ namespace K_Gest.Controllers
         //-----------------------------------------------------------
         public IActionResult ExcluirProcessar(ReceitasViewModel o_ReceitasVM)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 Receitas o_Receitas = new Receitas();

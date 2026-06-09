@@ -15,6 +15,10 @@ namespace K_Gest.Controllers
         //-----------------------------------------------------------
         public IActionResult Selecionar()
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 PossuiInsumosCadastrados();
@@ -39,6 +43,10 @@ namespace K_Gest.Controllers
         }
         public IActionResult Entradas()
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 PossuiInsumosCadastrados();
@@ -64,6 +72,10 @@ namespace K_Gest.Controllers
         }
         public IActionResult Saidas()
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 PossuiInsumosCadastrados();
@@ -91,6 +103,10 @@ namespace K_Gest.Controllers
         //----------------------------------------------------------- 
         public IActionResult InserirExibir()
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 MovimentacaoEstoqueViewModel o_MovimentVM = new MovimentacaoEstoqueViewModel();
@@ -108,6 +124,10 @@ namespace K_Gest.Controllers
         }
         public IActionResult InserirSaida()
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 MovimentacaoEstoqueViewModel o_MovimentVM = new MovimentacaoEstoqueViewModel();
@@ -125,6 +145,10 @@ namespace K_Gest.Controllers
         }
         public IActionResult InserirEntrada()
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 MovimentacaoEstoqueViewModel o_MovimentacaoEstoqueVM = new MovimentacaoEstoqueViewModel();
@@ -146,6 +170,10 @@ namespace K_Gest.Controllers
         [HttpPost]
         public IActionResult InserirProcessar(MovimentacaoEstoqueViewModel o_MovimentacaoEstoqueVM)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 if (ModelState.ContainsKey("ListaInsumos"))
@@ -224,6 +252,10 @@ namespace K_Gest.Controllers
         //----------------------------------------------------------- 
         public IActionResult ExcluirExibir(int idEstoque)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 //--------------------------------------------------
@@ -264,6 +296,10 @@ namespace K_Gest.Controllers
         //-----------------------------------------------------------
         public IActionResult ExcluirProcessar(MovimentacaoEstoqueViewModel o_MovimentacaoEstoqueVM)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 MovimentacaoEstoque o_MovimentacaoEstoque = new MovimentacaoEstoque();

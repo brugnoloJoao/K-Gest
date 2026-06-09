@@ -13,7 +13,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Login/Index"; // Redireciona para cá se tentar acessar sem login
-        options.ExpireTimeSpan = TimeSpan.FromHours(2);
+        options.ExpireTimeSpan = TimeSpan.FromHours(1);
     });
 
 // Registra o serviço de segundo plano

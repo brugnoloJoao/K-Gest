@@ -9,6 +9,10 @@ namespace K_Gest.Controllers
     {
         public IActionResult Selecionar()
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 Insumos o_Insumos = new Insumos();
@@ -27,11 +31,22 @@ namespace K_Gest.Controllers
             }
         }
 
-        public IActionResult InserirExibir() => View("InserirExibirView");
+        public IActionResult InserirExibir()
+        {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            return View("InserirExibirView");
+        }
 
         [HttpPost]
         public IActionResult InserirProcessar(InsumosViewModel o_InsumosVM)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 if (ModelState.IsValid)
@@ -57,6 +72,10 @@ namespace K_Gest.Controllers
 
         public IActionResult AlterarExibir(int idInsumo) 
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             Insumos o_Insumos = new Insumos();
             o_Insumos.idInsumo = idInsumo;
             DataTable dt = o_Insumos.SelecionarPorID();
@@ -83,6 +102,10 @@ namespace K_Gest.Controllers
         [HttpPost]
         public IActionResult AlterarProcessar(InsumosViewModel o_InsumosVM)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 // Forçamos a execução se o ID for válido, ignorando erros automáticos de validação
@@ -112,6 +135,10 @@ namespace K_Gest.Controllers
 
         public IActionResult ExcluirExibir(int idInsumo)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             Insumos o_Insumos = new Insumos();
             o_Insumos.idInsumo = idInsumo;
             DataTable dt = o_Insumos.SelecionarPorID();
@@ -134,6 +161,10 @@ namespace K_Gest.Controllers
         [HttpPost]
         public IActionResult ExcluirProcessar(InsumosViewModel vm)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 Insumos o_Insumos = new Insumos { idInsumo = vm.IdInsumo };

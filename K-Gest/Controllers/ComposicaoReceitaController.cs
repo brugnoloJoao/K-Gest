@@ -10,6 +10,10 @@ namespace K_Gest.Controllers
     {
         public IActionResult Selecionar()
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             ComposicaoReceita o_Comp = new ComposicaoReceita();
             DataTable dt = o_Comp.SelecionarAgrupado();
             return View("SelecionarView", dt);
@@ -18,6 +22,7 @@ namespace K_Gest.Controllers
         [HttpGet]
         public JsonResult ObterIngredientesJson(int id)
         {
+
             ComposicaoReceita o_Comp = new ComposicaoReceita();
             DataTable dt = o_Comp.SelecionarPorReceita(id);
 
@@ -43,6 +48,10 @@ namespace K_Gest.Controllers
         [HttpGet]
         public IActionResult EditarFicha(int id)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 ComposicaoReceita o_Comp = new ComposicaoReceita();
@@ -76,12 +85,20 @@ namespace K_Gest.Controllers
 
         public IActionResult ExcluirIngrediente(int id)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             new ComposicaoReceita().ExcluirIngredienteIndividual(id);
             return RedirectToAction("Selecionar");
         }
 
         public IActionResult InserirExibir()
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             var vm = new ComposicaoReceitaViewModel
             {
                 ListaReceitas = ObterReceitas(),
@@ -93,6 +110,11 @@ namespace K_Gest.Controllers
         [HttpPost]
         public IActionResult InserirProcessar(ComposicaoReceitaViewModel vm)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
             ModelState.Remove("ListaReceitas");
             ModelState.Remove("ListaInsumos");
 
@@ -122,6 +144,11 @@ namespace K_Gest.Controllers
         [HttpPost]
         public IActionResult AlterarProcessar(ComposicaoReceitaViewModel vm)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
             ModelState.Remove("ListaReceitas");
             ModelState.Remove("ListaInsumos");
 
@@ -151,6 +178,10 @@ namespace K_Gest.Controllers
 
         public IActionResult Excluir(int id)
         {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             try
             {
                 ComposicaoReceita o_Comp = new ComposicaoReceita { idComposicao = id };

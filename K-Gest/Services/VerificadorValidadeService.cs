@@ -13,11 +13,11 @@ namespace K_Gest.Services
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<VerificadorValidadeService> _logger;
 
-        //// Define o intervalo de tempo (Ex: Rodar a cada 24 horas)
-        private readonly TimeSpan _intervalo = TimeSpan.FromHours(24);
+        ////// Define o intervalo de tempo (Ex: Rodar a cada 24 horas)
+        //private readonly TimeSpan _intervalo = TimeSpan.FromHours(24);
 
         //Para testes utilizar esse
-        //private readonly TimeSpan _intervalo = TimeSpan.FromSeconds(10);
+        private readonly TimeSpan _intervalo = TimeSpan.FromSeconds(60);
 
         public VerificadorValidadeService(IServiceProvider serviceProvider, ILogger<VerificadorValidadeService> logger)
         {

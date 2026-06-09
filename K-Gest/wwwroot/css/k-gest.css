@@ -1425,6 +1425,12 @@ html.dark-mode .col-highlight-salmon {
     background-color: rgba(255, 140, 105, 0.10) !important;
 }
 
+html.dark-mode input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.7);
+    cursor: pointer;
+}
+
+
 /* =============================================================
    7. CLASSES EXTRAÍDAS DAS VIEWS (antes inline)
    Removidas dos atributos style="..." das views e centralizadas.
